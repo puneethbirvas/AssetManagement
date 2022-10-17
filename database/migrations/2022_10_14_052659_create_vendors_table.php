@@ -16,7 +16,8 @@ return new class extends Migration
         Schema::create('vendors', function (Blueprint $table) {
             $table->id();
             $table->string('vendorName');
-            $table->string('vendorType');
+            $table->bigInteger('vendorType')->unsigned();
+            $table->foreign('vendorType')->references('id')->on('vendor_types')->onDelete('cascade');
             $table->string('address');
             $table->string('email')->unique('vendors');
             $table->string('altEmail')->unique();

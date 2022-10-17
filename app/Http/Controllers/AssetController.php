@@ -6,6 +6,7 @@ use App\Models\Asset;
 use Illuminate\Http\Request;
 use Exception;
 use Illuminate\Database\QueryException;
+use DB;
 
 class AssetController extends Controller
 {
@@ -129,16 +130,24 @@ class AssetController extends Controller
             $asset->assetModel = $request->assetModel;
             $asset->poNo = $request->poNo;
             $asset->invoiceNo = $request->invoiceNo;
+            $asset->typeWarranty = $request->typeWarranty;
+
+            if($asset->typeWarranty == 'warranty'){
             $asset->warrantyStartDate = $request->warrantyStartDate;
-            $asset->warrantyEndDate = $request->warrantyEndDate;
-            
+            $asset->warrantyEndDate = $request->warrantyEndDate; 
             //imageStoring
-            if($file = $request->hasFile('warrantyDocument')) {
-                $file = $request->file('warrantyDocument') ;
-                $fileName = $file->getClientOriginalName() ;
-                $destinationPath = public_path().'/images/' ;
-                $file->move($destinationPath,$fileName);
-                $asset->warrantyDocument = '/images/'.$fileName ;
+                if($file = $request->hasFile('warrantyDocument')) {
+                    $file = $request->file('warrantyDocument') ;
+                    $fileName = $file->getClientOriginalName() ;
+                    $destinationPath = public_path().'/images/' ;
+                    $file->move($destinationPath,$fileName);
+                    $asset->warrantyDocument = '/images/'.$fileName ;
+                }
+            }
+            if($asset->typeWarranty == 'noWarranty'){
+                $asset->warrantyStartDate = null;
+                $asset->warrantyEndDate = null; 
+                $asset->warrantyDocument = null; 
             }
             if($file = $request->hasFile('uploadDocument')) {
                 $file = $request->file('uploadDocument') ;

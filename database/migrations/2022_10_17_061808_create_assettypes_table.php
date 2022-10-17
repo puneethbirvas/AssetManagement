@@ -13,17 +13,13 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('users', function (Blueprint $table) {
+        Schema::create('assettypes', function (Blueprint $table) {
             $table->id();
-            $table->string('employee_id');
-            $table->string('employee_name');
             $table->bigInteger('department')->unsigned();
             $table->foreign('department')->references('id')->on('departments')->onDelete('cascade');
-            $table->string('designation');
-            $table->string('mobile_number');
-            $table->string('email')->unique();
-            $table->string('user_name');
-            $table->string('password');
+            $table->bigInteger('section')->unsigned();
+            $table->foreign('section')->references('id')->on('sections')->onDelete('cascade');
+            $table->string('asset_type');
             $table->timestamps();
         });
     }
@@ -35,6 +31,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('users');
+        Schema::dropIfExists('assettypes');
     }
 };
