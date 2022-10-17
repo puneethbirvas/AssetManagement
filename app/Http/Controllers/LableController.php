@@ -50,4 +50,63 @@ class LabelController extends Controller
         
         return response($response, $status);        
     }
+
+     // Displaying data
+    public function showData(Lable $lable)
+    {
+ 
+        try{
+            $lable = Lable::all();
+ 
+            if(!$lable){
+                throw new Exception("data not found");
+            }else{
+                $response = [
+                     'success' => true,
+                     'data' => $lable         
+                ];
+                $status = 201;   
+            return response($response,$status);
+            }
+ 
+        }catch(Exception $e){
+            $response = [
+                "error" => $e->getMessage(),
+                "status" => 404
+            ];
+            $status = 404; 
+         
+        }
+ 
+        return response($response,$status);
+ 
+    }
+    
+    //destroy
+    public function destroy(Lable $Lable, $id)
+    {
+        try{
+            $Lable = Lable::find($id);
+            if(!$Lable){
+                throw new Exception("data not found");
+            }else{
+                $Lable->delete();
+                $response = [
+                     "message" => "Lable deleted successfully",
+                     "status" => 200
+                ];
+                $status = 200;                   
+            }
+ 
+        }catch(Exception $e){
+            $response = [
+                "error" => $e->getMessage(),
+                "status" => 404
+            ];
+            $status = 404;     
+        }
+ 
+        return response($response,$status);
+       
+    }  
 }

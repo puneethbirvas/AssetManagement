@@ -9,6 +9,7 @@ use App\Http\Controllers\AssetController;
 use App\Http\Controllers\UsersController;
 use App\Http\Controllers\SectionController;
 use App\Http\Controllers\AssettypeController;
+use App\Http\Controllers\LableController;
 
 
 
@@ -62,4 +63,7 @@ Route::post('section/{id}/update',[SectionController::class,'update']);
 Route::post('section/{id}/delete',[SectionController::class,'destroy']);
 Route::post('section/showdata',[SectionController::class,'ShowData']);
 
-
+//Lab
+Route::post('Lab/add',[LableController::class,'store']);
+Route::post('Lab/{id}/delete',[LableController::class,'destroy']);
+Route::post('Lab/showdata',[LableController::class,'ShowData']);
