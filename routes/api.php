@@ -6,6 +6,7 @@ use App\Http\Controllers\DepartmentController;
 use App\Http\Controllers\RegisterController;
 use App\Http\Controllers\VendorController;
 use App\Http\Controllers\VendorTypeController;
+use App\Http\Controllers\AssetController;
 
 // Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 //     return $request->user();
@@ -47,3 +48,10 @@ Route::get('show', [DepartmentController::class, 'show']);
 //VendorTypeController
 Route::post('vendorType/add', [VendorTypeController::class, 'store']);
 Route::post('vendorType/showData', [VendorTypeController::class, 'showData']);
+
+
+//AssetController
+Route::post('asset/add', [AssetController::class, 'store']);
+Route::post('asset/{id}/update', [AssetController::class, 'update']);
+Route::post('asset/{id}/delete', [AssetController::class, 'destroy']);
+Route::post('get', [AssetController::class, 'get']);
