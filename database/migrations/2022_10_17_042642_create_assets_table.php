@@ -22,7 +22,8 @@ return new class extends Migration
             $table->foreign('section')->references('id')->on('sections')->onDelete('cascade');
             $table->string('assetName');
             $table->string('financialAssetId');
-            $table->string('vendorName');
+            $table->bigInteger('vendorName')->unsigned();
+            $table->foreign('vendorName')->references('id')->on('vendors')->onDelete('cascade');
             $table->string('number');
             $table->string('email')->unique();
             $table->string('vendorAddress');
