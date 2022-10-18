@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Label;
 use Illuminate\Http\Request;
+use Exception;
+use Illuminate\Database\QueryException;
 
 class LabelController extends Controller
 {
@@ -24,6 +26,7 @@ class LabelController extends Controller
             if($Label->selectAssetType == 'selectAssetId'){
                 $Label->selectAssetId = $request->selectAssetId;
             }
+            
             $Label->code = $request->code; 
            
             $Label->save();
@@ -52,18 +55,18 @@ class LabelController extends Controller
     }
 
      // Displaying data
-    public function showData(Lable $lable)
+    public function showData(Label $Label)
     {
  
         try{
-            $lable = Lable::all();
+            $Label = Label::all();
  
-            if(!$lable){
+            if(!$Label){
                 throw new Exception("data not found");
             }else{
                 $response = [
                      'success' => true,
-                     'data' => $lable         
+                     'data' => $Label         
                 ];
                 $status = 201;   
             return response($response,$status);
@@ -83,16 +86,16 @@ class LabelController extends Controller
     }
     
     //destroy
-    public function destroy(Lable $Lable, $id)
+    public function destroy(Label $Label, $id)
     {
         try{
-            $Lable = Lable::find($id);
-            if(!$Lable){
+            $Label = Label::find($id);
+            if(!$Label){
                 throw new Exception("data not found");
             }else{
-                $Lable->delete();
+                $Label->delete();
                 $response = [
-                     "message" => "Lable deleted successfully",
+                     "message" => "Label deleted successfully",
                      "status" => 200
                 ];
                 $status = 200;                   

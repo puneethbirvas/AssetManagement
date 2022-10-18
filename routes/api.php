@@ -9,7 +9,7 @@ use App\Http\Controllers\AssetController;
 use App\Http\Controllers\UsersController;
 use App\Http\Controllers\SectionController;
 use App\Http\Controllers\AssettypeController;
-use App\Http\Controllers\LableController;
+use App\Http\Controllers\LabelController;
 
 
 
@@ -24,7 +24,7 @@ Route::post('user/{id}/update',[UsersController::class,'update']);
 Route::post('user/{id}/delete',[UsersController::class,'destroy']);
 Route::post('user/login',[UsersController::class,'loginUser']);
 Route::post('user/{id}/block',[UsersController::class,'block']);
-Route::post('user/showdata',[UsersController::class,'ShowData']);
+Route::post('user/showData',[UsersController::class,'ShowData']);
 
 
 //vendor
@@ -45,25 +45,25 @@ Route::post('asset/{id}/delete', [AssetController::class, 'destroy']);
 Route::post('get', [AssetController::class, 'get']);
 
 //Asset_Type
-Route::post('assettype/add',[AssettypeController::class,'add']);
-Route::post('assettype/{id}/update',[AssettypeController::class,'update']);
-Route::post('assettype/{id}/delete',[AssettypeController::class,'destroy']);
-Route::post('assettype/showdata',[AssettypeController::class,'ShowData']);
+Route::post('assetType/add',[AssettypeController::class,'add']);
+Route::post('assetType/{id}/update',[AssettypeController::class,'update']);
+Route::post('assetType/{id}/delete',[AssettypeController::class,'destroy']);
+Route::post('assetType/showData',[AssettypeController::class,'ShowData']);
 
 //Department
 Route::post('department/add',[DepartmentController::class,'add']);
 Route::post('department/{id}/update',[DepartmentController::class,'update']);
 Route::post('department/{id}/delete',[DepartmentController::class,'destroy']);
-Route::post('department/showdata',[DepartmentController::class,'ShowData']);
+Route::post('department/showData',[DepartmentController::class,'ShowData']);
 
 
 //Section
 Route::post('section/add',[SectionController::class,'add']);
 Route::post('section/{id}/update',[SectionController::class,'update']);
 Route::post('section/{id}/delete',[SectionController::class,'destroy']);
-Route::post('section/showdata',[SectionController::class,'ShowData']);
+Route::post('section/showData',[SectionController::class,'ShowData']);
 
 //Lab
-Route::post('Lab/add',[LableController::class,'store']);
-Route::post('Lab/{id}/delete',[LableController::class,'destroy']);
-Route::post('Lab/showdata',[LableController::class,'ShowData']);
+Route::post('Label/add',[LabelController::class,'store']);
+Route::post('Label/{id}/delete',[LabelController::class,'destroy']);
+Route::post('Label/showData',[LabelController::class,'ShowData']);

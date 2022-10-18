@@ -15,11 +15,15 @@ return new class extends Migration
     {
         Schema::create('labels', function (Blueprint $table) {
             $table->id();
-            $table->string('Department');
-            $table->string('selectSection');
-            $table->string('assetType');
+            $table->bigInteger('Department')->unsigned();
+            $table->foreign('Department')->references('id')->on('departments')->onDelete('cascade');
+            $table->bigInteger('selectSection')->unsigned();
+            $table->foreign('selectSection')->references('id')->on('sections')->onDelete('cascade');
+            $table->bigInteger('assetType')->unsigned();
+            $table->foreign('assetType')->references('id')->on('assettypes')->onDelete('cascade');
             $table->string('selectAssetType');
-            $table->string('selectAsset')->nullable();
+            $table->bigInteger('selectAsset')->unsigned()->nullable();
+            $table->foreign('selectAsset')->references('id')->on('assets')->onDelete('cascade');
             $table->string('selectAssetId')->nullable();
             $table->string('code');
             $table->timestamps();
