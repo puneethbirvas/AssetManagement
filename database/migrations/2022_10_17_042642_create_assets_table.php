@@ -24,7 +24,7 @@ return new class extends Migration
             $table->string('financialAssetId');
             $table->bigInteger('vendorName')->unsigned();
             $table->foreign('vendorName')->references('id')->on('vendors')->onDelete('cascade');
-            $table->string('number');
+            $table->string('phoneNumber');
             $table->string('email')->unique();
             $table->string('vendorAddress');
             $table->bigInteger('assetType')->unsigned();

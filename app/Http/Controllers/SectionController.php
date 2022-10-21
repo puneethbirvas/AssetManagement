@@ -107,7 +107,7 @@ class SectionController extends Controller
         return response($response,$status);
     } 
 
-    public function ShowData()
+    public function showData()
     {
       try{    
           $section = section::all();

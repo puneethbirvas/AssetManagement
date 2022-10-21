@@ -108,7 +108,7 @@ class AssettypeController extends Controller
         return response($response,$status);
     } 
 
-    public function ShowData()
+    public function showData()
     {
       try{    
           $assettype = assettype::all();
