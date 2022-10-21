@@ -110,7 +110,7 @@ class DepartmentController extends Controller
         return response($response,$status);
     } 
 
-    public function ShowData()
+    public function showData()
     {
       try{    
           $department = department::all();

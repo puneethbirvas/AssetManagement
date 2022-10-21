@@ -198,7 +198,7 @@ class UsersController extends Controller
         return response($response,$status);
     }  
     
-    public function ShowData()
+    public function showData()
     {
       try{    
           $users = Users::all();

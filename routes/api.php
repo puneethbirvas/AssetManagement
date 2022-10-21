@@ -15,7 +15,7 @@ use App\Http\Controllers\LabelController;
 
 Route::middleware(['auth:sanctum'])->group(function () {
     //All secure URL's
-          
+           
     });
 
 //users
@@ -24,46 +24,46 @@ Route::post('user/{id}/update',[UsersController::class,'update']);
 Route::post('user/{id}/delete',[UsersController::class,'destroy']);
 Route::post('user/login',[UsersController::class,'loginUser']);
 Route::post('user/{id}/block',[UsersController::class,'block']);
-Route::post('user/showData',[UsersController::class,'ShowData']);
+Route::get('user/showData',[UsersController::class,'showData']);
 
 
 //vendor
 Route::post('vendor/add', [VendorController::class, 'store']);
 Route::post('vendor/{id}/update', [VendorController::class, 'update']);
 Route::post('vendor/{id}/delete', [VendorController::class, 'destroy']);
-Route::post('vendor/showData', [VendorController::class, 'showData']);
+Route::get('vendor/showData', [VendorController::class, 'showData']);
  
 //VendorType
 Route::post('vendorType/add', [VendorTypeController::class, 'store']);
-Route::post('vendorType/showData', [VendorTypeController::class, 'showData']);
+Route::get('vendorType/showData', [VendorTypeController::class, 'showData']);
 
 
 //Asset
 Route::post('asset/add', [AssetController::class, 'store']);
 Route::post('asset/{id}/update', [AssetController::class, 'update']);
 Route::post('asset/{id}/delete', [AssetController::class, 'destroy']);
-Route::post('get', [AssetController::class, 'get']);
+Route::get('asset/showData', [AssetController::class, 'showData']);
 
 //Asset_Type
 Route::post('assetType/add',[AssettypeController::class,'add']);
 Route::post('assetType/{id}/update',[AssettypeController::class,'update']);
 Route::post('assetType/{id}/delete',[AssettypeController::class,'destroy']);
-Route::post('assetType/showData',[AssettypeController::class,'ShowData']);
+Route::get('assetType/showData',[AssettypeController::class,'showData']);
 
 //Department
 Route::post('department/add',[DepartmentController::class,'add']);
 Route::post('department/{id}/update',[DepartmentController::class,'update']);
 Route::post('department/{id}/delete',[DepartmentController::class,'destroy']);
-Route::post('department/showData',[DepartmentController::class,'ShowData']);
+Route::get('department/showData',[DepartmentController::class,'showData']);
 
 
 //Section
 Route::post('section/add',[SectionController::class,'add']);
 Route::post('section/{id}/update',[SectionController::class,'update']);
 Route::post('section/{id}/delete',[SectionController::class,'destroy']);
-Route::post('section/showData',[SectionController::class,'ShowData']);
+Route::get('section/showData',[SectionController::class,'showData']);
 
-//Lab
+//Label
 Route::post('Label/add',[LabelController::class,'store']);
 Route::post('Label/{id}/delete',[LabelController::class,'destroy']);
-Route::post('Label/showData',[LabelController::class,'ShowData']);
+Route::get('Label/showData',[LabelController::class,'showData']);

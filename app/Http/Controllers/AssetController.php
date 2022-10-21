@@ -17,12 +17,12 @@ class AssetController extends Controller
                 
             $last= 'asset-'.$this->get();
             $asset->assetId = $last;
-            $asset->Department  = $request->Department ;
-            $asset->Section = $request->Section;
+            $asset->department  = $request->department ;
+            $asset->section = $request->section;
             $asset->assetName = $request->assetName;
             $asset->financialAssetId = $request->financialAssetId;
             $asset->vendorName = $request->vendorName;
-            $asset->number = $request->number;
+            $asset->phoneNumber = $request->phoneNumber;
             $asset->email = $request->email;
             $asset->vendorAddress = $request->vendorAddress;
             $asset->assetType = $request->assetType;
@@ -122,7 +122,7 @@ class AssetController extends Controller
             $asset->assetName = $request->assetName;
             $asset->financialAssetId = $request->financialAssetId;
             $asset->vendorName = $request->vendorName;
-            $asset->number = $request->number;
+            $asset->phoneNumber = $request->phoneNumber;
             $asset->email = $request->email;
             $asset->vendorAddress = $request->vendorAddress;
             $asset->assetType = $request->assetType;
@@ -219,7 +219,35 @@ class AssetController extends Controller
         }
 
         return response($response,$status);
-      
     }  
+
+    public function showData()
+    {
+      try{    
+          return DB::table('assets')->select('id','department','section','assetName','assetType','manufaturer','assetModel','warrantyStartDate','warrantyEndDate')->orderby('id','asc')->get();
+          if(!$asset){
+            throw new Exception("Asset not found");
+          }
+            $response=[
+             "message" => "Asset List",
+             "data" => $asset
+              ];
+            $status = 200; 
+            
+        }catch(Exception $e){
+            $response = [
+             "message"=>$e->getMessage(),
+              "status" => 406
+              ];            
+            $status = 406;
+        }catch(QueryException $e){
+            $response = [
+                "error" => $e->errorInfo,
+                "status" => 406
+               ];
+            $status = 406; 
+        }
+        return response($response,$status); 
+    }
 
 }
