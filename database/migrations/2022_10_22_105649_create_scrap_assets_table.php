@@ -13,17 +13,18 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('users', function (Blueprint $table) {
+        Schema::create('scrapassets', function (Blueprint $table) {
             $table->id();
-            $table->string('employee_id')->unique();
-            $table->string('employee_name');
+            $table->string('scrapType');
             $table->bigInteger('department')->unsigned();
             $table->foreign('department')->references('id')->on('departments')->onDelete('cascade');
-            $table->string('designation');
-            $table->string('mobile_number');
-            $table->string('email')->unique();
-            $table->string('user_name');
-            $table->string('password');
+            $table->bigInteger('section')->unsigned();
+            $table->foreign('section')->references('id')->on('sections')->onDelete('cascade');
+            $table->bigInteger('assetType')->unsigned();
+            $table->foreign('assetType')->references('id')->on('assettypes')->onDelete('cascade');
+            $table->string('assetName');
+            $table->string('scrapAprovalLetter');
+            $table->string('user');
             $table->timestamps();
         });
     }
@@ -35,6 +36,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('users');
+        Schema::dropIfExists('scrapassets');
     }
 };

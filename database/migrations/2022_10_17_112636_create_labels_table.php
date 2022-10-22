@@ -26,6 +26,7 @@ return new class extends Migration
             $table->foreign('selectAsset')->references('id')->on('assets')->onDelete('cascade');
             $table->string('selectAssetId')->nullable();
             $table->string('code');
+            $table->string('codeGenerator');
             $table->timestamps();
         });
     }

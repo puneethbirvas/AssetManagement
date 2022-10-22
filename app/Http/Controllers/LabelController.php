@@ -4,30 +4,48 @@ namespace App\Http\Controllers;
 
 use App\Models\Label;
 use Illuminate\Http\Request;
+use Storage;
+use SimpleSoftwareIO\QrCode\Facades\QrCode;
+use Milon\Barcode\Facades\DNS1DFacade;
 use Exception;
 use Illuminate\Database\QueryException;
+
 
 class LabelController extends Controller
 {
     public function store(Request $request)
     {
        try{                
-            $Label = new Label;
+        $Label = new Label;
                 
-            $Label->Department  = $request->Department ;
-            $Label->selectSection = $request->selectSection;
-            $Label->assetType = $request->assetType;
-            $Label->selectAssetType = $request->selectAssetType;
+        $Label->Department  = $request->department ;
+        $Label->selectSection = $request->selectSection;
+        $Label->assetType = $request->assetType;
+        $Label->selectAssetType = $request->selectAssetType;
 
-            if($Label->selectAssetType == 'selectAsset'){
-                $Label->selectAsset = $request->selectAsset;
-            } 
+        if($Label->selectAssetType == 'selectAsset'){
+            $Label->selectAsset = $request->selectAsset;
+        } 
 
-            if($Label->selectAssetType == 'selectAssetId'){
-                $Label->selectAssetId = $request->selectAssetId;
-            }
-            
-            $Label->code = $request->code; 
+        if($Label->selectAssetType == 'selectAssetId'){
+            $Label->selectAssetId = $request->selectAssetId;
+        }
+        $Label->code = $request->code; 
+
+         // QrCode
+        if($Label->code == 'qrCode'){
+        $generate = 'welocome';
+        $filename = $generate.'.png';
+        $store = public_path().'/images/';
+        base64_encode(QrCode::format('png')->size(100)->generate("$generate", $store. $filename));
+        $Label->codeGenerator =  '/images/'.$filename;
+        }
+        // BarCode
+        if($Label->code == 'barCode'){
+        $name = 'barcode.png';
+        Storage::disk('public')->put("$name" ,base64_decode(DNS1DFacade::getBarcodePNG("44453645656", "EAN13")));
+        $Label->codeGenerator =  '/storage/'.$name;
+        }
            
             $Label->save();
             $response = [

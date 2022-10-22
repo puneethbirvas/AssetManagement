@@ -10,7 +10,7 @@ use Illuminate\Database\QueryException;
 class SectionController extends Controller
 {
     
-    public function add(Request $request)
+    public function store(Request $request)
     {
         try{
             $section = new section;

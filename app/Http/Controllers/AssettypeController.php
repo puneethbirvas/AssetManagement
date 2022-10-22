@@ -9,7 +9,7 @@ use Illuminate\Database\QueryException;
 
 class AssettypeController extends Controller
 {
-    public function add(Request $request)
+    public function store(Request $request)
     {
         try{
             $assettype = new assettype;
