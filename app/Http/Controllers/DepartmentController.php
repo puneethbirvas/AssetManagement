@@ -11,7 +11,7 @@ class DepartmentController extends Controller
 {
    
 
-    public function add(Request $request)
+    public function store(Request $request)
     {
         try{
             $department = new department;

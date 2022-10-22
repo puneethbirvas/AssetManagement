@@ -13,7 +13,7 @@ use Illuminate\Database\QueryException;
 
 class UsersController extends Controller
 { 
-    public function add(Request $request)
+    public function store(Request $request)
     {
         try{
             $users = new users;
