@@ -12,20 +12,35 @@ use App\Http\Controllers\AssettypeController;
 use App\Http\Controllers\LabelController;
 use App\Http\Controllers\ScrapAssetController;
 
+Route::get('token', function() {
+    $response = [          
+        "message" =>  " Token is  required",
+        "status" => 400
+    ];
+    $status = 400;
+
+    return Response($response, $status);
+                                                                                                           
+})->name('token');
 
 
 Route::middleware(['auth:sanctum'])->group(function () {
     //All secure URL's
-           
+
+    Route::post('user/{id}/update',[UsersController::class,'update']);
+    Route::post('logout',[UsersController::class,'logout']);
+    Route::post('user/{id}/delete',[UsersController::class,'destroy']);
+    Route::post('user/{id}/block',[UsersController::class,'block']);
+    Route::get('user/showData',[UsersController::class,'showData']);
+
     });
 
 //users
 Route::post('user/add',[UsersController::class,'store']);
-Route::post('user/{id}/update',[UsersController::class,'update']);
-Route::post('user/{id}/delete',[UsersController::class,'destroy']);
-Route::post('user/login',[UsersController::class,'loginUser']);
-Route::post('user/{id}/block',[UsersController::class,'block']);
-Route::get('user/showData',[UsersController::class,'showData']);
+
+
+//login 
+Route::post('login',[UsersController::class,'loginUser']);
 
 
 //vendor
@@ -37,7 +52,6 @@ Route::get('vendor/showData', [VendorController::class, 'showData']);
 //VendorType
 Route::post('vendorType/add', [VendorTypeController::class, 'store']);
 Route::get('vendorType/showData', [VendorTypeController::class, 'showData']);
-
 
 //Asset
 Route::post('asset/add', [AssetController::class, 'store']);
@@ -59,7 +73,7 @@ Route::get('department/showData',[DepartmentController::class,'showData']);
 
 
 //Section
-Route::post('section/add',[SectionController::class,'add']);
+Route::post('section/add',[SectionController::class,'store']);
 Route::post('section/{id}/update',[SectionController::class,'update']);
 Route::post('section/{id}/delete',[SectionController::class,'destroy']);
 Route::get('section/showData',[SectionController::class,'showData']);

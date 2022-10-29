@@ -7,6 +7,7 @@ use App\Models\Users;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use DB;
 use Exception;
 use Illuminate\Database\QueryException;
 
@@ -155,9 +156,10 @@ class UsersController extends Controller
                 $users = Users::where('password', $request['password'])->firstOrFail();
                 $token = $users->createToken('auth_token')->plainTextToken;
                 $response = [
-                    'message' => 'login sucessfully',
-                    'username' => $users->user_name,
-                    'email'=>$users->email,
+                    'userDetails' =>[ 
+                        'username' => $users->user_name,
+                        'email'=>$users->email,
+                    ],
                     'access_token' => $token, 
                     ];
                 $status = 200;        
@@ -165,6 +167,34 @@ class UsersController extends Controller
         }
 
         return response($response, $status);
+    }
+
+    public function logout(Request $request) 
+    {
+        try{
+            auth()->user()->tokens()->delete();
+            $response = [          
+                "message" =>  " user Logout Sucessfully!",
+                "status" => 200
+            ];
+            $status = 200;     
+            
+
+        }catch(Exception $e){
+            $response = [
+                "message"=>$e->getMessage(),
+                "status" => 406
+            ];            
+            $status = 406;
+        }catch(QueryException $e){
+            $response = [
+                "error" => $e->errorInfo,
+                "status" => 406
+            ];
+            $status = 406; 
+        }
+
+        return response($response,$status);
     }
 
     public function block($id)
@@ -201,7 +231,7 @@ class UsersController extends Controller
     public function showData()
     {
       try{    
-          $users = Users::all();
+        $users = Users::all();
           if(!$users){
             throw new Exception("user not found");
           }
@@ -226,5 +256,4 @@ class UsersController extends Controller
         }
         return response($response,$status); 
     }
-
 }
