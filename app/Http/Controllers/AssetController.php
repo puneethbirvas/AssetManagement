@@ -224,7 +224,7 @@ class AssetController extends Controller
     public function showData()
     {
       try{    
-          return DB::table('assets')->select('id','department','section','assetName','assetType','manufaturer','assetModel','warrantyStartDate','warrantyEndDate')->orderby('id','asc')->get();
+          $asset = DB::table('assets')->select('id','department','section','assetName','assetType','manufaturer','assetModel','warrantyStartDate','warrantyEndDate')->orderby('id','asc')->get();
           if(!$asset){
             throw new Exception("Asset not found");
           }
