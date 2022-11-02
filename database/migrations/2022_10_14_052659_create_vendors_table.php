@@ -23,11 +23,12 @@ return new class extends Migration
             $table->string('altEmail')->unique();
             $table->string('contactNo');
             $table->string('altContactNo');
+            $table->string('contactPerson');
             $table->string('reMarks');
             $table->string('gstNo');
             $table->string('gstCertificate');
             $table->string('msmeCertificate');
-            $table->string('canceledChecque');
+            $table->string('canceledCheque');
             $table->timestamp('email_verified_at')->nullable();
             $table->timestamps();
         });

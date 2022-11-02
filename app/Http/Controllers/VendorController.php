@@ -8,6 +8,7 @@ use App\Http\Controllers\BaseController as BaseController;
 use Exception;
 use Illuminate\Database\QueryException;
 use Validator;
+use DB;
 
 class VendorController extends Controller
 {
@@ -25,6 +26,7 @@ class VendorController extends Controller
             $vendor->altEmail = $request->altEmail;
             $vendor->contactNo = $request->contactNo;
             $vendor->altContactNo = $request->altContactNo;
+            $vendor->contactPerson = $request->contactPerson;
             $vendor->reMarks = $request->reMarks;
             $vendor->gstNo = $request->gstNo;
             
@@ -94,6 +96,7 @@ class VendorController extends Controller
             $vendor->altEmail = $request->altEmail;
             $vendor->contactNo = $request->contactNo;
             $vendor->altContactNo = $request->altContactNo;
+            $vendor->contactPerson = $request->contactPerson;
             $vendor->reMarks = $request->reMarks;
             $vendor->gstNo = $request->gstNo;
 
@@ -179,7 +182,7 @@ class VendorController extends Controller
     {
 
         try{
-            $vendor = Vendor::all();
+            $vendor = DB::table('vendors')->select('id','vendorName','address','email','contactNo','contactPerson')->orderby('id','asc')->get();
 
             if(!$vendor){
                 throw new Exception("Vendor details not found");
