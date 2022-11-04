@@ -35,37 +35,49 @@ class AssetController extends Controller
             if($asset->typeWarranty == 'warranty'){
             $asset->warrantyStartDate = $request->warrantyStartDate;
             $asset->warrantyEndDate = $request->warrantyEndDate; 
-            //imageStoring
-                if($file = $request->hasFile('warrantyDocument')) {
-                    $file = $request->file('warrantyDocument') ;
-                    $fileName = $file->getClientOriginalName() ;
-                    $destinationPath = public_path().'/images/' ;
-                    $file->move($destinationPath,$fileName);
-                    $asset->warrantyDocument = '/images/'.$fileName ;
-                }
+
+            //imageStoring warrantyDocument
+            $image = $request->warrantyDocument;  // your base64 encoded
+            $extension = explode('/', explode(':', substr($image, 0, strpos($image, ';')))[1])[1]; 
+            $replace = substr($image, 0, strpos($image, ',')+1); 
+            $image = str_replace($replace, '', $image); 
+            $image = str_replace(' ', '+', $image); 
+            $imageName = Str::random(10).'.'.$extension;
+            $imagePath = '/storage'.'/'.$imageName;
+            Storage::disk('public')->put($imageName, base64_decode($image));
+
+            $asset->warrantyDocument = $imagePath;
             }
             if($asset->typeWarranty == 'noWarranty'){
                 $asset->warrantyStartDate = null;
                 $asset->warrantyEndDate = null; 
                 $asset->warrantyDocument = null; 
             }
-            if($file = $request->hasFile('uploadDocument')) {
-                $file = $request->file('uploadDocument') ;
-                $fileName = $file->getClientOriginalName() ;
-                $destinationPath = public_path().'/images/' ;
-                $file->move($destinationPath,$fileName);
-                $asset->uploadDocument = '/images/'.$fileName ;
-            }
+            //imageStoring uploadDocument
+            $image = $request->uploadDocument;  // your base64 encoded
+            $extension = explode('/', explode(':', substr($image, 0, strpos($image, ';')))[1])[1]; 
+            $replace = substr($image, 0, strpos($image, ',')+1); 
+            $image = str_replace($replace, '', $image); 
+            $image = str_replace(' ', '+', $image); 
+            $imageName = Str::random(10).'.'.$extension;
+            $imagePath = '/storage'.'/'.$imageName;
+            Storage::disk('public')->put($imageName, base64_decode($image));
+
+            $asset->uploadDocument = $imagePath;
 
             $asset->description = $request->description;
 
-            if($file = $request->hasFile('assetImage')) {
-                $file = $request->file('assetImage') ;
-                $fileName = $file->getClientOriginalName() ;
-                $destinationPath = public_path().'/images/' ;
-                $file->move($destinationPath,$fileName);
-                $asset->assetImage = '/images/'.$fileName ;
-            }
+            //imageStoring assteImage
+            $image = $request->assteImage;  // your base64 encoded
+            $extension = explode('/', explode(':', substr($image, 0, strpos($image, ';')))[1])[1]; 
+            $replace = substr($image, 0, strpos($image, ',')+1); 
+            $image = str_replace($replace, '', $image); 
+            $image = str_replace(' ', '+', $image); 
+            $imageName = Str::random(10).'.'.$extension;
+            $imagePath = '/storage'.'/'.$imageName;
+            Storage::disk('public')->put($imageName, base64_decode($image));
+
+            $asset->assteImage = $imagePath;
 
             $asset->save();
             $response = [

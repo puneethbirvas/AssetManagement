@@ -31,27 +31,38 @@ class VendorController extends Controller
             $vendor->gstNo = $request->gstNo;
             
             //imageStoring
-            if($file = $request->hasFile('gstCertificate')) {
-                $file = $request->file('gstCertificate') ;
-                $fileName = $file->getClientOriginalName() ;
-                $destinationPath = public_path().'/images/' ;
-                $file->move($destinationPath,$fileName);
-                $vendor->gstCertificate = '/images/'.$fileName ;
-            }
-            if($file = $request->hasFile('msmeCertificate')) {
-                $file = $request->file('msmeCertificate') ;
-                $fileName = $file->getClientOriginalName() ;
-                $destinationPath = public_path().'/images/' ;
-                $file->move($destinationPath,$fileName);
-                $vendor->msmeCertificate = '/images/'.$fileName ;
-            }
-            if($file = $request->hasFile('canceledCheque')) {
-                $file = $request->file('canceledCheque') ;
-                $fileName = $file->getClientOriginalName() ;
-                $destinationPath = public_path().'/images/' ;
-                $file->move($destinationPath,$fileName);
-                $vendor->canceledCheque = '/images/'.$fileName ;
-            }
+            $image = $request->gstCertifiacate;  // your base64 encoded
+            $extension = explode('/', explode(':', substr($image, 0, strpos($image, ';')))[1])[1]; 
+            $replace = substr($image, 0, strpos($image, ',')+1); 
+            $image = str_replace($replace, '', $image); 
+            $image = str_replace(' ', '+', $image); 
+            $imageName = Str::random(10).'.'.$extension;
+            $imagePath = '/storage'.'/'.$imageName;
+            Storage::disk('public')->put($imageName, base64_decode($image));
+
+            $vendor->gstCertifiacate = $imagePath;
+
+            $image = $request->msmeCertifiacate;  // your base64 encoded
+            $extension = explode('/', explode(':', substr($image, 0, strpos($image, ';')))[1])[1]; 
+            $replace = substr($image, 0, strpos($image, ',')+1); 
+            $image = str_replace($replace, '', $image); 
+            $image = str_replace(' ', '+', $image); 
+            $imageName = Str::random(10).'.'.$extension;
+            $imagePath = '/storage'.'/'.$imageName;
+            Storage::disk('public')->put($imageName, base64_decode($image));
+
+            $vendor->msmeCertifiacate = $imagePath;
+
+            $image = $request->canceledCheque;  // your base64 encoded
+            $extension = explode('/', explode(':', substr($image, 0, strpos($image, ';')))[1])[1]; 
+            $replace = substr($image, 0, strpos($image, ',')+1); 
+            $image = str_replace($replace, '', $image); 
+            $image = str_replace(' ', '+', $image); 
+            $imageName = Str::random(10).'.'.$extension;
+            $imagePath = '/storage'.'/'.$imageName;
+            Storage::disk('public')->put($imageName, base64_decode($image));
+
+            $vendor->canceledCheque = $imagePath;
 
             $vendor->save();
             $response = [
