@@ -57,27 +57,27 @@ class ScrapAssetController extends Controller
     public function showData()
     {
       try{    
-        return DB::table('scrap_assets')->select('id', 'department','section','assetType','assetName','user')->orderby('id','asc')->get();
-          if(!$scrapAsset){
-            throw new Exception("ScrapAsset not found");
-          }
+          return DB::table('scrap_assets')->select('id', 'department','section','assetType',       'assetName','user')->orderby('id','asc')->get();
+            if(!$scrapAsset){
+             throw new Exception("ScrapAsset not found");
+            }
             $response=[
              "message" => "ScrapAsset List",
              "data" => $scrapAsset
-              ];
+            ];
             $status = 200; 
             
         }catch(Exception $e){
             $response = [
              "message"=>$e->getMessage(),
               "status" => 406
-              ];            
+            ];            
             $status = 406;
         }catch(QueryException $e){
             $response = [
                 "error" => $e->errorInfo,
                 "status" => 406
-               ];
+            ];
             $status = 406; 
         }
         return response($response,$status); 

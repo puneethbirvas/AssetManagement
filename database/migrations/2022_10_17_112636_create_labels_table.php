@@ -21,6 +21,7 @@ return new class extends Migration
             $table->foreign('selectSection')->references('id')->on('sections')->onDelete('cascade');
             $table->bigInteger('assetType')->unsigned();
             $table->foreign('assetType')->references('id')->on('assettypes')->onDelete('cascade');
+            $table->string('assetId');
             $table->string('selectAssetType');
             $table->bigInteger('selectAsset')->unsigned()->nullable();
             $table->foreign('selectAsset')->references('id')->on('assets')->onDelete('cascade');

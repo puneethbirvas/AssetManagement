@@ -61,13 +61,13 @@ class SectionController extends Controller
                $response = [
                    "message"=>$e->getMessage(),
                    "status" => 406
-               ];            
+                ];            
                $status = 200;
             }catch(QueryException $e){
                $response = [
                    "error" => $e->errorInfo,
                    "status" => 406
-               ];
+                ];
                $status = 406; 
             }
 
@@ -110,27 +110,27 @@ class SectionController extends Controller
     public function showData()
     {
       try{    
-          $section = section::all();
-          if(!$section){
-            throw new Exception("section not found");
-          }
+            $section = section::all();
+            if(!$section){
+              throw new Exception("section not found");
+            }
             $response=[
-             "message" => "section List",
-             "data" => $section
-              ];
+              "message" => "section List",
+              "data" => $section
+            ];
             $status = 200; 
             
         }catch(Exception $e){
             $response = [
-             "message"=>$e->getMessage(),
+              "message"=>$e->getMessage(),
               "status" => 406
               ];            
             $status = 406;
         }catch(QueryException $e){
             $response = [
-                "error" => $e->errorInfo,
-                "status" => 406
-               ];
+              "error" => $e->errorInfo,
+              "status" => 406
+            ];
             $status = 406; 
         }
         return response($response,$status); 

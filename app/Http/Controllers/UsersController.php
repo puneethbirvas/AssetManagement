@@ -231,27 +231,27 @@ class UsersController extends Controller
     public function showData()
     {
       try{    
-        $users = Users::all();
-          if(!$users){
-            throw new Exception("user not found");
-          }
+            $users = Users::all();
+            if(!$users){
+             throw new Exception("user not found");
+            }
             $response=[
              "message" => "Users List",
              "data" => $users
-              ];
+            ];
             $status = 200; 
             
         }catch(Exception $e){
-            $response = [
-             "message"=>$e->getMessage(),
-              "status" => 406
-              ];            
+               $response = [
+                 "message"=>$e->getMessage(),
+                 "status" => 406
+                ];                    
             $status = 406;
         }catch(QueryException $e){
-            $response = [
-                "error" => $e->errorInfo,
-                "status" => 406
-               ];
+                $response = [
+                  "error" => $e->errorInfo,
+                  "status" => 406
+                ];  
             $status = 406; 
         }
         return response($response,$status); 
