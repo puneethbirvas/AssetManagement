@@ -17,7 +17,9 @@ class LabelController extends Controller
     {
        try{                
         $Label = new Label;
-                
+             
+        $last= 'RDL_AS_'.$this->get();
+        $Label->assetId = $last;
         $Label->Department  = $request->department ;
         $Label->selectSection = $request->selectSection;
         $Label->assetType = $request->assetType;
@@ -70,6 +72,20 @@ class LabelController extends Controller
         }
         
         return response($response, $status);        
+    }
+
+     //default asset-id
+    public function get()
+    {
+       $last = DB::table('labels')->latest( 'id')->first();
+       if(!$last){
+        $user =  "1";
+
+       }else{
+        $user = $last->id + 1;
+       }
+
+    return $user ;
     }
 
      // Displaying data
