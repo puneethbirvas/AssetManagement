@@ -113,10 +113,10 @@ class DepartmentController extends Controller
     public function showData()
     {
       try{    
-          $department = department::all();
-          if(!$department){
-            throw new Exception("department not found");
-          }
+            $department = department::all();
+            if(!$department){
+             throw new Exception("department not found");
+            }
             $response=[
              "message" => "department List",
              "data" => $department

@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Storage;
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
 use Milon\Barcode\Facades\DNS1DFacade;
+use DB;
 use Exception;
 use Illuminate\Database\QueryException;
 
@@ -15,6 +16,7 @@ class LabelController extends Controller
 {
     public function store(Request $request)
     {
+
        try{                
         $Label = new Label;
              
@@ -69,10 +71,24 @@ class LabelController extends Controller
                 "status"=>406
             ];
             $status = 406; 
+           } 
+            return response($response, $status);        
+
         }
-        
-        return response($response, $status);        
-    }
+    
+         //default asset-id
+        public function get()
+        {
+           $last = DB::table('labels')->latest( 'id')->first();
+           if(!$last){
+            $user =  "1";
+    
+           }else{
+            $user = $last->id + 1;
+           }
+    
+         return $user ;
+        } 
 
      //default asset-id
     public function get()
@@ -93,7 +109,7 @@ class LabelController extends Controller
     {
  
         try{
-            $Label = Label::all();
+            $Label = DB::table('labels')->select('id','department','selectSection','assetType','assetId','selectAssetType','selectAsset','selectAssetId','code','created_at','codeGenerator')->orderby('id','asc')->get();
  
             if(!$Label){
                 throw new Exception("data not found");
@@ -106,7 +122,7 @@ class LabelController extends Controller
             return response($response,$status);
             }
  
-        }catch(Exception $e){
+            }catch(Exception $e){
             $response = [
                 "error" => $e->getMessage(),
                 "status" => 404

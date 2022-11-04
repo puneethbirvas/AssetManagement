@@ -51,6 +51,8 @@ Route::get('vendor/showData', [VendorController::class, 'showData']);
  
 //VendorType
 Route::post('vendorType/add', [VendorTypeController::class, 'store']);
+Route::post('vendorType/{id}/update', [VendorTypeController::class, 'update']);
+Route::post('vendorType/{id}/delete', [VendorTypeController::class, 'destroy']);
 Route::get('vendorType/showData', [VendorTypeController::class, 'showData']);
 
 //Asset
@@ -59,7 +61,7 @@ Route::post('asset/{id}/update', [AssetController::class, 'update']);
 Route::post('asset/{id}/delete', [AssetController::class, 'destroy']);
 Route::get('asset/showData', [AssetController::class, 'showData']);
 
-//Asset_Type
+//AssetType   
 Route::post('assetType/add',[AssettypeController::class,'store']);
 Route::post('assetType/{id}/update',[AssettypeController::class,'update']);
 Route::post('assetType/{id}/delete',[AssettypeController::class,'destroy']);
@@ -79,10 +81,10 @@ Route::post('section/{id}/delete',[SectionController::class,'destroy']);
 Route::get('section/showData',[SectionController::class,'showData']);
 
 //Label
-Route::post('Label/add',[LabelController::class,'store']);
-Route::post('Label/{id}/delete',[LabelController::class,'destroy']);
-Route::get('Label/showData',[LabelController::class,'showData']);
+Route::post('label/add',[LabelController::class,'store']);
+Route::post('label/{id}/delete',[LabelController::class,'destroy']);
+Route::get('label/showData',[LabelController::class,'showData']);
 
-//ScrapAssetel
+//ScrapAssetes
 Route::post('scrapAsset/add',[ScrapAssetController::class,'store']);
 Route::get('scrapAsset/showData',[ScrapAssetController::class,'showData']);
