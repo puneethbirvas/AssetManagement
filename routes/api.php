@@ -11,6 +11,14 @@ use App\Http\Controllers\SectionController;
 use App\Http\Controllers\AssettypeController;
 use App\Http\Controllers\LabelController;
 use App\Http\Controllers\ScrapAssetController;
+use App\Http\Controllers\AuditController;
+use App\Http\Controllers\AllocationController;
+use App\Http\Controllers\AssetMasterController;
+use App\Http\Controllers\GetDataController;
+use App\Http\Controllers\TransferAssetController;
+use App\Http\Controllers\TagAssetController;
+use App\Http\Controllers\UntagAssetController;
+
 
 Route::get('token', function() {
     $response = [          
@@ -48,7 +56,7 @@ Route::post('vendor/add', [VendorController::class, 'store']);
 Route::post('vendor/{id}/update', [VendorController::class, 'update']);
 Route::post('vendor/{id}/delete', [VendorController::class, 'destroy']);
 Route::get('vendor/showData', [VendorController::class, 'showData']);
- 
+
 //VendorType
 Route::post('vendorType/add', [VendorTypeController::class, 'store']);
 Route::post('vendorType/{id}/update', [VendorTypeController::class, 'update']);
@@ -85,6 +93,45 @@ Route::post('label/add',[LabelController::class,'store']);
 Route::post('label/{id}/delete',[LabelController::class,'destroy']);
 Route::get('label/showData',[LabelController::class,'showData']);
 
+Route::get('label/{id}/getAssetName',[LabelController::class,'getAssetName']);
+
+
 //ScrapAssetes
 Route::post('scrapAsset/add',[ScrapAssetController::class,'store']);
 Route::get('scrapAsset/showData',[ScrapAssetController::class,'showData']);
+
+//Audit
+Route::post('audit/add', [AuditController::class, 'store']);
+Route::post('audit/{id}/update', [AuditController::class, 'update']);
+Route::post('audit/{id}/delete', [AuditController::class, 'destroy']);
+Route::get('audit/showData', [AuditController::class, 'showData']);
+Route::get('audit/{id}/viewAuditReport', [AuditController::class, 'viewAuditReport']);
+
+//Allocation
+Route::post('allocation/add', [AllocationController::class, 'store']);
+Route::post('allocation/{id}/update', [AllocationController::class, 'update']);
+Route::get('allocation/showData', [AllocationController::class, 'showData']);
+Route::get('alloation/{id}/getEmpName',[AllocationController::class, 'getEmpName']);
+
+//TransferAsset
+Route::post('transferAsset/{id}', [TransferAssetController::class, 'transferData']);
+
+// AssetMaster
+Route::get('assetMaster/{id}/showData', [AssetMasterController::class, 'showData']);
+
+//GetData
+Route::get('getDepartment', [GetDataController::class, 'getDepartment']);
+Route::get('getSection/{id}', [GetDataController::class, 'getSection']);
+Route::get('getAssetType/{id}', [GetDataController::class, 'getAssetType']);
+Route::get('getAssetName/{id}', [GetDataController::class, 'getAssetName']);
+Route::get('getVendor', [GetDataController::class, 'getVendor']);
+Route::get('getVendorData/{id}', [GetDataController::class, 'getVendorData']);
+
+//TagAsset
+Route::post('tagAsset/add', [TagAssetController::class, 'store']);
+Route::get('getAssetId/{id}', [TagAssetController::class, 'getAssetId']);
+Route::get('selectAssetId', [TagAssetController::class, 'selectAssetId']);
+
+//UnTagAsset
+Route::post('untagAsset/add', [UntagAssetController::class, 'store']);
+Route::get('untagAsset/showData', [UntagAssetController::class, 'showData']);

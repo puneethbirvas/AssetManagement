@@ -12,7 +12,7 @@ class assettype extends Model
     protected $fillable = [
         'department' ,
         'section' ,
-        'asset_type' ,
+        'assetType' ,
     ];
  
      /**
