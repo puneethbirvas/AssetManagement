@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\section;
 use Illuminate\Http\Request;
+use DB;
 use Exception;
 use Illuminate\Database\QueryException;
 
@@ -38,7 +39,7 @@ class SectionController extends Controller
         }
 
         return response($response,$status);
-    }
+    } 
 
 
     public function update(Request $request,$id)
@@ -110,13 +111,16 @@ class SectionController extends Controller
     public function showData()
     {
       try{    
-            $section = section::all();
-            if(!$section){
-              throw new Exception("section not found");
+            $result = DB::table('sections')
+                    ->join('departments','departments.id','=','sections.department')
+                    ->select('sections.*','departments.department_name as department')
+                    ->get();
+            if(!$result){
+                throw new Exception("section not found");
             }
             $response=[
               "message" => "section List",
-              "data" => $section
+              "data" => $result
             ];
             $status = 200; 
             

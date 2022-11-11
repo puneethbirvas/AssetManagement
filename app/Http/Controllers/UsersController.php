@@ -231,13 +231,16 @@ class UsersController extends Controller
     public function showData()
     {
       try{    
-            $users = Users::all();
-            if(!$users){
+        $result = DB::table('users')
+                ->join('departments','departments.id','=','users.department')
+                ->select('users.*','departments.department_name as department')
+                ->get();
+            if(!$result){
              throw new Exception("user not found");
             }
             $response=[
              "message" => "Users List",
-             "data" => $users
+             "data" => $result
             ];
             $status = 200; 
             

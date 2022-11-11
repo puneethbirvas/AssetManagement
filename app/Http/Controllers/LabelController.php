@@ -10,6 +10,7 @@ use Milon\Barcode\Facades\DNS1DFacade;
 use DB;
 use Exception;
 use Illuminate\Database\QueryException;
+use Str;
 
 
 class LabelController extends Controller
@@ -19,9 +20,7 @@ class LabelController extends Controller
 
        try{                
         $Label = new Label;
-             
-        $last= 'RDL_AS_'.$this->get();
-        $Label->assetId = $last;
+         
         $Label->Department  = $request->department ;
         $Label->selectSection = $request->selectSection;
         $Label->assetType = $request->assetType;
@@ -36,12 +35,13 @@ class LabelController extends Controller
         }
         $Label->code = $request->code; 
 
+        $getId = $this->getAssetName($request);
+
          // QrCode
         if($Label->code == 'qrCode'){
-        $generate = 'welocome';
-        $filename = $generate.'.png';
+        $filename =  Str::random(10).'.png';
         $store = public_path().'/images/';
-        base64_encode(QrCode::format('png')->size(100)->generate("$generate", $store. $filename));
+        base64_encode(QrCode::format('png')->size(100)->generate("$getId", $store. $filename));
         $Label->codeGenerator =  '/images/'.$filename;
         }
         // BarCode
@@ -74,34 +74,14 @@ class LabelController extends Controller
            } 
             return response($response, $status);        
 
-        }
-    
-         //default asset-id
-        public function get()
-        {
-           $last = DB::table('labels')->latest( 'id')->first();
-           if(!$last){
-            $user =  "1";
-    
-           }else{
-            $user = $last->id + 1;
-           }
-    
-         return $user ;
-        } 
+    }
 
-     //default asset-id
-    public function get()
-    {
-       $last = DB::table('labels')->latest( 'id')->first();
-       if(!$last){
-        $user =  "1";
+    public function getAssetName($id)
+    { 
 
-       }else{
-        $user = $last->id + 1;
-       }
+        $assetName = DB::table('assets')->where('id','=',$id)->get('assetId');
 
-    return $user ;
+        return $assetName;
     }
 
      // Displaying data
@@ -144,6 +124,7 @@ class LabelController extends Controller
                 throw new Exception("data not found");
             }else{
                 $Label->delete();
+
                 $response = [
                      "message" => "Label deleted successfully",
                      "status" => 200

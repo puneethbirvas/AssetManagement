@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\scrapAsset;
 use Illuminate\Http\Request;
 use DB;
+use Str;
+use Storage;
 
 class ScrapAssetController extends Controller
 {
@@ -20,16 +22,19 @@ class ScrapAssetController extends Controller
             $scrapAsset->assetName = $request->assetName;
            
             //imageStoring
-            $image = $request->scrapAprovalLetter;  // your base64 encoded
-            $extension = explode('/', explode(':', substr($image, 0, strpos($image, ';')))[1])[1]; 
-            $replace = substr($image, 0, strpos($image, ',')+1); 
-            $image = str_replace($replace, '', $image); 
-            $image = str_replace(' ', '+', $image); 
-            $imageName = Str::random(10).'.'.$extension;
-            $imagePath = '/storage'.'/'.$imageName;
-            Storage::disk('public')->put($imageName, base64_decode($image));
+            $image = $request->scrapAprovalLetter;
+            if($image){  // your base64 encoded
+                $extension = explode('/', explode(':', substr($image, 0, strpos($image, ';')))[1])[1]; 
+                $replace = substr($image, 0, strpos($image, ',')+1); 
+                $image = str_replace($replace, '', $image); 
+                $image = str_replace(' ', '+', $image); 
+                $imageName = Str::random(10).'.'.$extension;
+                $imagePath = '/storage'.'/'.$imageName;
+                Storage::disk('public')->put($imageName, base64_decode($image));
 
-            $scrapAsset->scrapAprovalLetter = $imagePath;
+                $scrapAsset->scrapAprovalLetter = $imagePath;
+            }
+
             $scrapAsset->user='Admin';
 
             $scrapAsset->save();
