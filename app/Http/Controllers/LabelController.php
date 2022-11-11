@@ -18,6 +18,7 @@ class LabelController extends Controller
     public function store(Request $request)
     {
 
+
        try{                
         $Label = new Label;
          
@@ -83,6 +84,7 @@ class LabelController extends Controller
 
         return $assetName;
     }
+
 
      // Displaying data
     public function showData(Label $Label)

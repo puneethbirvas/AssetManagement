@@ -111,6 +111,7 @@ class SectionController extends Controller
     public function showData()
     {
       try{    
+
             $result = DB::table('sections')
                     ->join('departments','departments.id','=','sections.department')
                     ->select('sections.*','departments.department_name as department')
@@ -121,6 +122,7 @@ class SectionController extends Controller
             $response=[
               "message" => "section List",
               "data" => $result
+
             ];
             $status = 200; 
             

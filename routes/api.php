@@ -69,7 +69,6 @@ Route::post('asset/{id}/update', [AssetController::class, 'update']);
 Route::post('asset/{id}/delete', [AssetController::class, 'destroy']);
 Route::get('asset/showData', [AssetController::class, 'showData']);
 
-
 //AssetType   
 Route::post('assetType/add',[AssettypeController::class,'store']);
 Route::post('assetType/{id}/update',[AssettypeController::class,'update']);
@@ -93,7 +92,9 @@ Route::get('section/showData',[SectionController::class,'showData']);
 Route::post('label/add',[LabelController::class,'store']);
 Route::post('label/{id}/delete',[LabelController::class,'destroy']);
 Route::get('label/showData',[LabelController::class,'showData']);
+
 Route::get('label/{id}/getAssetName',[LabelController::class,'getAssetName']);
+
 
 //ScrapAssetes
 Route::post('scrapAsset/add',[ScrapAssetController::class,'store']);
