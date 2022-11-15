@@ -10,12 +10,12 @@ class Asset extends Model
     use HasFactory;
     protected $fillable = [
         'assetId',
-        'Department',
-        'Section',
+        'department',
+        'section',
         'assetName',
         'financialAssetId',
         'vendorName',
-        'number',
+        'phoneNumber',
         'email',
         'vendorAddress',
         'assetType',

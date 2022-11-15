@@ -47,7 +47,8 @@ class GetDataController extends Controller
             ];
             $status = 406; 
         }
-           return response($response, $status);    
+        
+        return response($response, $status);    
     }
     
 
@@ -60,7 +61,7 @@ class GetDataController extends Controller
             if(!$section){
                 throw new Exception("data not found");
             }else{
-                $section = DB::table('sections')->where('department','=',$id)->get('section');
+                $section = DB::table('sections')->where('department','=',$id)->get();
 
                 $response = [
                     'success' => true,
@@ -96,7 +97,7 @@ class GetDataController extends Controller
             if(!$assetType){
                 throw new Exception("data not found");
             }else{
-                $assetType = DB::table('assettypes')->where('section','=',$id)->get('assetType');
+                $assetType = DB::table('assettypes')->where('section','=',$id)->get();
 
                 $response = [
                     'success' => true,
@@ -130,7 +131,10 @@ class GetDataController extends Controller
             if(!$assetName){
                 throw new Exception("data not found");
             }else{
-                $assetName = DB::table('assets')->where('assetType','=',$id)->get('assetName');
+                $assetName = DB::table('assets')
+                    ->where('assetType','=',$id)
+                    ->select('id','assetType')
+                    ->get();
 
                 $response = [
                     'success' => true,
@@ -200,9 +204,10 @@ class GetDataController extends Controller
                 throw new Exception("VendorData not found");
             }else{   
                 
-                $VendorData = DB::table('vendors')->where('id','=',$id)
-                ->select('contactNo','email','address')
-                ->get();
+                $VendorData = DB::table('vendors')
+                    ->where('id','=',$id)
+                    ->select('contactNo','email','address')
+                    ->get();
 
                 $response = [
                     'success' => true,

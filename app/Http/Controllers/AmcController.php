@@ -8,6 +8,7 @@ use Exception;
 use Illuminate\Database\QueryException;
 use Storage;
 use Str;
+use DB;
 
 class AMCController extends Controller
 {
@@ -32,9 +33,10 @@ class AMCController extends Controller
                 $imageName = Str::random(10).'.'.$extension;
                 $imagePath = '/storage'.'/'.$imageName;
                 Storage::disk('public')->put($imageName, base64_decode($image));
+                $amc->amcDoc = $imagePath;
             }
             
-            $amc->amcDoc = $imagePath;
+            
             $amc->servicePattern = $request->servicePattern;
             $amc->department = $request->department;
             $amc->section = $request->section;
@@ -67,7 +69,7 @@ class AMCController extends Controller
     }
 
     //update
-    public function update(Request $request)
+    public function update(Request $request,$id)
     {
         try{
             $amc = AMC::find($id);          
@@ -90,9 +92,10 @@ class AMCController extends Controller
                 $imageName = Str::random(10).'.'.$extension;
                 $imagePath = '/storage'.'/'.$imageName;
                 Storage::disk('public')->put($imageName, base64_decode($image));
+                $amc->amcDoc = $imagePath;
+
             }
             
-            $amc->amcDoc = $imagePath;
             $amc->servicePattern = $request->servicePattern;
             $amc->department = $request->department;
             $amc->section = $request->section;
@@ -136,7 +139,7 @@ class AMCController extends Controller
             }else{
                 $amc->delete();
                 $response = [
-                    "message" => "amc deleted successfully",
+                    "message" => "data deleted successfully",
                     "status" => 200
                 ];
                 $status = 200;                   
@@ -162,12 +165,14 @@ class AMCController extends Controller
             if(!$amc){
                throw new Exception("amc not found");
             }else{
-                $amc = DB::table('assets')
-                    ->join('departments','departments.id','=','assets.department')
-                    ->join('sections','sections.id','=','assets.section')
-                    ->join('assettypes','assettypes.id','=','assets.assetType')
-                    ->select('vendorName','periodFrom','periodTo','servicePattern','departments.department_name as department',
-                      'sections.section as section','assettypes.assetType as assetType','assets.assetName')
+                $amc = DB::table('amcs')
+                    ->join('vendors','vendors.id','=','amcs.vendorName')
+                    ->join('departments','departments.id','=','amcs.department')
+                    ->join('sections','sections.id','=','amcs.section')
+                    ->join('assettypes','assettypes.id','=','amcs.assetType')
+                    ->join('assets','assets.id','=','amcs.assetName')
+                    ->select('vendors.vendorName as vendorName','periodFrom','periodTo','servicePattern','departments.department_name as department',
+                      'sections.section as section','assettypes.assetType as assetType','assets.assetName as assetName')
                     ->get();
                         
                 $response=[

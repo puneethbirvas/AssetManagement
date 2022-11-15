@@ -13,21 +13,22 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('amc', function (Blueprint $table) {
+        Schema::create('insurances', function (Blueprint $table) {
             $table->id();
-            $table->string('vendorName');
+            $table->bigInteger('vendorName')->unsigned();
+            $table->foreign('vendorName')->references('id')->on('vendors')->onDelete('cascade');
             $table->string('periodFrom');
             $table->string('periodTo');
             $table->string('premiumCost');
-            $table->string('amcDoc');
-            $table->string('servicePattern');
+            $table->string('insuranceDoc');
             $table->bigInteger('department')->unsigned();
             $table->foreign('department')->references('id')->on('departments')->onDelete('cascade');
             $table->bigInteger('section')->unsigned();
             $table->foreign('section')->references('id')->on('sections')->onDelete('cascade');
             $table->bigInteger('assetType')->unsigned();
             $table->foreign('assetType')->references('id')->on('assetTypes')->onDelete('cascade');
-            $table->string('assetName');
+            $table->bigInteger('assetName')->unsigned();
+            $table->foreign('assetName')->references('id')->on('assets')->onDelete('cascade');
             $table->timestamps();
         });
     }
@@ -39,6 +40,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('amc');
+        Schema::dropIfExists('insurances');
     }
 };

@@ -142,9 +142,9 @@ class AllocationController extends Controller
                     ->join('assettypes','assettypes.id','=','allocations.assetType')
                     ->join('assets','assets.id','=','allocations.assetName')
                     ->join('sections','sections.id','=','allocations.section')
+                    ->join('users','users.id','=','allocations.user')
                     ->select('departments.department_name as department','sections.section as 
                       section','assettypes.assetType as assetType','assets.assetName asassetName','assets.assetId as assetId','users.user_name as user')
-                    ->join('users','users.id','=','allocations.user')
                     ->get();
 
             if(!$result){
