@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\AMC;
+use App\Models\Amc;
 use Illuminate\Http\Request;
 use Exception;
 use Illuminate\Database\QueryException;
@@ -16,7 +16,7 @@ class AMCController extends Controller
     public function store(Request $request)
     {
         try{
-            $amc = new AMC;
+            $amc = new Amc;
 
             $amc->vendorName = $request->vendorName;
             $amc->periodFrom = $request->periodFrom;
@@ -35,9 +35,45 @@ class AMCController extends Controller
                 Storage::disk('public')->put($imageName, base64_decode($image));
                 $amc->amcDoc = $imagePath;
             }
-            
-            
+           
             $amc->servicePattern = $request->servicePattern;
+            $service = $request->servicePattern;
+
+            if($service == 'service1')
+            {
+                $amc->service1 = $this->service1($request);
+            }
+
+            if($service == 'service2')
+            {
+                $amc->service1 = $this->service1($request);
+                $amc->service2 = $this->service2($request);
+            }
+
+            if($service == 'service3')
+            {
+                $amc->service1 = $this->service1($request);
+                $amc->service2 = $this->service2($request);
+                $amc->service3 = $this->service3($request);
+            }
+
+            if($service == 'service4')
+            {
+                $amc->service1 = $this->service1($request);
+                $amc->service2 = $this->service2($request);
+                $amc->service3 = $this->service3($request);
+                $amc->service4 = $this->service4($request);
+            }
+
+            if($service == 'service5')
+            {
+                $amc->service1 = $this->service1($request);
+                $amc->service2 = $this->service2($request);
+                $amc->service3 = $this->service3($request);
+                $amc->service4 = $this->service4($request);
+                $amc->service5 = $this->service5($request);
+            }
+
             $amc->department = $request->department;
             $amc->section = $request->section;
             $amc->assetType = $request->assetType;
@@ -72,7 +108,7 @@ class AMCController extends Controller
     public function update(Request $request,$id)
     {
         try{
-            $amc = AMC::find($id);          
+            $amc = Amc::find($id);          
             if(!$amc){
                 throw new Exception("AMC not found");
             }
@@ -128,11 +164,11 @@ class AMCController extends Controller
     }
 
      //destroy
-    public function destroy(AMC $amc, $id)
+    public function destroy(Amc $amc, $id)
     {
         try{
 
-            $amc = AMC::find($id);
+            $amc = Amc::find($id);
              
             if(!$amc){
                 throw new Exception("amc not found");
@@ -198,7 +234,54 @@ class AMCController extends Controller
         return response($response,$status); 
     }
 
- 
+    public function service1(Request $request)
+    {
+        $s1DateFrom = $request->s1DateFrom;
+        $s1DateTo = $request->s1DateTo;
+        $s1runHours = $request->s1runHours;
+        $service1 = $s1DateFrom."+".$s1DateTo."+".$s1runHours;
+
+        return $service1;
+
+    }
+    public function service2(Request $request)
+    {
+        $s2DateFrom = $request->s2DateFrom;
+        $s2DateTo = $request->s2DateTo;
+        $s2runHours = $request->s2runHours;
+        $service2 = $s2DateFrom."+".$s2DateTo."+".$s2runHours;
+
+        return $service2;
+    }
+
+    public function service3(Request $request)
+    {
+        $s3DateFrom = $request->s3DateFrom;
+        $s3DateTo = $request->s3DateTo;
+        $s3runHours = $request->s3runHours;
+        $service3 = $s3DateFrom."+".$s3DateTo."+".$s3runHours;
+
+        return $service3;
+    }
+
+    public function service4(Request $request)
+    {
+        $s4DateFrom = $request->s4DateFrom;
+        $s4DateTo = $request->s4DateTo;
+        $s4runHours = $request->s4runHours;
+        $service4 = $s4DateFrom."+".$s4DateTo."+".$s4runHours;
+        return $service4;
+    }
+
+    public function service5(Request $request)
+    {
+        $s5DateFrom = $request->s5DateFrom;
+        $s5DateTo = $request->s5DateTo;
+        $s5runHours = $request->s5runHours;
+        $service5 = $s5DateFrom."+".$s5DateTo."+".$s5runHours;
+
+        return $service5;
+    }
 }
 
 
