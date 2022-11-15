@@ -120,7 +120,15 @@ class AssetController extends Controller
             $user = $last->id + 1;
         }
         $get = "asset-".$user;
-        return $get;
+
+        $response = [
+            'success' => true,
+            'data' =>  $get,
+            'status' => 201
+        ];
+        $status = 201;   
+
+        return Response($response,$status);
     }
 
     //asset update
