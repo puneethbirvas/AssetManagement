@@ -22,6 +22,11 @@ return new class extends Migration
             $table->string('premiumCost');
             $table->string('amcDoc');
             $table->string('servicePattern');
+            $table->string('service1');
+            $table->string('service2')->nullable();
+            $table->string('service3')->nullable();
+            $table->string('service4')->nullable();
+            $table->string('service5')->nullable();
             $table->bigInteger('department')->unsigned();
             $table->foreign('department')->references('id')->on('departments')->onDelete('cascade');
             $table->bigInteger('section')->unsigned();
