@@ -15,6 +15,7 @@ class AlterUsersTable extends Migration
     {
         Schema::table('users', function (Blueprint $table) {
             $table->boolean('blocked')->default(0)->after('email');
+            $table->string('userType')->after('id');;
                
         });
     }

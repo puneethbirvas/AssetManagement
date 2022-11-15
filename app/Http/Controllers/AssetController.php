@@ -18,8 +18,7 @@ class AssetController extends Controller
        try{                
             $asset = new Asset;
                 
-            $last= 'asset-'.$this->get();
-            $asset->assetId = $last;
+            $asset->assetId = $request->assetId;
             $asset->department  = $request->department ;
             $asset->section = $request->section;
             $asset->assetName = $request->assetName;
@@ -112,15 +111,24 @@ class AssetController extends Controller
     }
 
     //default asset-id
-    public function get()
+    public function assetId()
     {
         $last = DB::table('assets')->latest('id')->first();
         if(!$last){
-           $user = "0";
+           $user = "1";
         }else{
-            $user = $last->id;
+            $user = $last->id + 1;
         }
-        return $user  ;
+        $get = "asset-".$user;
+
+        $response = [
+            'success' => true,
+            'data' =>  $get,
+            'status' => 201
+        ];
+        $status = 201;   
+
+        return Response($response,$status);
     }
 
     //asset update

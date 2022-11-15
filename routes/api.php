@@ -18,6 +18,9 @@ use App\Http\Controllers\GetDataController;
 use App\Http\Controllers\TransferAssetController;
 use App\Http\Controllers\TagAssetController;
 use App\Http\Controllers\UntagAssetController;
+use App\Http\Controllers\AmcController;
+use App\Http\Controllers\WarrantyController;
+use App\Http\Controllers\InsuranceController;
 
 
 Route::get('token', function() {
@@ -68,6 +71,7 @@ Route::post('asset/add', [AssetController::class, 'store']);
 Route::post('asset/{id}/update', [AssetController::class, 'update']);
 Route::post('asset/{id}/delete', [AssetController::class, 'destroy']);
 Route::get('asset/showData', [AssetController::class, 'showData']);
+Route::post('asset/assetId', [AssetController::class, 'assetId']);
 
 //AssetType   
 Route::post('assetType/add',[AssettypeController::class,'store']);
@@ -135,3 +139,22 @@ Route::get('selectAssetId', [TagAssetController::class, 'selectAssetId']);
 //UnTagAsset
 Route::post('untagAsset/add', [UntagAssetController::class, 'store']);
 Route::get('untagAsset/showData', [UntagAssetController::class, 'showData']);
+
+//Amc
+Route::post('amc/add', [AmcController::class, 'store']);
+Route::post('amc/{id}/update', [AmcController::class, 'update']);
+Route::post('amc/{id}/delete', [AmcController::class, 'destroy']);
+Route::get('amc/showData', [AmcController::class, 'showData']);
+
+//Warranty
+Route::get('warranty/showData', [WarrantyController::class, 'showData']);
+Route::get('warranty/viewAsset', [WarrantyController::class, 'viewAsset']);
+
+//Insurence
+Route::post('insurance/add', [InsuranceController::class, 'store']);
+Route::post('insurance/{id}/update', [InsuranceController::class, 'update']);
+Route::post('insurance/{id}/delete', [InsuranceController::class, 'destroy']);
+Route::get('insurance/showData', [InsuranceController::class, 'showData']);
+Route::get('insurance/{id}/insuranceDue', [InsuranceController::class, 'insuranceDue']);
+Route::get('insurance/viewInsuranceRenewal', [InsuranceController::class, 'viewInsuranceRenewal']);
+Route::post('insurance/{id}/renewalInsurance', [InsuranceController::class, 'renewalInsurance']);

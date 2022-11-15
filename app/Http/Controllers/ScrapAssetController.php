@@ -66,9 +66,11 @@ class ScrapAssetController extends Controller
     {
       try{    
           return DB::table('scrap_assets')->select('id', 'department','section','assetType',       'assetName','user')->orderby('id','asc')->get();
+          
             if(!$scrapAsset){
              throw new Exception("ScrapAsset not found");
             }
+
             $response=[
              "message" => "ScrapAsset List",
              "data" => $scrapAsset
