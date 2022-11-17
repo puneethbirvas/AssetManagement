@@ -104,6 +104,56 @@ class AMCController extends Controller
         return response($response, $status);        
     }
 
+    // to merge 3 inputs into one
+    public function service1(Request $request)
+    {
+        $s1DateFrom = $request->s1DateFrom;
+        $s1DateTo = $request->s1DateTo;
+        $s1runHours = $request->s1runHours;
+        $service1 = $s1DateFrom."+".$s1DateTo."+".$s1runHours;
+
+        return $service1;
+
+    }
+    public function service2(Request $request)
+    {
+        $s2DateFrom = $request->s2DateFrom;
+        $s2DateTo = $request->s2DateTo;
+        $s2runHours = $request->s2runHours;
+        $service2 = $s2DateFrom."+".$s2DateTo."+".$s2runHours;
+
+        return $service2;
+    }
+
+    public function service3(Request $request)
+    {
+        $s3DateFrom = $request->s3DateFrom;
+        $s3DateTo = $request->s3DateTo;
+        $s3runHours = $request->s3runHours;
+        $service3 = $s3DateFrom."+".$s3DateTo."+".$s3runHours;
+
+        return $service3;
+    }
+
+    public function service4(Request $request)
+    {
+        $s4DateFrom = $request->s4DateFrom;
+        $s4DateTo = $request->s4DateTo;
+        $s4runHours = $request->s4runHours;
+        $service4 = $s4DateFrom."+".$s4DateTo."+".$s4runHours;
+        return $service4;
+    }
+
+    public function service5(Request $request)
+    {
+        $s5DateFrom = $request->s5DateFrom;
+        $s5DateTo = $request->s5DateTo;
+        $s5runHours = $request->s5runHours;
+        $service5 = $s5DateFrom."+".$s5DateTo."+".$s5runHours;
+
+        return $service5;
+    }
+
     //update
     public function update(Request $request,$id)
     {
@@ -233,53 +283,140 @@ class AMCController extends Controller
         return response($response,$status); 
     }
 
-    public function service1(Request $request)
+    // to explode the data
+    public function getDate1(Request $request)
     {
-        $s1DateFrom = $request->s1DateFrom;
-        $s1DateTo = $request->s1DateTo;
-        $s1runHours = $request->s1runHours;
-        $service1 = $s1DateFrom."+".$s1DateTo."+".$s1runHours;
+        $assetName = $request->assetName;
+        $last =DB::table('amcs')->where('assetName','=',$assetName)->select('service1')->first();
+        $last = $last->service1;
+        $get = explode('+',$last);
+        $get = $get[0];
 
-        return $service1;
-
-    }
-    public function service2(Request $request)
+        return $get;
+    }   
+    
+    public function getDate2(Request $request)
     {
-        $s2DateFrom = $request->s2DateFrom;
-        $s2DateTo = $request->s2DateTo;
-        $s2runHours = $request->s2runHours;
-        $service2 = $s2DateFrom."+".$s2DateTo."+".$s2runHours;
-
-        return $service2;
-    }
-
-    public function service3(Request $request)
-    {
-        $s3DateFrom = $request->s3DateFrom;
-        $s3DateTo = $request->s3DateTo;
-        $s3runHours = $request->s3runHours;
-        $service3 = $s3DateFrom."+".$s3DateTo."+".$s3runHours;
-
-        return $service3;
+        $assetName = $request->assetName;
+        $last =DB::table('amcs')->where('assetName','=',$assetName)->select('service2')->first();
+        $last = $last->service2;
+        $get = explode('+',$last);
+        $get = $get[0];
+            
+        return $get;
     }
 
-    public function service4(Request $request)
+    public function getDate3(Request $request)
     {
-        $s4DateFrom = $request->s4DateFrom;
-        $s4DateTo = $request->s4DateTo;
-        $s4runHours = $request->s4runHours;
-        $service4 = $s4DateFrom."+".$s4DateTo."+".$s4runHours;
-        return $service4;
+        $assetName = $request->assetName;
+        $last =DB::table('amcs')->where('assetName','=',$assetName)->select('service3')->first();
+        $last = $last->service3;
+        $get = explode('+',$last);
+        $get = $get[0];
+            
+        return $get;
     }
 
-    public function service5(Request $request)
+    public function getDate4(Request $request)
     {
-        $s5DateFrom = $request->s5DateFrom;
-        $s5DateTo = $request->s5DateTo;
-        $s5runHours = $request->s5runHours;
-        $service5 = $s5DateFrom."+".$s5DateTo."+".$s5runHours;
+        $assetName = $request->assetName;
+        $last =DB::table('amcs')->where('assetName','=',$assetName)->select('service4')->first();
+        $last = $last->service4;
+        $get = explode('+',$last);
+        $get = $get[0];
+            
+        return $get;
+    }
 
-        return $service5;
+    public function getDate5(Request $request)
+    {
+        $assetName = $request->assetName;
+        $last =DB::table('amcs')->where('assetName','=',$assetName)->select('service5')->first();
+        $last = $last->service5;
+        $get = explode('+',$last);
+        $get = $get[0];
+            
+        return $get;
+    }
+
+    // to display service date
+    public function showAmcData(Request $request)
+    {
+        $assetName = $request->assetName; 
+        
+        $last = DB::table('amcs')
+                ->where('assetName','=',$assetName)
+                ->select('servicePattern')
+                ->first();
+        $service = $last->servicePattern;
+
+
+        if($service == 'service1')
+        {
+            $amc1 = $this->getDate1($request);
+            $response = [
+                "s1Date"=>$amc1,
+            ]; 
+            $status = 200;  
+        }
+
+        if($service == 'service2')
+        {
+            $amc1 = $this->getDate1($request);
+            $amc2 = $this->getDate2($request);
+            $response = [
+                "s1Date"=>$amc1,
+                's2Date'=>$amc2,
+            ]; 
+            $status = 200;  
+        }
+
+        if($service == 'service3')
+        {
+            $amc1 = $this->getDate1($request);
+            $amc2 = $this->getDate2($request);
+            $amc3 = $this->getDate3($request);
+            $response = [
+                "s1Date"=>$amc1,
+                "s2Date"=>$amc2,
+                "s3Date"=>$amc3
+            ]; 
+            $status = 200;  
+        }
+
+        if($service == 'service4')
+        {
+            $amc1 = $this->getDate1($request);
+            $amc2 = $this->getDate2($request);
+            $amc3 = $this->getDate3($request);
+            $amc4 = $this->getDate4($request);
+            $response = [
+                "s1Date"=>$amc1,
+                "s2Date"=>$amc2,
+                "s3Date"=>$amc3,
+                "s4Date"=>$amc4
+            ]; 
+            $status = 200; 
+        }
+
+        if($service == 'service5')
+        {
+            $amc1 = $this->getDate1($request);
+            $amc2 = $this->getDate2($request);
+            $amc3 = $this->getDate3($request);
+            $amc4 = $this->getDate4($request);
+            $amc5 = $this->getDate5($request);
+            $response = [
+                "s1Date"=>$amc1,
+                's2Date'=>$amc2,
+                's3Date'=>$amc3,
+                's4Date'=>$amc4,
+                's5Date'=>$amc5,
+            ]; 
+            $status = 200;  
+        }
+
+        return Response($response,$status);
     }
 
     public function serviceDue(Request $request,$id)
