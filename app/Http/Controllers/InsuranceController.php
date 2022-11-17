@@ -251,16 +251,16 @@ class InsuranceController extends Controller
         try{
 
             $result=DB::table('insurances')
-                ->join('departments','departments.id','=','insurances.department')
-                ->join('assets','assets.id','=','insurances.assetName')
-                ->select( 'departments.department_name as department', 
-                 'assets.assetName as assetName','periodFrom as insuranceStartDate',
-                 'periodTo as insuranceEndDate')
-                ->get();
-
-            if(!$result){
-              throw new Exception("data not found");
-            } 
+                    ->whereBetween('periodTo', [now(), now()->addDays(7)])
+                    ->join('departments','departments.id','=','insurances.department')
+                    ->join('assets','assets.id','=','insurances.assetName')
+                    ->select( 'departments.department_name as department', 'assets.assetName as assetName',
+                    'periodFrom as insuranceStartDate','periodTo as insuranceEndDate')
+                    ->get();
+                
+                if(!$result){
+                 throw new Exception("data not found");
+                } 
                 
             $response = [
                 'success' => true,

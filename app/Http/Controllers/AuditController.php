@@ -174,7 +174,8 @@ class AuditController extends Controller
                 ->join('departments','departments.id','=','audits.department')
                 ->join('sections','sections.id','=','audits.section')
                 ->join('assettypes','assettypes.id','=','audits.assetType')
-                ->select('audits.auditName','departments.department_name as department',
+                ->select('audits.*','audits.auditName',
+                 'departments.department_name as department',
                  'sections.section as section','assettypes.assetType as assetType')
                 ->get();
 

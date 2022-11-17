@@ -25,11 +25,11 @@ return new class extends Migration
             $table->bigInteger('vendorName')->unsigned();
             $table->foreign('vendorName')->references('id')->on('vendors')->onDelete('cascade');
             $table->string('phoneNumber');
-            $table->string('email')->unique();
+            $table->string('email');
             $table->string('vendorAddress');
             $table->bigInteger('assetType')->unsigned();
             $table->foreign('assetType')->references('id')->on('assettypes')->onDelete('cascade');
-            $table->string('manufaturer');
+            $table->string('manufacturer');
             $table->string('assetModel');
             $table->string('poNo');
             $table->string('invoiceNo');

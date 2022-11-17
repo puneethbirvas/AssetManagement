@@ -22,7 +22,7 @@ class LabelController extends Controller
        try{                
         $Label = new Label;
          
-        $Label->Department  = $request->department ;
+        $Label->department  = $request->department ;
         $Label->selectSection = $request->selectSection;
         $Label->assetType = $request->assetType;
         $Label->selectAssetType = $request->selectAssetType;
@@ -36,14 +36,14 @@ class LabelController extends Controller
         }
         $Label->code = $request->code; 
 
-        $getId = $this->getAssetName($request);
-
          // QrCode
-        if($Label->code == 'qrCode'){
-        $filename =  Str::random(10).'.png';
-        $store = public_path().'/images/';
-        base64_encode(QrCode::format('png')->size(100)->generate("$getId", $store. $filename));
-        $Label->codeGenerator =  '/images/'.$filename;
+        if($Label->code == 'qrCode')
+        {
+            $getId = $this->assetGetId($request);
+            $filename =  Str::random(10).'.png';
+            $store = public_path().'/images/';
+            base64_encode(QrCode::format('png')->size(100)->generate($getId, $store. $filename));
+            $Label->codeGenerator =  '/images/'.$filename;
         }
         // BarCode
         if($Label->code == 'barCode'){
@@ -77,10 +77,11 @@ class LabelController extends Controller
 
     }
 
-    public function getAssetName($id)
+    public function assetGetId(Request $request)
     { 
-
-        $assetName = DB::table('assets')->where('id','=',$id)->get('assetId');
+        $Label = $request->selectAsset;
+        $assetName = DB::table('assets')->where('id','=',$Label)->first('assetId');
+        $assetName = $assetName->assetId;
 
         return $assetName;
     }

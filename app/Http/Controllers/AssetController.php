@@ -28,7 +28,7 @@ class AssetController extends Controller
             $asset->email = $request->email;
             $asset->vendorAddress = $request->vendorAddress;
             $asset->assetType = $request->assetType;
-            $asset->manufaturer = $request->manufaturer;
+            $asset->manufacturer = $request->manufacturer;
             $asset->assetModel = $request->assetModel;
             $asset->poNo = $request->poNo;
             $asset->invoiceNo = $request->invoiceNo;
@@ -152,7 +152,7 @@ class AssetController extends Controller
             $asset->email = $request->email;
             $asset->vendorAddress = $request->vendorAddress;
             $asset->assetType = $request->assetType;
-            $asset->manufaturer = $request->manufaturer;
+            $asset->manufacturer = $request->manufacturer;
             $asset->assetModel = $request->assetModel;
             $asset->poNo = $request->poNo;
             $asset->invoiceNo = $request->invoiceNo;
@@ -275,8 +275,12 @@ class AssetController extends Controller
                     ->join('departments','departments.id','=','assets.department')
                     ->join('sections','sections.id','=','assets.section')
                     ->join('assettypes','assettypes.id','=','assets.assetType')
-                    ->select('assets.id','departments.department_name as department',
-                      'sections.section as section','assets.assetName','assettypes.assetType as assetType','assets.manufaturer','assets.assetModel', 'assets.warrantyStartDate', 'assets.warrantyEndDate')
+                    ->select('assets.*','assets.id','assets.department',
+                     'departments.department_name as departmentName', 
+                     'assets.section', 'sections.section as sectionName',
+                     'assets.assetName', 'assets.assetType','assettypes.assetType as     assetTypeName',
+                     'assets.manufacturer', 'assets.assetModel', 'assets.warrantyStartDate', 
+                     'assets.warrantyEndDate')
                     ->get();
                         
                 $response=[

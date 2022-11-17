@@ -13,20 +13,20 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('amcs', function (Blueprint $table) {
+        Schema::create('certificates', function (Blueprint $table) {
             $table->id();
             $table->bigInteger('vendorName')->unsigned();
             $table->foreign('vendorName')->references('id')->on('vendors')->onDelete('cascade');
-            $table->string('periodFrom');
-            $table->string('periodTo');
+            $table->string('certificateDate');
+            $table->string('expireDate');
             $table->string('premiumCost');
-            $table->string('amcDoc');
-            $table->string('servicePattern');
-            $table->string('service1');
-            $table->string('service2')->nullable();
-            $table->string('service3')->nullable();
-            $table->string('service4')->nullable();
-            $table->string('service5')->nullable();
+            $table->string('certificateDoc');
+            $table->string('inspectionPattern');
+            $table->string('inspection1');
+            $table->string('inspection2')->nullable();
+            $table->string('inspection3')->nullable();
+            $table->string('inspection4')->nullable();
+            $table->string('inspection5')->nullable();
             $table->bigInteger('department')->unsigned();
             $table->foreign('department')->references('id')->on('departments')->onDelete('cascade');
             $table->bigInteger('section')->unsigned();
@@ -46,6 +46,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('amcs');
+        Schema::dropIfExists('certificates');
     }
 };
