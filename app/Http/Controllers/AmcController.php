@@ -132,7 +132,6 @@ class AMCController extends Controller
 
             }
             
-            $amc->servicePattern = $request->servicePattern;
             $amc->department = $request->department;
             $amc->section = $request->section;
             $amc->assetType = $request->assetType;
@@ -281,6 +280,92 @@ class AMCController extends Controller
         $service5 = $s5DateFrom."+".$s5DateTo."+".$s5runHours;
 
         return $service5;
+    }
+
+    public function serviceDue(Request $request,$id)
+    {
+        try{    
+
+            $periodFrom =$request->periodFrom;
+            $periodTo = $request->periodTo;
+
+            $result = DB::table('amcs')
+                    ->where('amcs.assetType','=',$id)
+                    ->where('periodFrom','>=',$periodFrom) 
+                    ->where('periodTo','<=', $periodTo)
+                    ->join('vendors','vendors.id','=','amcs.vendorName')
+                    ->join('assets','assets.id','=','amcs.assetName')
+                    ->select('amcs.id','vendors.vendorName as vendorName',
+                     'assets.assetName as assetName','periodTo as serviceDueDate')
+                    ->get();
+
+                if(!$result){
+                 throw new Exception("data not found");
+                }
+
+            $response=[
+             "message" => "Service Due Date List",
+             "data" => $result
+            ];
+            $status = 200; 
+            
+        }catch(Exception $e){
+            $response = [
+             "message"=>$e->getMessage(),
+              "status" => 406
+            ];            
+            $status = 406;
+
+        }catch(QueryException $e){
+            $response = [
+                "error" => $e->errorInfo,
+                "status" => 406
+            ];
+            $status = 406; 
+        }
+        return response($response,$status); 
+    }
+
+    public function viewAmcRenewal()
+    {
+        try{
+
+            $result=DB::table('amcs')
+                    ->whereBetween('periodTo', [now(), now()->addDays(7)])
+                    ->join('departments','departments.id','=','amcs.department')
+                    ->join('assets','assets.id','=','amcs.assetName')
+                    ->select( 'amcs.id','departments.department_name as department', 
+                     'assets.assetName as assetName',
+                     'periodFrom as amcStartDate','periodTo as amcEndDate')
+                    ->get();
+                
+                if(!$result){
+                 throw new Exception("data not found");
+                } 
+                
+            $response = [
+                'success' => true,
+                'data' => $result,
+                'status' => 201
+            ];
+            $status = 201;   
+            
+        }catch(Exception $e){
+            $response = [
+                "error"=>$e->getMessage(),
+                "status"=>406
+            ];            
+            $status = 406;
+
+        }catch(QueryException $e){
+            $response = [
+                "error" => $e->errorInfo,
+                "status"=>406
+            ];
+            $status = 406; 
+        }
+        
+        return response($response, $status);    
     }
 }
 

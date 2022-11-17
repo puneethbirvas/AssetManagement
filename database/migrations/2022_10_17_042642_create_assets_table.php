@@ -29,7 +29,7 @@ return new class extends Migration
             $table->string('vendorAddress');
             $table->bigInteger('assetType')->unsigned();
             $table->foreign('assetType')->references('id')->on('assettypes')->onDelete('cascade');
-            $table->string('manufaturer');
+            $table->string('manufacturer');
             $table->string('assetModel');
             $table->string('poNo');
             $table->string('invoiceNo');

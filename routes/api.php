@@ -19,8 +19,10 @@ use App\Http\Controllers\TransferAssetController;
 use App\Http\Controllers\TagAssetController;
 use App\Http\Controllers\UntagAssetController;
 use App\Http\Controllers\AmcController;
+use App\Http\Controllers\CertificateController;
 use App\Http\Controllers\WarrantyController;
 use App\Http\Controllers\InsuranceController;
+use App\Http\Controllers\MaintenanceController;
 
 
 Route::get('token', function() {
@@ -96,9 +98,7 @@ Route::get('section/showData',[SectionController::class,'showData']);
 Route::post('label/add',[LabelController::class,'store']);
 Route::post('label/{id}/delete',[LabelController::class,'destroy']);
 Route::get('label/showData',[LabelController::class,'showData']);
-
-Route::get('label/{id}/getAssetName',[LabelController::class,'getAssetName']);
-
+Route::post('label/assetGetId', [LabelController::class, 'assetGetId']);
 
 //ScrapAssetes
 Route::post('scrapAsset/add',[ScrapAssetController::class,'store']);
@@ -109,7 +109,7 @@ Route::post('audit/add', [AuditController::class, 'store']);
 Route::post('audit/{id}/update', [AuditController::class, 'update']);
 Route::post('audit/{id}/delete', [AuditController::class, 'destroy']);
 Route::get('audit/showData', [AuditController::class, 'showData']);
-Route::get('audit/{id}/viewAuditReport', [AuditController::class, 'viewAuditReport']);
+Route::post('audit/{id}/viewAuditReport', [AuditController::class, 'viewAuditReport']);
 
 //Allocation
 Route::post('allocation/add', [AllocationController::class, 'store']);
@@ -140,11 +140,24 @@ Route::get('selectAssetId', [TagAssetController::class, 'selectAssetId']);
 Route::post('untagAsset/add', [UntagAssetController::class, 'store']);
 Route::get('untagAsset/showData', [UntagAssetController::class, 'showData']);
 
+//Maintenance
+Route::post('maintenance/add', [MaintenanceController::class, 'store']);
+
 //Amc
 Route::post('amc/add', [AmcController::class, 'store']);
 Route::post('amc/{id}/update', [AmcController::class, 'update']);
 Route::post('amc/{id}/delete', [AmcController::class, 'destroy']);
 Route::get('amc/showData', [AmcController::class, 'showData']);
+Route::get('amc/{id}/serviceDue', [AmcController::class, 'serviceDue']);
+Route::get('amc/viewAmcRenewal', [AmcController::class, 'viewAmcRenewal']);
+
+
+
+//Certificate
+Route::post('certificate/add', [CertificateController::class, 'store']);
+Route::post('certificate/{id}/update', [CertificateController::class, 'update']);
+Route::post('certificate/{id}/delete', [CertificateController::class, 'destroy']);
+Route::get('certificate/showData', [CertificateController::class, 'showData']);
 
 //Warranty
 Route::get('warranty/showData', [WarrantyController::class, 'showData']);

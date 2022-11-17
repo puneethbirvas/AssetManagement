@@ -133,7 +133,6 @@ class GetDataController extends Controller
             }else{
                 $assetName = DB::table('assets')
                     ->where('assetType','=',$id)
-                    ->select('id','assetType')
                     ->get();
 
                 $response = [
@@ -168,7 +167,7 @@ class GetDataController extends Controller
                 throw new Exception("VendorData not found");
             }else{   
 
-                $Vendor=DB::table('vendors')->select('id','vendorName')->get();
+                $Vendor=DB::table('vendors')->select('id as vendorId','vendorName')->get();
 
                 $response = [
                     'success' => true,

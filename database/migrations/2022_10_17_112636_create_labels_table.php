@@ -15,8 +15,8 @@ return new class extends Migration
     {
         Schema::create('labels', function (Blueprint $table) {
             $table->id();
-            $table->bigInteger('Department')->unsigned();
-            $table->foreign('Department')->references('id')->on('departments')->onDelete('cascade');
+            $table->bigInteger('department')->unsigned();
+            $table->foreign('department')->references('id')->on('departments')->onDelete('cascade');
             $table->bigInteger('selectSection')->unsigned();
             $table->foreign('selectSection')->references('id')->on('sections')->onDelete('cascade');
             $table->bigInteger('assetType')->unsigned();

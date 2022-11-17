@@ -57,9 +57,9 @@ class UntagAssetController extends Controller
                     ->join('sections','sections.id','=','untag_assets.section')
                     ->join('assets','assets.id','=','untag_assets.assetName')
                     ->select('sections.section as  section','assets.assetName as assetName',
-                       'assets.assetId')  
+                     'assets.assetId')  
                     ->get();
-
+                    
             if(!$result){
               throw new Exception("data not found");
             }
