@@ -254,8 +254,8 @@ class InsuranceController extends Controller
                     ->whereBetween('periodTo', [now(), now()->addDays(7)])
                     ->join('departments','departments.id','=','insurances.department')
                     ->join('assets','assets.id','=','insurances.assetName')
-                    ->select( 'departments.department_name as department', 'assets.assetName as assetName',
-                    'periodFrom as insuranceStartDate','periodTo as insuranceEndDate')
+                    ->select( 'insurances.id','departments.department_name as department',
+                     'assets.assetName as  assetName','periodFrom as insuranceStartDate','periodTo as insuranceEndDate')
                     ->get();
                 
                 if(!$result){
@@ -305,7 +305,7 @@ class InsuranceController extends Controller
                 ->where('insurances.id','=',$id)
                 ->join('departments','departments.id','=','insurances.department')
                 ->join('assets','assets.id','=','insurances.assetName')
-                ->select( 'departments.department_name as department', 
+                ->select( 'insurances.id','departments.department_name as department', 
                  'assets.assetName as assetName','periodFrom as insuranceStartDate',
                  'periodTo as insuranceEndDate')
                 ->get();

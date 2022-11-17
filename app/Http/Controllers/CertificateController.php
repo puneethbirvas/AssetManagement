@@ -276,4 +276,91 @@ class CertificateController extends Controller
 
         return $inspection5;
     }
+    
+    public function inspectionDue(Request $request,$id)
+    {
+        try{    
+
+            $certificateDate =$request->certificateDate;
+            $expireDate = $request->expireDate;
+
+            $result = DB::table('certificates')
+                    ->where('certificates.assetType','=',$id)
+                    ->where('certificateDate','>=',$certificateDate) 
+                    ->where('expireDate','<=', $expireDate)
+                    ->join('vendors','vendors.id','=','certificates.vendorName')
+                    ->join('assets','assets.id','=','certificates.assetName')
+                    ->select('certificates.id','vendors.vendorName as vendorName',
+                    'expireDate as inspectionDate','assets.assetName as assetName',)
+                    ->get();
+
+                if(!$result){
+                 throw new Exception("data not found");
+                }
+
+            $response=[
+             "message" => "inspection Due Date List",
+             "data" => $result
+            ];
+            $status = 200; 
+            
+        }catch(Exception $e){
+            $response = [
+             "message"=>$e->getMessage(),
+              "status" => 406
+            ];            
+            $status = 406;
+
+        }catch(QueryException $e){
+            $response = [
+                "error" => $e->errorInfo,
+                "status" => 406
+            ];
+            $status = 406; 
+        }
+        return response($response,$status); 
+    }
+
+    public function inspectionRenewal()
+    {
+        try{
+
+            $result=DB::table('certificates')
+                    ->whereBetween('expireDate', [now(), now()->addDays(7)])
+                    ->join('departments','departments.id','=','certificates.department')
+                    ->join('assets','assets.id','=','certificates.assetName')
+                    ->select( 'certificates.id','departments.department_name as department', 
+                     'assets.assetName as assetName','certificateDate as certificateStartDate',
+                     'expireDate as certificateEndDate')
+                    ->get();
+                
+                if(!$result){
+                 throw new Exception("data not found");
+                } 
+                
+            $response = [
+                'success' => true,
+                'data' => $result,
+                'status' => 201
+            ];
+            $status = 201;   
+            
+        }catch(Exception $e){
+            $response = [
+                "error"=>$e->getMessage(),
+                "status"=>406
+            ];            
+            $status = 406;
+
+        }catch(QueryException $e){
+            $response = [
+                "error" => $e->errorInfo,
+                "status"=>406
+            ];
+            $status = 406; 
+        }
+        
+        return response($response, $status);    
+    }
+
 }

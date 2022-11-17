@@ -158,6 +158,9 @@ Route::post('certificate/add', [CertificateController::class, 'store']);
 Route::post('certificate/{id}/update', [CertificateController::class, 'update']);
 Route::post('certificate/{id}/delete', [CertificateController::class, 'destroy']);
 Route::get('certificate/showData', [CertificateController::class, 'showData']);
+Route::get('certificate/{id}/inspectionDue', [CertificateController::class, 'inspectionDue']);
+Route::get('certificate/inspectionRenewal', [CertificateController::class, 'inspectionRenewal']);
+
 
 //Warranty
 Route::get('warranty/showData', [WarrantyController::class, 'showData']);
