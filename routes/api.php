@@ -150,7 +150,7 @@ Route::post('amc/{id}/delete', [AmcController::class, 'destroy']);
 Route::get('amc/showData', [AmcController::class, 'showData']);
 Route::get('amc/{id}/serviceDue', [AmcController::class, 'serviceDue']);
 Route::get('amc/viewAmcRenewal', [AmcController::class, 'viewAmcRenewal']);
-
+Route::post('amc/showAmcData', [AmcController::class, 'showAmcData']);
 
 
 //Certificate
@@ -158,6 +158,8 @@ Route::post('certificate/add', [CertificateController::class, 'store']);
 Route::post('certificate/{id}/update', [CertificateController::class, 'update']);
 Route::post('certificate/{id}/delete', [CertificateController::class, 'destroy']);
 Route::get('certificate/showData', [CertificateController::class, 'showData']);
+Route::post('certificate/showCertificateData', [CertificateController::class, 'showCertificateData']);
+
 
 //Warranty
 Route::get('warranty/showData', [WarrantyController::class, 'showData']);

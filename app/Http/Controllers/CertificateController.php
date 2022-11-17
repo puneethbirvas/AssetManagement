@@ -276,4 +276,139 @@ class CertificateController extends Controller
 
         return $inspection5;
     }
+    // to explode the data
+    public function getDate1(Request $request)
+    {
+        $assetName = $request->assetName;
+        $last =DB::table('certificates')->where('assetName','=',$assetName)->select('inspection1')->first();
+        $last = $last->inspection1;
+        $get = explode('+',$last);
+        $get = $get[0];
+
+        return $get;
+    }   
+    
+    public function getDate2(Request $request)
+    {
+        $assetName = $request->assetName;
+        $last =DB::table('certificates')->where('assetName','=',$assetName)->select('inspection2')->first();
+        $last = $last->inspection2;
+        $get = explode('+',$last);
+        $get = $get[0];
+            
+        return $get;
+    }
+
+    public function getDate3(Request $request)
+    {
+        $assetName = $request->assetName;
+        $last =DB::table('certificates')->where('assetName','=',$assetName)->select('inspection3')->first();
+        $last = $last->inspection3;
+        $get = explode('+',$last);
+        $get = $get[0];
+            
+        return $get;
+    }
+
+    public function getDate4(Request $request)
+    {
+        $assetName = $request->assetName;
+        $last =DB::table('certificates')->where('assetName','=',$assetName)->select('inspection4')->first();
+        $last = $last->inspection4;
+        $get = explode('+',$last);
+        $get = $get[0];
+            
+        return $get;
+    }
+
+    public function getDate5(Request $request)
+    {
+        $assetName = $request->assetName;
+        $last =DB::table('certificates')->where('assetName','=',$assetName)->select('inspection5')->first();
+        $last = $last->inspection5;
+        $get = explode('+',$last);
+        $get = $get[0];
+            
+        return $get;
+    }
+
+    // to display service date
+    public function showCertificateData(Request $request)
+    {
+        $assetName = $request->assetName; 
+        
+        $last = DB::table('certificates')
+                ->where('assetName','=',$assetName)
+                ->select('inspectionPattern')
+                ->first();
+        $inspection = $last->inspectionPattern;
+
+
+        if($inspection == 'inspection1')
+        {
+            $amc1 = $this->getDate1($request);
+            $response = [
+                "s1Date"=>$amc1,
+            ]; 
+            $status = 200;  
+        }
+
+        if($inspection == 'inspection2')
+        {
+            $amc1 = $this->getDate1($request);
+            $amc2 = $this->getDate2($request);
+            $response = [
+                "s1Date"=>$amc1,
+                's2Date'=>$amc2,
+            ]; 
+            $status = 200;  
+        }
+
+        if($inspection == 'inspection3')
+        {
+            $amc1 = $this->getDate1($request);
+            $amc2 = $this->getDate2($request);
+            $amc3 = $this->getDate3($request);
+            $response = [
+                "s1Date"=>$amc1,
+                "s2Date"=>$amc2,
+                "s3Date"=>$amc3
+            ]; 
+            $status = 200;  
+        }
+
+        if($inspection == 'inspection4')
+        {
+            $amc1 = $this->getDate1($request);
+            $amc2 = $this->getDate2($request);
+            $amc3 = $this->getDate3($request);
+            $amc4 = $this->getDate4($request);
+            $response = [
+                "s1Date"=>$amc1,
+                "s2Date"=>$amc2,
+                "s3Date"=>$amc3,
+                "s4Date"=>$amc4
+            ]; 
+            $status = 200; 
+        }
+
+        if($inspection == 'inspection5')
+        {
+            $amc1 = $this->getDate1($request);
+            $amc2 = $this->getDate2($request);
+            $amc3 = $this->getDate3($request);
+            $amc4 = $this->getDate4($request);
+            $amc5 = $this->getDate5($request);
+            $response = [
+                "s1Date"=>$amc1,
+                's2Date'=>$amc2,
+                's3Date'=>$amc3,
+                's4Date'=>$amc4,
+                's5Date'=>$amc5,
+            ]; 
+            $status = 200;  
+        }
+
+        return Response($response,$status);
+    }
 }
