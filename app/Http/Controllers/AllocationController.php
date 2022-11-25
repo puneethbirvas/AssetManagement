@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Allocation;
+use App\Models\Users;
 use Illuminate\Http\Request;
 use DB;
 use Exception;
@@ -119,13 +120,89 @@ class AllocationController extends Controller
         return response($response, $status);    
     }
 
+    public function getEmpId()
+    {
+        $empId = DB::table('users')
+            ->select('id','employee_id')
+            ->get();
+
+        return ($empId);
+       
+    }
+
     public function getEmpName($id)
     {
-        $empName = DB::table('users')->where('employee_id','=',$id)
-                ->select('employee_name')
-                ->get();
+        try{
+            $empUser = Users::find($id);
 
-        return ($empName);
+            if(!$empUser){
+                throw new Exception("data not found");
+            }else{
+
+                $empName = DB::table('users')
+                    ->where('id','=',$id)
+                    ->select('id','employee_name')
+                    ->get();
+
+                $response = [
+                    'data' =>  $empName
+                ];
+                $status = 201;   
+            }   
+    
+        }catch(Exception $e){
+            $response = [
+                "error"=>$e->getMessage(),
+            ];            
+            $status = 406;
+    
+        }catch(QueryException $e){
+            $response = [
+                "error" => $e->errorInfo,
+            ];
+            $status = 406; 
+        }
+            
+        return response($response, $status); 
+       
+    }
+
+    public function getUser($id)
+    {
+        try{
+
+            $empUser = Users::find($id);
+
+            if(!$empUser){
+                throw new Exception("data not found");
+            }else{
+    
+            
+                $empUser = DB::table('users')
+                    ->where('department','=',$id)
+                    ->select('id','user_name')
+                    ->get();
+
+                $response = [
+                    'data' =>  $empUser
+                ];
+                $status = 201;
+            }
+        
+        }catch(Exception $e){
+            $response = [
+                "error"=>$e->getMessage(),
+            ];            
+            $status = 406;
+        
+        }catch(QueryException $e){
+            $response = [
+                "error" => $e->errorInfo,
+            ];
+            $status = 406; 
+        }
+                
+        return response($response, $status); 
        
     }
 

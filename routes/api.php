@@ -50,6 +50,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
 
 //users
 Route::post('user/add',[UsersController::class,'store']);
+Route::get('user/empId',[UsersController::class,'empId']);
 
 
 //login 
@@ -103,6 +104,8 @@ Route::post('label/assetGetId', [LabelController::class, 'assetGetId']);
 //ScrapAssetes
 Route::post('scrapAsset/add',[ScrapAssetController::class,'store']);
 Route::get('scrapAsset/showData',[ScrapAssetController::class,'showData']);
+Route::get('scrapAsset/export',[ScrapAssetController::class,'export']);
+
 
 //Audit
 Route::post('audit/add', [AuditController::class, 'store']);
@@ -115,26 +118,31 @@ Route::post('audit/{id}/viewAuditReport', [AuditController::class, 'viewAuditRep
 Route::post('allocation/add', [AllocationController::class, 'store']);
 Route::post('allocation/{id}/update', [AllocationController::class, 'update']);
 Route::get('allocation/showData', [AllocationController::class, 'showData']);
+Route::get('alloation/getEmpId',[AllocationController::class, 'getEmpId']);
 Route::get('alloation/{id}/getEmpName',[AllocationController::class, 'getEmpName']);
+Route::get('alloation/{id}/getUser',[AllocationController::class, 'getUser']);
+
 
 //TransferAsset
 Route::post('transferAsset/{id}', [TransferAssetController::class, 'transferData']);
 
 // AssetMaster
 Route::get('assetMaster/{id}/showData', [AssetMasterController::class, 'showData']);
+Route::get('assetMaster/export', [AssetMasterController::class, 'export']);
 
 //GetData
 Route::get('getDepartment', [GetDataController::class, 'getDepartment']);
 Route::get('getSection/{id}', [GetDataController::class, 'getSection']);
 Route::get('getAssetType/{id}', [GetDataController::class, 'getAssetType']);
 Route::get('getAssetName/{id}', [GetDataController::class, 'getAssetName']);
+Route::get('getMachine', [GetDataController::class, 'getMachine']);
 Route::get('getVendor', [GetDataController::class, 'getVendor']);
 Route::get('getVendorData/{id}', [GetDataController::class, 'getVendorData']);
 
 //TagAsset
 Route::post('tagAsset/add', [TagAssetController::class, 'store']);
-Route::get('getAssetId/{id}', [TagAssetController::class, 'getAssetId']);
-Route::get('selectAssetId', [TagAssetController::class, 'selectAssetId']);
+Route::get('tagAsset/{id}/getAssetId', [TagAssetController::class, 'getAssetId']);
+Route::get('tagAsset/selectAssetId', [TagAssetController::class, 'selectAssetId']);
 
 //UnTagAsset
 Route::post('untagAsset/add', [UntagAssetController::class, 'store']);
@@ -142,35 +150,48 @@ Route::get('untagAsset/showData', [UntagAssetController::class, 'showData']);
 
 //Maintenance
 Route::post('maintenance/add', [MaintenanceController::class, 'store']);
+Route::get('maintenance/showData', [MaintenanceController::class, 'showData']);
+Route::get('maintenance/getMaintenanceId', [MaintenanceController::class, 'getMaintenanceId']);
+Route::post('maintenance/{id}/updateAction', [MaintenanceController::class, 'updateAction']);
+Route::post('maintenance/{id}/updateClosedMaintenance', [MaintenanceController::class, 'updateClosedMaintenance']);
+Route::get('maintenance/aprovedShowData', [MaintenanceController::class, 'aprovedShowData']);
+Route::get('maintenance/pendingShowData', [MaintenanceController::class, 'pendingShowData']);
+Route::get('maintenance/rejectedShowData', [MaintenanceController::class, 'rejectedShowData']);
+Route::get('maintenance/showClosedMaintenance', [MaintenanceController::class, 'showClosedMaintenance']);
+Route::get('maintenance/{id}/partsOrConsumable', [MaintenanceController::class, 'partsOrConsumable']);
+
 
 //Amc
 Route::post('amc/add', [AmcController::class, 'store']);
 Route::post('amc/{id}/update', [AmcController::class, 'update']);
 Route::post('amc/{id}/delete', [AmcController::class, 'destroy']);
 Route::get('amc/showData', [AmcController::class, 'showData']);
-Route::get('amc/{id}/serviceDue', [AmcController::class, 'serviceDue']);
+Route::get('amc/{id}/showService', [AmcController::class, 'showService']);
+Route::post('amc/{id}/serviceDue', [AmcController::class, 'serviceDue']);
 Route::get('amc/viewAmcRenewal', [AmcController::class, 'viewAmcRenewal']);
-
-
+Route::get('amc/{id}/renewalAmc', [AmcController::class, 'renewalAmc']);
 
 //Certificate
 Route::post('certificate/add', [CertificateController::class, 'store']);
 Route::post('certificate/{id}/update', [CertificateController::class, 'update']);
 Route::post('certificate/{id}/delete', [CertificateController::class, 'destroy']);
 Route::get('certificate/showData', [CertificateController::class, 'showData']);
-Route::get('certificate/{id}/inspectionDue', [CertificateController::class, 'inspectionDue']);
-Route::get('certificate/inspectionRenewal', [CertificateController::class, 'inspectionRenewal']);
+Route::post('certificate/{id}/inspectionDue', [CertificateController::class, 'inspectionDue']);
+Route::get('certificate/viewCertificateRenewal', [CertificateController::class, 'viewCertificateRenewal']);
+Route::get('certificate/{id}/showInspection', [CertificateController::class, 'showInspection']);
+Route::get('certificate/{id}/renewalCertificate', [CertificateController::class, 'renewalCertificate']);
+Route::get('certificate/{id}/showDetails', [CertificateController::class, 'showDetails']);
 
 
 //Warranty
-Route::get('warranty/showData', [WarrantyController::class, 'showData']);
-Route::get('warranty/viewAsset', [WarrantyController::class, 'viewAsset']);
+Route::post('warranty/showData', [WarrantyController::class, 'showData']);
+Route::get('warranty/{id}/viewAsset', [WarrantyController::class, 'viewAsset']);
 
 //Insurence
 Route::post('insurance/add', [InsuranceController::class, 'store']);
 Route::post('insurance/{id}/update', [InsuranceController::class, 'update']);
 Route::post('insurance/{id}/delete', [InsuranceController::class, 'destroy']);
 Route::get('insurance/showData', [InsuranceController::class, 'showData']);
-Route::get('insurance/{id}/insuranceDue', [InsuranceController::class, 'insuranceDue']);
+Route::post('insurance/{id}/insuranceDue', [InsuranceController::class, 'insuranceDue']);
 Route::get('insurance/viewInsuranceRenewal', [InsuranceController::class, 'viewInsuranceRenewal']);
 Route::post('insurance/{id}/renewalInsurance', [InsuranceController::class, 'renewalInsurance']);

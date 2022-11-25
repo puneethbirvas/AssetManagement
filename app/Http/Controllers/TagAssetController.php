@@ -48,6 +48,7 @@ class TagAssetController extends Controller
         return response($response, $status);        
     }
 
+    //To get the  AssetId
     public function selectAssetId()
     {
         try{
@@ -57,7 +58,7 @@ class TagAssetController extends Controller
                 throw new Exception("AssetId not found");
             }else{   
 
-                $selectAssetId=DB::table('assets')->get('assetId');
+                $selectAssetId=DB::table('assets')->select('id','assetId')->get();
                 
                 $response = [
                     'success' => true,
@@ -84,6 +85,7 @@ class TagAssetController extends Controller
            return response($response, $status);    
     }
 
+    //To get the AssetId Data
     public function getAssetId( $id)
     { 
        try{ 
@@ -97,7 +99,7 @@ class TagAssetController extends Controller
                     ->join('departments','departments.id','=','assets.department')
                     ->join('sections','sections.id','=','assets.section')
                     ->join('assettypes','assettypes.id','=','assets.assetType')
-                    ->select('departments.department_name as department','sections.section as 
+                    ->select('assets.id','departments.department_name as department','sections.section as 
                      section','assettypes.assetType as  assetype','assetName','assetId')
                     ->get();
 

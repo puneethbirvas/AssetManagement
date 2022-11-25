@@ -278,7 +278,7 @@ class AssetController extends Controller
                     ->select('assets.*','assets.id','assets.department',
                      'departments.department_name as departmentName', 
                      'assets.section', 'sections.section as sectionName',
-                     'assets.assetName', 'assets.assetType','assettypes.assetType as     assetTypeName',
+                     'assets.assetName', 'assets.assetType','assettypes.assetType as assetTypeName',
                      'assets.manufacturer', 'assets.assetModel', 'assets.warrantyStartDate', 
                      'assets.warrantyEndDate')
                     ->get();

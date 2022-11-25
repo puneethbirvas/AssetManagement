@@ -168,7 +168,7 @@ class InsuranceController extends Controller
                 ->join('sections','sections.id','=','insurances.section')
                 ->join('assettypes','assettypes.id','=','insurances.assetType')
                 ->join('assets','assets.id','=','insurances.assetName')
-                ->select('vendors.vendorName as vendorName','periodFrom','periodTo',
+                ->select('insurances.id','vendors.vendorName as vendorName','periodFrom','periodTo',
                   'departments.department_name as department', 'sections.section as section',
                   'assettypes.assetType as assetType','assets.assetName as assetName')
                 ->get();
@@ -201,7 +201,7 @@ class InsuranceController extends Controller
         return response($response,$status); 
     }
   
-    
+    //To display the Insurance Due(End) Date
     public function insuranceDue(Request $request,$id)
     {
         try{    
@@ -215,7 +215,7 @@ class InsuranceController extends Controller
                     ->where('periodTo','<=', $periodTo)
                     ->join('vendors','vendors.id','=','insurances.vendorName')
                     ->join('assets','assets.id','=','insurances.assetName')
-                    ->select('vendors.vendorName as vendorName','periodTo as insuranceDate',
+                    ->select('insurances.id','vendors.vendorName as vendorName','periodTo as insuranceDate',
                      'assets.assetName as assetName')
                     ->get();
 
@@ -246,17 +246,18 @@ class InsuranceController extends Controller
         return response($response,$status); 
     }
 
+    //To Display The Insurance data with in end of 7 days
     public function viewInsuranceRenewal()
     {
-        try{
+        try{ 
 
             $result=DB::table('insurances')
-                    ->whereBetween('periodTo', [now(), now()->addDays(7)])
-                    ->join('departments','departments.id','=','insurances.department')
-                    ->join('assets','assets.id','=','insurances.assetName')
-                    ->select( 'insurances.id','departments.department_name as department',
-                     'assets.assetName as  assetName','periodFrom as insuranceStartDate','periodTo as insuranceEndDate')
-                    ->get();
+                ->whereBetween('periodTo', [now(), now()->addDays(7)])
+                ->join('departments','departments.id','=','insurances.department')
+                ->join('assets','assets.id','=','insurances.assetName')
+                ->select( 'insurances.id','departments.department_name as department',
+                 'assets.assetName as  assetName','periodFrom as insuranceStartDate','periodTo as insuranceEndDate')
+                ->get();
                 
                 if(!$result){
                  throw new Exception("data not found");
@@ -287,6 +288,7 @@ class InsuranceController extends Controller
         return response($response, $status);    
     }
 
+    //Update The Insurance (Date) Renewal
     public function renewalInsurance(Request $request,$id)
     {
         try{    
@@ -300,19 +302,10 @@ class InsuranceController extends Controller
             $insurance->periodFrom = $request->periodFrom;
             $insurance->periodTo = $request->periodTo;
             $insurance->save();
-                
-            $insurance = DB::table('insurances')
-                ->where('insurances.id','=',$id)
-                ->join('departments','departments.id','=','insurances.department')
-                ->join('assets','assets.id','=','insurances.assetName')
-                ->select( 'insurances.id','departments.department_name as department', 
-                 'assets.assetName as assetName','periodFrom as insuranceStartDate',
-                 'periodTo as insuranceEndDate')
-                ->get();
 
             $response=[
                 "message" => "Updated Sucessfully",
-                "data" => $insurance
+                "status" => 200
             ];
             $status = 200; 
             

@@ -7,6 +7,7 @@ use App\Models\department;
 use App\Models\section;
 use App\Models\assettype;
 use App\Models\Vendor;
+use App\Models\Asset;
 use DB;
 use Exception;
 use Illuminate\Database\QueryException;
@@ -88,7 +89,7 @@ class GetDataController extends Controller
 
     }
      
-    //To Fetch The Sections
+    //To Fetch The assettypes
     public function getAssetType( $id)
     { 
        try{ 
@@ -122,8 +123,8 @@ class GetDataController extends Controller
         return response($response,$status);
     }
     
-    //To Fetch The AssetTypes
-    public function getAssetName( $id)
+    //To Fetch The AssetName
+    public function getAssetName($id)
     { 
        try{ 
             $assetName=assettype::find($id);
@@ -158,6 +159,45 @@ class GetDataController extends Controller
         return response($response,$status);
     }
 
+    //Retrving All AssetName
+    public function getMachine()
+    {
+        try{
+            $asset = Asset::all();
+ 
+             if(!$asset){
+                 throw new Exception("Machine not found");
+             }else{   
+ 
+            $asset=DB::table('assets')->select('id','assetName')->get();
+                 
+                $response = [
+                    'success' => true,
+                    'data' => $asset,
+                    'status' => 201
+                ];
+                $status = 201;   
+            }
+ 
+        }catch(Exception $e){
+            $response = [
+                "error"=>$e->getMessage(),
+                "status"=>406
+            ];            
+            $status = 406;
+ 
+        }catch(QueryException $e){
+            $response = [
+                "error" => $e->errorInfo,
+                "status"=>406
+            ];
+            $status = 406; 
+        }
+         
+        return response($response, $status);    
+    }
+
+    //Retrving All Vendor
     public function getVendor()
     {
         try{
@@ -194,6 +234,7 @@ class GetDataController extends Controller
            return response($response, $status);    
     }
     
+    //Fetch The VENDOR data
     public function getVendorData($id)
     {
         try{

@@ -54,10 +54,13 @@ class UntagAssetController extends Controller
             $result = DB::table('untag_assets')
                     // ->where('fromDate','>=',$fromDate) 
                     // ->where('toDate','<=', $toDate)
+                    ->join('departments','departments.id','=','untag_assets.department')
                     ->join('sections','sections.id','=','untag_assets.section')
+                    ->join('assettypes','assettypes.id','=','untag_assets.assetType')
                     ->join('assets','assets.id','=','untag_assets.assetName')
-                    ->select('sections.section as  section','assets.assetName as assetName',
-                     'assets.assetId')  
+                    ->select('untag_assets.*','departments.department_name as department',
+                     'sections.section as  section','assettypes.assetType as assetType',
+                     'assets.assetName as assetName','assets.assetId')  
                     ->get();
                     
             if(!$result){

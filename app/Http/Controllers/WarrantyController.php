@@ -3,7 +3,10 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\Asset;
 use DB;
+use Exception;
+use Illuminate\Database\QueryException;
 
 class WarrantyController extends Controller
 {
@@ -17,7 +20,7 @@ class WarrantyController extends Controller
                     ->where('warrantyStartDate','>=',$warrantyStartDate) 
                     ->where('warrantyEndDate','<=', $warrantyEndDate)
                     ->join('departments','departments.id','=','assets.department')
-                    ->select('departments.department_name as department','assets.assetName',
+                    ->select('assets.id','departments.department_name as department','assets.assetName',
                      'assets.warrantyStartDate', 'assets.warrantyEndDate')
                     ->get();
 
@@ -46,19 +49,20 @@ class WarrantyController extends Controller
         return response($response,$status); 
     }
 
-    public function viewAsset()
+    public function viewAsset($id)
     {
-      try{    
-            $asset = DB::table('assets');
+        try{    
+            $asset = Asset::find($id);
 
             if(!$asset){
                throw new Exception("Asset not found");
             }else{
                 $asset = DB::table('assets')
+                    ->where('assets.id','=',$id)
                     ->join('sections','sections.id','=','assets.section')
                     ->join('assettypes','assettypes.id','=','assets.assetType')
                     ->select('assets.id','assettypes.assetType as assetType',
-                     'sections.section as section','assets.manufaturer', 'assets.assetModel',
+                     'sections.section as section','assets.manufacturer', 'assets.assetModel',
                       'assets.description', 'assets.assetImage')
                     ->get();
                         
@@ -68,6 +72,7 @@ class WarrantyController extends Controller
                 ];
                 $status = 200; 
             } 
+            
         }catch(Exception $e){
             $response = [
              "message"=>$e->getMessage(),

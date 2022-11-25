@@ -13,7 +13,7 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('scrapassets', function (Blueprint $table) {
+        Schema::create('scrap_assets', function (Blueprint $table) {
             $table->id();
             $table->string('scrapType');
             $table->bigInteger('department')->unsigned();
@@ -22,7 +22,8 @@ return new class extends Migration
             $table->foreign('section')->references('id')->on('sections')->onDelete('cascade');
             $table->bigInteger('assetType')->unsigned();
             $table->foreign('assetType')->references('id')->on('assettypes')->onDelete('cascade');
-            $table->string('assetName');
+            $table->bigInteger('assetName')->unsigned();
+            $table->foreign('assetName')->references('id')->on('assets')->onDelete('cascade');
             $table->string('scrapAprovalLetter');
             $table->string('user');
             $table->timestamps();
