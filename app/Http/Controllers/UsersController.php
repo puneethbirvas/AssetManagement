@@ -50,6 +50,27 @@ class UsersController extends Controller
 
         return response($response,$status);
     }
+     
+    //Default EmpID
+    public function empId()
+    {
+        $last = DB::table('users')->latest('id')->first();
+        if(!$last){
+           $emp = "1";
+        }else{
+            $emp = $last->id + 1;
+        }
+        $get = "emp-".$emp;
+
+        $response = [
+            'success' => true,
+            'data' =>  $get,
+            'status' => 201
+        ];
+        $status = 201;   
+
+        return Response($response,$status);
+    }
 
 
     public function update(Request $request,$id)

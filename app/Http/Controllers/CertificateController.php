@@ -38,25 +38,25 @@ class CertificateController extends Controller
             $certificate->inspectionPattern = $request->inspectionPattern;
             $inspection = $request->inspectionPattern;
 
-            if($inspection == 'inspection1')
+            if($inspection == 1)
             {
                 $certificate->inspection1 = $this->inspection1($request);
             }
 
-            if($inspection == 'inspection2')
+            if($inspection == 2)
             {
                 $certificate->inspection1 = $this->inspection1($request);
                 $certificate->inspection2 = $this->inspection2($request);
             }
 
-            if($inspection == 'inspection3')
+            if($inspection == 3)
             {
                 $certificate->inspection1 = $this->inspection1($request);
                 $certificate->inspection2 = $this->inspection2($request);
                 $certificate->inspection3 = $this->inspection3($request);
             }
 
-            if($inspection == 'inspection4')
+            if($inspection == 4)
             {
                 $certificate->inspection1 = $this->inspection1($request);
                 $certificate->inspection2 = $this->inspection2($request);
@@ -64,7 +64,7 @@ class CertificateController extends Controller
                 $certificate->inspection4 = $this->inspection4($request);
             }
 
-            if($inspection == 'inspection5')
+            if($inspection == 5)
             {
                 $certificate->inspection1 = $this->inspection1($request);
                 $certificate->inspection2 = $this->inspection2($request);
@@ -101,6 +101,52 @@ class CertificateController extends Controller
         }
     
         return response($response, $status);        
+    }
+
+    // to merge 3 inputs into one
+    public function inspection1(Request $request)
+    {
+        $c1DateFrom = $request->c1DateFrom;
+        $c1DateTo = $request->c1DateTo;
+        $inspection1 = $c1DateFrom."+".$c1DateTo;
+
+        return $inspection1;
+
+    }
+    public function inspection2(Request $request)
+    {
+        $c2DateFrom = $request->c2DateFrom;
+        $c2DateTo = $request->c2DateTo;
+        $inspection2 = $c2DateFrom."+".$c2DateTo;
+
+        return $inspection2;
+    }
+
+    public function inspection3(Request $request)
+    {
+        $c3DateFrom = $request->c3DateFrom;
+        $c3DateTo = $request->c3DateTo;
+        $inspection3 = $c3DateFrom."+".$c3DateTo;
+
+        return $inspection3;
+    }
+
+    public function inspection4(Request $request)
+    {
+        $c4DateFrom = $request->c4DateFrom;
+        $c4DateTo = $request->c4DateTo;
+        $inspection4 = $c4DateFrom."+".$c4DateTo;
+
+        return $inspection4;
+    }
+
+    public function inspection5(Request $request)
+    {
+        $c5DateFrom = $request->c5DateFrom;
+        $c5DateTo = $request->c5DateTo;
+        $inspection5 = $c5DateFrom."+".$c5DateTo;
+
+        return $inspection5;
     }
 
     //update
@@ -204,7 +250,7 @@ class CertificateController extends Controller
                     ->join('sections','sections.id','=','certificates.section')
                     ->join('assettypes','assettypes.id','=','certificates.assetType')
                     ->join('assets','assets.id','=','certificates.assetName')
-                    ->select('vendors.vendorName as vendorName','certificateDate','expireDate','inspectionPattern','departments.department_name as department',
+                    ->select('certificates.id','vendors.vendorName as vendorName','certificateDate','expireDate','inspectionPattern','departments.department_name as department',
                       'sections.section as section','assettypes.assetType as assetType',
                       'assets.assetName as assetName')
                     ->get();
@@ -232,48 +278,342 @@ class CertificateController extends Controller
         return response($response,$status); 
     }
 
-    public function inspection1(Request $request)
+   
+    // to explode the data
+    public function getDate1($id)
     {
-        $c1DateFrom = $request->c1DateFrom;
-        $c1DateTo = $request->c1DateTo;
-        $inspection1 = $c1DateFrom."+".$c1DateTo;
+        $last =DB::table('certificates')->where('assetName','=',$id)->select('inspection1')->first();
+        $last = $last->inspection1;
+        $get = explode('+',$last);
+        $get1 = $get[0];
+        $get2 = $get[1];
+  
+        $response = [
+            "c1DateFrom" =>$get1,
+            "c1To" =>$get2,
+        ]; 
 
-        return $inspection1;
+        return $response;
+    }   
+      
+    public function getDate2($id)
+    {
+        $last =DB::table('certificates')->where('assetName','=',$id)->select('inspection2')->first();
+        $last = $last->inspection2;
+        $get = explode('+',$last);
+        $get1 = $get[0];
+        $get2 = $get[1];
+  
+        $response = [
+            "c2DateFrom" =>$get1,
+            "c2To" =>$get2,
+        ]; 
+
+        return $response;
+    }
+  
+    public function getDate3($id)
+    {
+        $last =DB::table('certificates')->where('assetName','=',$id)->select('inspection3')->first();
+        $last = $last->inspection3;
+        $get = explode('+',$last);
+        $get1 = $get[0];
+        $get2 = $get[1];
+  
+        $response = [
+            "c3DateFrom" =>$get1,
+            "c3To" =>$get2,
+        ]; 
+
+        return $response;
+    }
+  
+    public function getDate4($id)
+    {
+        $last =DB::table('certificates')->where('assetName','=',$id)->select('inspection4')->first();
+        $last = $last->inspection4;
+        $get = explode('+',$last);
+        $get1 = $get[0];
+        $get2 = $get[1];
+  
+        $response = [
+            "c4DateFrom" =>$get1,
+            "c4To" =>$get2,
+        ]; 
+
+        return $response;
+    }
+  
+    public function getDate5( $id)
+    {
+        $last =DB::table('certificates')->where('assetName','=',$id)->select('inspection5')->first();
+        $last = $last->inspection5;
+        $get = explode('+',$last);
+        $get1 = $get[0];
+        $get2 = $get[1];
+  
+        $response = [
+            "c5DateFrom" =>$get1,
+            "c5To" =>$get2,
+        ]; 
+        
+        return $response;
+    }
+
+    //To Get Certificate (VendorName,AssetName)
+    public function showDetails($id)
+    {
+        $last = DB::table('certificates')
+            ->where('certificates.assetName','=',$id)
+            ->join('vendors','vendors.id','=','certificates.vendorName')
+            ->select('certificates.id','vendors.vendorName as vendorName')
+            ->first();
+        return $last;
 
     }
-    public function inspection2(Request $request)
+  
+    // to display service date
+    public function showInspection($id)
     {
-        $c2DateFrom = $request->c2DateFrom;
-        $c2DateTo = $request->c2DateTo;
-        $inspection2 = $c2DateFrom."+".$c2DateTo;
+        try{
+          
+            $data  = DB::table('certificates')
+                ->select('*','vendors.vendorName as vendorName')
+                ->join('vendors','vendors.id','=','certificates.vendorName')
+                ->where('assetName','=',$id)
+                ->get();
 
-        return $inspection2;
+            if(count($data)>0){
+                $id = $data[0]->id;
+                $vendorName = $data[0]->vendorName;
+                $inspectionPattern = $data[0]->inspectionPattern;
+    
+                $rawData = array();
+                $rawData["id"] = $id;
+                $rawData["vendorName"] = $vendorName;
+                $rawData["inspectionPattern"] = $inspectionPattern;
+    
+                $data1 = array();
+                for($i=1;$i<=number_format($inspectionPattern);$i++){
+                        
+                    if($i == 1){
+                        $inspectionSplit1 = explode("+",$data[0]->inspection1);
+    
+                        $rawData["c1startDate"] = $inspectionSplit1[0];
+                        $rawData["c1endDate"] = $inspectionSplit1[1];
+                    }
+    
+                    if($i == 2){
+                        $inspectionSplit2 = explode("+",$data[0]->inspection2);
+                        $rawData["c2startDate"] = $inspectionSplit2[0];
+                        $rawData["c2endDate"] = $inspectionSplit2[1];
+                    }
+    
+                    if($i == 3){
+                        $inspectionSplit3 = explode("+",$data[0]->inspection3);
+                        $rawData["c3startDate"] = $inspectionSplit3[0];
+                        $rawData["c3endDate"] = $inspectionSplit3[1];
+                    }
+    
+                    if($i == 4){
+                        $inspectionSplit4 = explode("+",$data[0]->inspection4);
+                        $rawData["c4startDate"] = $inspectionSplit4[0];
+                        $rawData["c4endDate"] = $inspectionSplit4[1];
+                    }
+    
+                    if($i == 5){
+                        $inspectionSplit5 = explode("+",$data[0]->inspection5);
+                        $rawData["c5startDate"] = $inspectionSplit5[0];
+                        $rawData["c5endDate"] = $inspectionSplit5[1];
+                    }
+                }
+                $data[] = $rawData;
+                $response["data"][] = $rawData;
+                $status = 200; 
+            }
+
+        }catch(Exception $e){
+            $response = [
+                "message"=>$e->getMessage(),
+                "status" => 406
+            ];            
+            $status = 406;
+
+        }catch(QueryException $e){
+            $response = [
+                "error" => $e->errorInfo,
+                "status" => 406
+            ];
+            $status = 406; 
+        }
+
+       return response($response,$status); 
     }
-
-    public function inspection3(Request $request)
+    
+    //To display the Inspection Due(End) Date
+    public function inspectionDue(Request $request,$id)
     {
-        $c3DateFrom = $request->c3DateFrom;
-        $c3DateTo = $request->c3DateTo;
-        $inspection3 = $c3DateFrom."+".$c3DateTo;
+        try{    
 
-        return $inspection3;
+            $certificateDate =$request->certificateDate;
+            $expireDate = $request->expireDate;
+
+            $result = DB::table('certificates')
+                ->where('certificates.assetType','=',$id)
+                ->where('certificateDate','>=',$certificateDate) 
+                ->where('expireDate','<=', $expireDate)
+                ->join('vendors','vendors.id','=','certificates.vendorName')
+                ->join('assets','assets.id','=','certificates.assetName')
+                ->select('certificates.id','vendors.vendorName as vendorName',
+                 'expireDate as inspectionDate','assets.assetName as assetName',)
+                ->get();
+
+                if(!$result){
+                 throw new Exception("data not found");
+                }
+
+            $response=[
+             "message" => "inspection Due Date List",
+             "data" => $result
+            ];
+            $status = 200; 
+            
+        }catch(Exception $e){
+            $response = [
+             "message"=>$e->getMessage(),
+              "status" => 406
+            ];            
+            $status = 406;
+
+        }catch(QueryException $e){
+            $response = [
+                "error" => $e->errorInfo,
+                "status" => 406
+            ];
+            $status = 406; 
+        }
+        return response($response,$status); 
     }
-
-    public function inspection4(Request $request)
+    
+    //To Display The Certificate data with in end of 7 days
+    public function viewCertificateRenewal()
     {
-        $c4DateFrom = $request->c4DateFrom;
-        $c4DateTo = $request->c4DateTo;
-        $inspection4 = $c4DateFrom."+".$c4DateTo;
+        try{
 
-        return $inspection4;
+            $result=DB::table('certificates')
+                    ->whereBetween('expireDate', [now(), now()->addDays(7)])
+                    ->join('departments','departments.id','=','certificates.department')
+                    ->join('assets','assets.id','=','certificates.assetName')
+                    ->select( 'certificates.id','departments.department_name as department', 
+                     'assets.assetName as assetName','certificateDate as certificateStartDate',
+                     'expireDate as certificateEndDate')
+                    ->get();
+                
+                if(!$result){
+                 throw new Exception("data not found");
+                } 
+                
+            $response = [
+                'success' => true,
+                'data' => $result,
+                'status' => 201
+            ];
+            $status = 201;   
+            
+        }catch(Exception $e){
+            $response = [
+                "error"=>$e->getMessage(),
+                "status"=>406
+            ];            
+            $status = 406;
+
+        }catch(QueryException $e){
+            $response = [
+                "error" => $e->errorInfo,
+                "status"=>406
+            ];
+            $status = 406; 
+        }
+        
+        return response($response, $status);    
     }
-
-    public function inspection5(Request $request)
+    
+    //Update The Certificate (Date & Inspection) Renewal
+    public function renewalCertificate(Request $request,$id)
     {
-        $c5DateFrom = $request->c5DateFrom;
-        $c5DateTo = $request->c5DateTo;
-        $inspection5 = $c5DateFrom."+".$c5DateTo;
+        try{    
+             
+            $certificate = Certificate::find($id); 
 
-        return $inspection5;
+            if(!$certificate){
+                throw new Exception("Data not found");
+            }
+                
+            $certificate->certificateDate = $request->certificateDate;
+            $certificate->expireDate = $request->expireDate;
+
+            $certificate->inspectionPattern = $request->inspectionPattern;
+            $inspection = $request->inspectionPattern;
+
+            if($inspection == 1)
+            {
+                $certificate->inspection1 = $this->inspection1($request);
+            }
+
+            if($inspection == 2)
+            {
+                $certificate->inspection1 = $this->inspection1($request);
+                $certificate->inspection2 = $this->inspection2($request);
+            }
+
+            if($inspection == 3)
+            {
+                $certificate->inspection1 = $this->inspection1($request);
+                $certificate->inspection2 = $this->inspection2($request);
+                $certificate->inspection3 = $this->inspection3($request);
+            }
+
+            if($inspection == 4)
+            {
+                $certificate->inspection1 = $this->inspection1($request);
+                $certificate->inspection2 = $this->inspection2($request);
+                $certificate->inspection3 = $this->inspection3($request);
+                $certificate->inspection4 = $this->inspection4($request);
+            }
+
+            if($inspection == 5)
+            {
+                $certificate->inspection1 = $this->inspection1($request);
+                $certificate->inspection2 = $this->inspection2($request);
+                $certificate->inspection3 = $this->inspection3($request);
+                $certificate->inspection4 = $this->inspection4($request);
+                $certificate->inspection5 = $this->inspection5($request);
+            }
+            $certificate->save();
+
+            $response=[
+                "message" => "Updated Sucessfully",
+                "status" => 200
+            ];
+            $status = 200; 
+            
+
+        }catch(Exception $e){
+            $response = [
+             "message"=>$e->getMessage(),
+              "status" => 406
+            ];            
+            $status = 406;
+            
+        }catch(QueryException $e){
+            $response = [
+                "error" => $e->errorInfo,
+                "status" => 406
+            ];
+            $status = 406; 
+
+        }
+        return response($response,$status); 
     }
+  
 }

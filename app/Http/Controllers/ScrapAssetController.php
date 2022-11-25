@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\scrapAsset;
+use App\Exports\ScrapAssetsExport;
+use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Http\Request;
 use DB;
 use Str;
@@ -64,8 +66,16 @@ class ScrapAssetController extends Controller
     
     public function showData()
     {
-      try{    
-          return DB::table('scrap_assets')->select('id', 'department','section','assetType',       'assetName','user')->orderby('id','asc')->get();
+        try{    
+            return DB::table('scrap_assets')
+                ->join('departments','departments.id','=','scrap_assets.department')
+                ->join('sections','sections.id','=','scrap_assets.section')
+                ->join('assettypes','assettypes.id','=','scrap_assets.assetType')
+                ->join('assets','assets.id','=','scrap_assets.assetName')
+                ->select('scrap_assets.id','departments.department_name as department',
+                 'sections.section as section','assettypes.assetType as assetType',
+                 'assets.assetName as assetName','scrap_assets.created_at as dateAndTime','scrap_assets.user')
+               ->get();
           
             if(!$scrapAsset){
              throw new Exception("ScrapAsset not found");
@@ -92,4 +102,21 @@ class ScrapAssetController extends Controller
         }
         return response($response,$status); 
     }
+
+    public function export()
+    {
+      $query = DB::table('scrap_assets')
+        ->join('departments','departments.id','=','scrap_assets.department')
+        ->join('sections','sections.id','=','scrap_assets.section')
+        ->join('assettypes','assettypes.id','=','scrap_assets.assetType')
+        ->join('assets','assets.id','=','scrap_assets.assetName')
+        ->select('scrap_assets.id','departments.department_name as department',
+         'sections.section as section','assettypes.assetType as assetType',
+         'assets.assetName as assetName','scrap_assets.created_at as dateAndTime','scrap_assets.user')
+        ->get();
+  
+      return Excel::download(new ScrapAssetsExport($query), 'ScrapAsset.csv');
+    }
+
+
 }
