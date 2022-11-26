@@ -251,9 +251,8 @@ class UsersController extends Controller
     
     public function showData()
     {
-      try{    
-
-        $result = DB::table('users')
+        try{    
+            $result = DB::table('users')
                 ->join('departments','departments.id','=','users.department')
                 ->select('users.*','departments.department_name as department')
                 ->get();
@@ -261,11 +260,10 @@ class UsersController extends Controller
 
              throw new Exception("user not found");
             }
+
             $response=[
-             "message" => "Users List",
-
-             "data" => $result
-
+                "message" => "Users List",
+                "data" => $result
             ];
             $status = 200; 
             
@@ -275,6 +273,7 @@ class UsersController extends Controller
                  "status" => 406
                 ];                    
             $status = 406;
+
         }catch(QueryException $e){
                 $response = [
                   "error" => $e->errorInfo,

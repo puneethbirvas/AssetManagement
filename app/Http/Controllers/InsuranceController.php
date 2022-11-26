@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Insurance;
 use Illuminate\Http\Request;
+use App\Exports\InsuranceExport;
+use Maatwebsite\Excel\Facades\Excel;
 use Storage;
 use Str;
 use DB;
@@ -326,6 +328,22 @@ class InsuranceController extends Controller
 
         }
         return response($response,$status); 
+    }
+
+    public function export()
+    {
+      $query = DB::table('insurances')
+        ->join('vendors','vendors.id','=','insurances.vendorName')
+        ->join('departments','departments.id','=','insurances.department')
+        ->join('sections','sections.id','=','insurances.section')
+        ->join('assettypes','assettypes.id','=','insurances.assetType')
+        ->join('assets','assets.id','=','insurances.assetName')
+        ->select('insurances.id','vendors.vendorName as vendorName','periodFrom','periodTo',
+            'departments.department_name as department', 'sections.section as section',
+            'assettypes.assetType as assetType','assets.assetName as assetName')
+        ->get();
+  
+      return Excel::download(new InsuranceExport($query), 'Insurance.csv');
     }
 
 }     

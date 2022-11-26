@@ -2,12 +2,12 @@
 
 namespace App\Exports;
 
-use App\Models\Asset;
+use App\Models\Insurance;
 use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\FromQuery;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 
-class AssetsExport implements FromCollection, WithHeadings
+class InsuranceExport implements FromCollection, WithHeadings
 {
     protected $query;
     public function __construct($query){
@@ -25,16 +25,13 @@ class AssetsExport implements FromCollection, WithHeadings
     {
         return [
             'SerialNo', 
-            'Department',  
+            'VendorName', 
+            'PeriodFrom',
+            'PeriodTo',
+            'Department',
             'Section',
-            'MachineName',
             'AssetType',
-            'Manufaturer',
-            'AssetModel',
-            'PODetails',
-            'InvoiceDetails',
-            'WarrantyStartDate',
-            'WarrantyEndDate',
+            'AssetName',
         ];
     }
 }

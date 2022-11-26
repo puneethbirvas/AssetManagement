@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Amc;
 use Illuminate\Http\Request;
+use App\Exports\AmcExport;
+use Maatwebsite\Excel\Facades\Excel;
 use Exception;
 use Illuminate\Database\QueryException;
 use Storage;
@@ -623,6 +625,21 @@ class AMCController extends Controller
 
         }
         return response($response,$status); 
+    }
+
+    public function export()
+    {
+      $query = DB::table('amcs')
+      ->join('vendors','vendors.id','=','amcs.vendorName')
+      ->join('departments','departments.id','=','amcs.department')
+      ->join('sections','sections.id','=','amcs.section')
+      ->join('assettypes','assettypes.id','=','amcs.assetType')
+      ->join('assets','assets.id','=','amcs.assetName')
+      ->select('amcs.id','vendors.vendorName as vendorName','periodFrom','periodTo','servicePattern','departments.department_name as department',
+        'sections.section as section','assettypes.assetType as assetType','assets.assetName as assetName')
+      ->get();
+  
+      return Excel::download(new AmcExport($query), 'Amc.csv');
     }
 }
 
