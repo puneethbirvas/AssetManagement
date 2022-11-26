@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Certificate;
 use Illuminate\Http\Request;
+use App\Exports\CertificateExport;
+use Maatwebsite\Excel\Facades\Excel;
 use Exception;
 use Illuminate\Database\QueryException;
 use Storage;
@@ -614,6 +616,22 @@ class CertificateController extends Controller
 
         }
         return response($response,$status); 
+    }
+
+    public function export()
+    {
+      $query = DB::table('certificates')
+        ->join('vendors','vendors.id','=','certificates.vendorName')
+        ->join('departments','departments.id','=','certificates.department')
+        ->join('sections','sections.id','=','certificates.section')
+        ->join('assettypes','assettypes.id','=','certificates.assetType')
+        ->join('assets','assets.id','=','certificates.assetName')
+        ->select('certificates.id','vendors.vendorName as vendorName','certificateDate','expireDate','inspectionPattern','departments.department_name as department',
+            'sections.section as section','assettypes.assetType as assetType',
+            'assets.assetName as assetName')
+        ->get();
+  
+      return Excel::download(new CertificateExport($query), 'Certificate.csv');
     }
   
 }

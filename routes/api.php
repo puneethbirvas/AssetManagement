@@ -122,7 +122,6 @@ Route::get('alloation/getEmpId',[AllocationController::class, 'getEmpId']);
 Route::get('alloation/{id}/getEmpName',[AllocationController::class, 'getEmpName']);
 Route::get('alloation/{id}/getUser',[AllocationController::class, 'getUser']);
 
-
 //TransferAsset
 Route::post('transferAsset/{id}', [TransferAssetController::class, 'transferData']);
 
@@ -158,8 +157,6 @@ Route::get('maintenance/aprovedShowData', [MaintenanceController::class, 'aprove
 Route::get('maintenance/pendingShowData', [MaintenanceController::class, 'pendingShowData']);
 Route::get('maintenance/rejectedShowData', [MaintenanceController::class, 'rejectedShowData']);
 Route::get('maintenance/showClosedMaintenance', [MaintenanceController::class, 'showClosedMaintenance']);
-Route::get('maintenance/{id}/partsOrConsumable', [MaintenanceController::class, 'partsOrConsumable']);
-
 
 //Amc
 Route::post('amc/add', [AmcController::class, 'store']);
@@ -170,6 +167,7 @@ Route::get('amc/{id}/showService', [AmcController::class, 'showService']);
 Route::post('amc/{id}/serviceDue', [AmcController::class, 'serviceDue']);
 Route::get('amc/viewAmcRenewal', [AmcController::class, 'viewAmcRenewal']);
 Route::get('amc/{id}/renewalAmc', [AmcController::class, 'renewalAmc']);
+Route::get('amc/export', [AmcController::class, 'export']);
 
 //Certificate
 Route::post('certificate/add', [CertificateController::class, 'store']);
@@ -181,7 +179,7 @@ Route::get('certificate/viewCertificateRenewal', [CertificateController::class, 
 Route::get('certificate/{id}/showInspection', [CertificateController::class, 'showInspection']);
 Route::get('certificate/{id}/renewalCertificate', [CertificateController::class, 'renewalCertificate']);
 Route::get('certificate/{id}/showDetails', [CertificateController::class, 'showDetails']);
-
+Route::get('certificate/export', [CertificateController::class, 'export']);
 
 //Warranty
 Route::post('warranty/showData', [WarrantyController::class, 'showData']);
@@ -195,3 +193,4 @@ Route::get('insurance/showData', [InsuranceController::class, 'showData']);
 Route::post('insurance/{id}/insuranceDue', [InsuranceController::class, 'insuranceDue']);
 Route::get('insurance/viewInsuranceRenewal', [InsuranceController::class, 'viewInsuranceRenewal']);
 Route::post('insurance/{id}/renewalInsurance', [InsuranceController::class, 'renewalInsurance']);
+Route::get('insurance/export', [InsuranceController::class, 'export']);

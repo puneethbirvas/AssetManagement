@@ -38,6 +38,7 @@ return new class extends Migration
             $table->string('timeTo');
             $table->string('action')->nullable();
             $table->string('closedMaintenance')->nullable();
+            $table->string('userName')->nullable();
             $table->timestamps();
         });
     }
