@@ -208,7 +208,7 @@ class CertificateController extends Controller
         return response($response, $status);        
     }
 
-     //destroy
+    //destroy
     public function destroy($id)
     {
         try{
@@ -279,6 +279,93 @@ class CertificateController extends Controller
         }
         return response($response,$status); 
     }
+
+    //view Certificate Data by ID
+    public function showData1($id)
+    {
+      try{    
+            $data = Certificate::find($id);
+
+            if(!$data){
+               throw new Exception("Data not found");
+
+            }else{
+                 
+                $data = DB::table('certificates')
+                    ->where('certificates.id','=',$id)
+                    ->join('vendors','vendors.id','=','certificates.vendorName')
+                    ->get();
+                
+                if(count($data)>0){
+                    $vendorName = $data[0]->vendorName;
+                    $inspectionPattern = $data[0]->inspectionPattern;
+            
+                    $rawData = array();
+                    $rawData["id"] = $id;
+                    $rawData["vendorName"] = $vendorName;
+                    $rawData["inspectionPattern"] = $inspectionPattern;
+            
+                    $data1 = array();
+
+                    for($i=1;$i<=number_format($inspectionPattern);$i++){
+                                
+                        if($i == 1){
+                            $inspectionSplit1 = explode("+",$data[0]->inspection1);
+            
+                            $rawData["c1startDate"] = $inspectionSplit1[0];
+                            $rawData["c1endDate"] = $inspectionSplit1[1];
+                        }
+            
+                        if($i == 2){
+                            $inspectionSplit2 = explode("+",$data[0]->inspection2);
+                            $rawData["c2startDate"] = $inspectionSplit2[0];
+                            $rawData["c2endDate"] = $inspectionSplit2[1];
+                        }
+            
+                        if($i == 3){
+                            $inspectionSplit3 = explode("+",$data[0]->inspection3);
+                            $rawData["c3startDate"] = $inspectionSplit3[0];
+                            $rawData["c3endDate"] = $inspectionSplit3[1];
+                        }
+            
+                        if($i == 4){
+                            $inspectionSplit4 = explode("+",$data[0]->inspection4);
+                            $rawData["c4startDate"] = $inspectionSplit4[0];
+                            $rawData["c4endDate"] = $inspectionSplit4[1];
+                        }
+            
+                        if($i == 5){
+                            $inspectionSplit5 = explode("+",$data[0]->inspection5);
+                            $rawData["c5startDate"] = $inspectionSplit5[0];
+                            $rawData["c5endDate"] = $inspectionSplit5[1];
+                        }
+                    }
+
+                    $data[] = $rawData;
+                    $response["data"][] = $rawData;
+                    $status = 200; 
+                }    
+                
+            } 
+
+        }catch(Exception $e){
+            $response = [
+             "message"=>$e->getMessage(),
+              "status" => 406
+              ];            
+            $status = 406;
+            
+        }catch(QueryException $e){
+            $response = [
+                "error" => $e->errorInfo,
+                "status" => 406
+               ];
+            $status = 406; 
+        }
+
+        return response($response,$status); 
+    }
+
 
    
     // to explode the data
@@ -617,7 +704,8 @@ class CertificateController extends Controller
         }
         return response($response,$status); 
     }
-
+    
+    //Downloading Certificate Data
     public function export()
     {
       $query = DB::table('certificates')

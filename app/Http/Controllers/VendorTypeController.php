@@ -115,31 +115,33 @@ class VendorTypeController extends Controller
      public function showData(VendorType $vendorType)
      {
  
-         try{
-             $vendorType = VendorType::all();
+        try{
+
+            $vendorType = VendorType::all();
  
-             if(!$vendorType){
-                 throw new Exception("VendorTypes not found");
-             }else{
-                 $response = [
+            if(!$vendorType){
+                throw new Exception("VendorTypes not found");
+
+            }else{
+                $response = [
                      'success' => true,
                      'data' => $vendorType         
-                 ];
-                 $status = 201;   
+                    ];
+                $status = 201;   
              return response($response,$status);
-             }
+            }
  
-         }catch(Exception $e){
-             $response = [
+        }catch(Exception $e){
+            $response = [
                  "error" => $e->getMessage(),
                  "status" => 404
-             ];
-             $status = 404; 
+                ];
+            $status = 404; 
          
-         }
+        }
  
-         return response($response,$status);
+        return response($response,$status);
  
-     }      
+    }      
 
 }

@@ -202,7 +202,7 @@ class InsuranceController extends Controller
         }
         return response($response,$status); 
     }
-  
+
     //To display the Insurance Due(End) Date
     public function insuranceDue(Request $request,$id)
     {
@@ -330,6 +330,7 @@ class InsuranceController extends Controller
         return response($response,$status); 
     }
 
+    //Downloading insurance Data
     public function export()
     {
       $query = DB::table('insurances')

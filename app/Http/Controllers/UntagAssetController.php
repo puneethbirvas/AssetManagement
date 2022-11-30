@@ -2,65 +2,56 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\UntagAsset;
+use App\Models\Allocation;
 use Illuminate\Http\Request;
+use App\Exports\untagAssetExport;
+use Maatwebsite\Excel\Facades\Excel;
+use Exception;
+use Illuminate\Database\QueryException;
 use DB;
 
 class UntagAssetController extends Controller
 {
-    public function store(Request $request)
+    public function update(Request $request,$id)
     {
-        try{
-            $untagAsset = new UntagAsset;
-            
-            $untagAsset->department = $request->department;
-            $untagAsset->section  = $request->section ;
-            $untagAsset->assetType = $request->assetType;
-            $untagAsset->assetName = $request->assetName;
-            $untagAsset->resonForUntag = $request->resonForUntag;
-            $untagAsset->tag = $request->tag;
-          
-            $untagAsset->save();
+        $get = DB::table('allocations')->where('assetName','=',$id)->first();
+        $get = $get->id;
+        $untag = Allocation::find($get);
 
-            $response = [
-                'success' => true,
-                'message' => "successfully added",
-                'status' => 201
-            ];
-            $status = 201;   
-        }catch(Exception $e){
-            $response = [
-                "message"=>$e->getMessage(),
-                "status" => 406
-            ];            
-            $status = 406;            
-        }catch(QueryException $e){
-            $response = [
-                "error" => $e->errorInfo,
-                "status" => 406
-            ];
-            $status = 406;             
-        }    
-     
-        return response($response, $status);        
+        $untag->reasonForUntag = $request->reasonForUntag;
+        $untag->tag = $request->tag;
+
+        $untag->save();
+
+        $response = [
+            "data" => "untagged successfuly",
+            "status" => 200
+        ];
+        $status = 200;
+
+        return Response($response,$status);
     }
 
-    public function showData()
+    public function showData(Request $request)
     {
       try{    
-            // $fromDate =$request->fromDate;
-            // $toDate = $request->toDate;
+            $fromDate =$request->fromDate;
+            $toDate = $request->toDate;
 
-            $result = DB::table('untag_assets')
-                    // ->where('fromDate','>=',$fromDate) 
-                    // ->where('toDate','<=', $toDate)
-                    ->join('departments','departments.id','=','untag_assets.department')
-                    ->join('sections','sections.id','=','untag_assets.section')
-                    ->join('assettypes','assettypes.id','=','untag_assets.assetType')
-                    ->join('assets','assets.id','=','untag_assets.assetName')
-                    ->select('untag_assets.*','departments.department_name as department',
+            $result = DB::table('allocations')
+                    ->where('fromDate','>=',$fromDate) 
+                    ->where('toDate','<=', $toDate)
+                    ->where('reasonForUntag','!=',"null")
+                    ->join('departments','departments.id','=','allocations.department')
+                    ->join('sections','sections.id','=','allocations.section')
+                    ->join('assettypes','assettypes.id','=','allocations.assetType')
+                    ->join('assets','assets.id','=','allocations.assetName')
+                    ->leftjoin('users as A','A.id','=','allocations.user')
+                    ->leftjoin('users as B','B.id','=','allocations.empId')
+                    ->select('allocations.*','departments.department_name as department',
                      'sections.section as  section','assettypes.assetType as assetType',
-                     'assets.assetName as assetName','assets.assetId')  
+                     'assets.assetName as assetName','A.user_name as user',
+                     'departments.department_name as userDepartment','B.employee_id as empId')  
                     ->get();
                     
             if(!$result){
@@ -86,5 +77,28 @@ class UntagAssetController extends Controller
             $status = 406; 
         }
         return response($response,$status); 
+    }
+
+    public function export(Request $request)
+    {
+        $fromDate =$request->fromDate;
+        $toDate = $request->toDate;
+
+        $query = DB::table('allocations')
+            ->where('fromDate','>=',$fromDate) 
+            ->where('toDate','<=', $toDate)
+            ->where('reasonForUntag','!=',"null")
+            ->join('departments','departments.id','=','allocations.department')
+            ->join('assettypes','assettypes.id','=','allocations.assetType')
+            ->join('assets','assets.id','=','allocations.assetName')
+            ->join('sections','sections.id','=','allocations.section')
+            ->join('users','users.id','=','allocations.user')
+            ->select('allocations.id','departments.department_name as department',
+             'sections.section as section', 'assettypes.assetType as assetType',
+             'assets.assetName as assetName','assets.assetId as assetId',
+             'users.employee_name as user')
+            ->get();
+        return ($query);
+      // return Excel::download(new untagAssetExport($query), 'Allocation.csv');
     }
 }
