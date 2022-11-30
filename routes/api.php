@@ -52,10 +52,8 @@ Route::middleware(['auth:sanctum'])->group(function () {
 Route::post('user/add',[UsersController::class,'store']);
 Route::get('user/empId',[UsersController::class,'empId']);
 
-
 //login 
 Route::post('login',[UsersController::class,'loginUser']);
-
 
 //vendor
 Route::post('vendor/add', [VendorController::class, 'store']);
@@ -113,14 +111,17 @@ Route::post('audit/{id}/update', [AuditController::class, 'update']);
 Route::post('audit/{id}/delete', [AuditController::class, 'destroy']);
 Route::get('audit/showData', [AuditController::class, 'showData']);
 Route::post('audit/{id}/viewAuditReport', [AuditController::class, 'viewAuditReport']);
+Route::post('audit/{id}/export', [AuditController::class, 'export']);
 
 //Allocation
 Route::post('allocation/add', [AllocationController::class, 'store']);
 Route::post('allocation/{id}/update', [AllocationController::class, 'update']);
-Route::get('allocation/showData', [AllocationController::class, 'showData']);
-Route::get('alloation/getEmpId',[AllocationController::class, 'getEmpId']);
-Route::get('alloation/{id}/getEmpName',[AllocationController::class, 'getEmpName']);
-Route::get('alloation/{id}/getUser',[AllocationController::class, 'getUser']);
+Route::post('allocation/showData', [AllocationController::class, 'showData']);
+Route::get('allocation/getEmpId',[AllocationController::class, 'getEmpId']);
+Route::post('allocation/{id}/getEmpName',[AllocationController::class, 'getEmpName']);
+Route::get('allocation/{id}/getUser',[AllocationController::class, 'getUser']);
+Route::get('allocation/export', [AllocationController::class, 'export']);
+
 
 //TransferAsset
 Route::post('transferAsset/{id}', [TransferAssetController::class, 'transferData']);
@@ -144,13 +145,16 @@ Route::get('tagAsset/{id}/getAssetId', [TagAssetController::class, 'getAssetId']
 Route::get('tagAsset/selectAssetId', [TagAssetController::class, 'selectAssetId']);
 
 //UnTagAsset
-Route::post('untagAsset/add', [UntagAssetController::class, 'store']);
-Route::get('untagAsset/showData', [UntagAssetController::class, 'showData']);
+Route::post('untagAsset/{id}/update', [UntagAssetController::class, 'update']);
+Route::post('untagAsset/showData', [UntagAssetController::class, 'showData']);
+Route::get('untagAsset/export', [UntagAssetController::class, 'export']);
+
 
 //Maintenance
 Route::post('maintenance/add', [MaintenanceController::class, 'store']);
 Route::get('maintenance/showData', [MaintenanceController::class, 'showData']);
 Route::get('maintenance/getMaintenanceId', [MaintenanceController::class, 'getMaintenanceId']);
+Route::get('maintenance/{id}/showStatus', [MaintenanceController::class, 'showStatus']);
 Route::post('maintenance/{id}/updateAction', [MaintenanceController::class, 'updateAction']);
 Route::post('maintenance/{id}/updateClosedMaintenance', [MaintenanceController::class, 'updateClosedMaintenance']);
 Route::get('maintenance/aprovedShowData', [MaintenanceController::class, 'aprovedShowData']);
@@ -158,11 +162,13 @@ Route::get('maintenance/pendingShowData', [MaintenanceController::class, 'pendin
 Route::get('maintenance/rejectedShowData', [MaintenanceController::class, 'rejectedShowData']);
 Route::get('maintenance/showClosedMaintenance', [MaintenanceController::class, 'showClosedMaintenance']);
 
+
 //Amc
 Route::post('amc/add', [AmcController::class, 'store']);
 Route::post('amc/{id}/update', [AmcController::class, 'update']);
 Route::post('amc/{id}/delete', [AmcController::class, 'destroy']);
 Route::get('amc/showData', [AmcController::class, 'showData']);
+Route::get('amc/{id}/showData1', [AmcController::class, 'showData1']);
 Route::get('amc/{id}/showService', [AmcController::class, 'showService']);
 Route::post('amc/{id}/serviceDue', [AmcController::class, 'serviceDue']);
 Route::get('amc/viewAmcRenewal', [AmcController::class, 'viewAmcRenewal']);
@@ -174,6 +180,7 @@ Route::post('certificate/add', [CertificateController::class, 'store']);
 Route::post('certificate/{id}/update', [CertificateController::class, 'update']);
 Route::post('certificate/{id}/delete', [CertificateController::class, 'destroy']);
 Route::get('certificate/showData', [CertificateController::class, 'showData']);
+Route::get('certificate/{id}/showData1', [CertificateController::class, 'showData1']);
 Route::post('certificate/{id}/inspectionDue', [CertificateController::class, 'inspectionDue']);
 Route::get('certificate/viewCertificateRenewal', [CertificateController::class, 'viewCertificateRenewal']);
 Route::get('certificate/{id}/showInspection', [CertificateController::class, 'showInspection']);

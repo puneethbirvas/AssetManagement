@@ -15,11 +15,12 @@ class Allocation extends Model
         "assetName",
         "userType",
         "empId",
-        "empName",
         "userDepartment",
         "user",
         "position",
         "fromDate",
-        "toDate"
+        "toDate",
+        "resonForUntag",
+        "tag"
     ];
 }

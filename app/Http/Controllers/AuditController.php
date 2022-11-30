@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Audit;
 use Illuminate\Http\Request;
+use App\Exports\AuditExport;
+use Maatwebsite\Excel\Facades\Excel;
 use DB;
 use Exception;
 use Illuminate\Database\QueryException;
@@ -202,5 +204,25 @@ class AuditController extends Controller
             $status = 406; 
         }
         return response($response,$status); 
+    }
+
+    public function export(Request $request,$id)
+    {
+        $fromDate =$request->fromDate;
+        $toDate = $request->toDate;
+
+        $query = DB::table('audits')
+            ->where('audits.assetType','=',$id)
+            ->where('auditDate','>=',$fromDate) 
+            ->where('auditDate','<=', $toDate)
+            ->join('departments','departments.id','=','audits.department')
+            ->join('sections','sections.id','=','audits.section')
+            ->join('assettypes','assettypes.id','=','audits.assetType')
+            ->select('audits.id','audits.auditName',
+             'departments.department_name as department',
+             'sections.section as section','assettypes.assetType as assetType')
+            ->get();
+  
+        return Excel::download(new AuditExport($query), 'Audit.csv');
     }
 }

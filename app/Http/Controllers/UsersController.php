@@ -103,6 +103,7 @@ class UsersController extends Controller
                    "status" => 406
                ];            
                $status = 200;
+               
             }catch(QueryException $e){
                $response = [
                    "error" => $e->errorInfo,

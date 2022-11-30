@@ -26,7 +26,6 @@ return new class extends Migration
             $table->string('userType');
             $table->bigInteger('empId')->unsigned()->nullable();
             $table->foreign('empId')->references('id')->on('users')->onDelete('cascade');
-            $table->string('empName')->nullable();
             $table->bigInteger('userDepartment')->unsigned()->nullable();
             $table->foreign('userDepartment')->references('id')->on('departments')->onDelete('cascade');
             $table->bigInteger('user')->unsigned()->nullable();
@@ -34,6 +33,8 @@ return new class extends Migration
             $table->string('position');
             $table->string('fromDate')->nullable();
             $table->string('tomDate')->nullable();
+            $table->string('reasonForUntag')->nullable();
+            $table->string('tag')->nullable();
             $table->timestamps();
         });
     }

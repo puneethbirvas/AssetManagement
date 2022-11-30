@@ -2,16 +2,13 @@
 
 namespace App\Exports;
 
-use App\Models\Amc;
-use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
+use App\Models\Allocation;
 use Maatwebsite\Excel\Concerns\FromCollection;
-use Maatwebsite\Excel\Concerns\WithStyles;
 use Maatwebsite\Excel\Concerns\FromQuery;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 
-class AmcExport implements FromCollection, WithHeadings, WithStyles
+class AllocationExport implements FromCollection, WithHeadings
 {
-   
     protected $query;
     public function __construct($query){
         $this->query = $query;
@@ -20,7 +17,7 @@ class AmcExport implements FromCollection, WithHeadings, WithStyles
 
     public function collection()
     {
-        return  collect($this->query);
+        return $this->query->get();
     }
     
    
@@ -28,22 +25,12 @@ class AmcExport implements FromCollection, WithHeadings, WithStyles
     {
         return [
             'SerialNo', 
-            'VendorName', 
-            'PeriodFrom',
-            'PeriodTo',
-            'ServicePattern',
             'Department',
             'Section',
             'AssetType',
             'AssetName',
-        ];
-    }
-
-    public function styles(Worksheet $sheet)
-    {
-        return [
-            // Style the first row as bold text.
-            1    => ['font' => ['bold' => true]]
+            'AssetId',
+            'Assigneduser',
         ];
     }
 }

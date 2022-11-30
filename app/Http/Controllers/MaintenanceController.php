@@ -18,7 +18,7 @@ class MaintenanceController extends Controller
       
             $maintenance = new Maintenance;
 
-            $maintenance->maintenanceId = $this->getMaintenanceId();
+            $maintenance->maintenanceId = $request->maintenanceId;
             $maintenance->assetName = $request->assetName;
             $maintenance->maintenanceType = $request->maintenanceType;
             $maintenance->severity = $request->severity;
@@ -295,7 +295,6 @@ class MaintenanceController extends Controller
       return Response($response, $status);
     }
 
-   
 
     public function pendingShowData()
     {
@@ -402,5 +401,52 @@ class MaintenanceController extends Controller
      
       return Response($response, $status);
 
+    }
+
+
+    public function showStatus($id)
+    {
+        try{
+         
+            $amc = DB::table('amcs')->where('assetName','=',$id)->get();
+
+                if(count($amc)>0){
+                    $data["amc"] = "Amc available";
+
+                }else{
+                    $data["amc"] = "Amc not available";
+                }
+
+            $warranty = DB::table('assets')->where('id','=',$id)->where('warrantyStartDate','!=',null)->first();
+                if($warranty){
+                    $data["warranty"] = "warranty available";
+                    $data["startDate"] = $warranty->warrantyStartDate;
+                    $data["endDate"] = $warranty->warrantyEndDate;
+
+                }else{
+                    $data["warranty"] = "warranty not available";
+                }
+
+            $data["warrantyType"] = "NA";
+
+            $response = $data;
+            $status = 406; 
+
+        }catch(Exception $e){
+            $response = [
+                "error"=>$e->getMessage(),
+                "status"=>406
+            ];            
+            $status = 406;
+
+        }catch(QueryException $e){
+            $response = [
+                "error" => $e->errorInfo,
+                "status"=>406
+            ];
+            $status = 406; 
+        }  
+
+      return Response($response,$status);
     }
 }   
