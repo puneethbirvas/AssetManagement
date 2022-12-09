@@ -19,6 +19,14 @@ class TransferAssetController extends Controller
                 throw new Exception("data not found");
             }else{
 
+                $data = $request->header('email');
+
+                if($data){
+                    $asset->transfer = 1;
+
+                }else{
+                    $asset->transfer = 0;
+                }
                 $asset->department = $request->department;
                 $asset->section = $request->section;
                 $asset->assetType = $request->assetType;

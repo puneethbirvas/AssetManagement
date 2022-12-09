@@ -20,7 +20,7 @@ class InsuranceController extends Controller
         try{
 
             $insurance = new Insurance;
-
+            
             $insurance->vendorName = $request->vendorName;
             $insurance->periodFrom = $request->periodFrom;
             $insurance->periodTo = $request->periodTo;
@@ -43,7 +43,7 @@ class InsuranceController extends Controller
             $insurance->section = $request->section;
             $insurance->assetType = $request->assetType;
             $insurance->assetName = $request->assetName;
-        
+            
             $insurance->save();
             $response = [
                 'success' => true,
@@ -344,7 +344,7 @@ class InsuranceController extends Controller
             'assettypes.assetType as assetType','assets.assetName as assetName')
         ->get();
   
-      return Excel::download(new InsuranceExport($query), 'Insurance.csv');
+      return Excel::download(new InsuranceExport($query), 'Insurance.xlsx');
     }
 
 }     

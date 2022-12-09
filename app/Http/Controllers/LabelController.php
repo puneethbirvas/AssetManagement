@@ -92,7 +92,15 @@ class LabelController extends Controller
     {
  
         try{
-            $Label = DB::table('labels')->select('id','department','selectSection','assetType','assetId','selectAssetType','selectAsset','selectAssetId','code','created_at','codeGenerator')->orderby('id','asc')->get();
+            $Label = DB::table('labels')
+             ->join('departments','departments.id','=','labels.department')
+             ->join('sections','sections.id','=','labels.selectSection')
+             ->join('assettypes','assettypes.id','=','labels.assetType')
+             ->join('assets','assets.id','=','labels.selectAsset')
+             ->select('labels.id','departments.department_name as department', 
+              'sections.section as section','assettypes.assetType as assetType',
+               'labels.selectAssetId','labels.code','labels.created_at as date',
+               'assets.assetName as assetName')->get();
  
             if(!$Label){
                 throw new Exception("data not found");
@@ -106,6 +114,46 @@ class LabelController extends Controller
             }
  
             }catch(Exception $e){
+            $response = [
+                "error" => $e->getMessage(),
+                "status" => 404
+            ];
+            $status = 404; 
+         
+        }
+ 
+        return response($response,$status);
+ 
+    }
+
+    public function showLabel($id)
+    {
+ 
+        try{
+            $Label = Label::find($id);
+
+            if(!$Label){
+                throw new Exception("data not found");
+
+            }else{
+
+                $Label = DB::table('labels')->where('labels.id','=',$id)
+                        ->join('departments','departments.id','=','labels.department')
+                        ->join('sections','sections.id','=','labels.id')
+                        ->join('assets','assets.id','=','labels.selectAsset')
+                        ->select('labels.id','departments.department_name as departmentName','sections.section as section','assets.assetName as assetName','codeGenerator','labels.created_at')
+                        ->get();
+
+                $response = [
+                     'success' => true,
+                     'data' => $Label         
+                ];
+
+                $status = 201;   
+            }
+ 
+            }catch(Exception $e){
+
             $response = [
                 "error" => $e->getMessage(),
                 "status" => 404

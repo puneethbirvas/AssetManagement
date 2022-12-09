@@ -30,13 +30,15 @@ class TagAssetController extends Controller
                 'message' => "successfully added",
                 'status' => 201
             ];
-            $status = 201;   
+            $status = 201;  
+
         }catch(Exception $e){
             $response = [
                 "message"=>$e->getMessage(),
                 "status" => 406
             ];            
-            $status = 406;            
+            $status = 406;   
+                     
         }catch(QueryException $e){
             $response = [
                 "error" => $e->errorInfo,
@@ -100,7 +102,7 @@ class TagAssetController extends Controller
                     ->join('sections','sections.id','=','assets.section')
                     ->join('assettypes','assettypes.id','=','assets.assetType')
                     ->select('assets.id','departments.department_name as department','sections.section as 
-                     section','assettypes.assetType as  assetype','assetName','assetId')
+                     section','assettypes.assetType as  assetype','assetName','assetId','departments.id as departmentId','sections.id as sectionId','assettypes.id as assetTypeId','assets.id as assetNameId',)
                     ->get();
 
                 $response = [
@@ -125,5 +127,26 @@ class TagAssetController extends Controller
 
         return response($response,$status);
     }
+
+     //default RFID
+     public function rfid()
+     {
+         $last = DB::table('tag_assets')->latest('id')->first();
+         if(!$last){
+            $user = "1";
+         }else{
+             $user = $last->id + 1;
+         }
+         $get = "RFID-0".$user;
+ 
+         $response = [
+             'success' => true,
+             'data' =>  $get,
+             'status' => 201
+         ];
+         $status = 201;   
+ 
+         return Response($response,$status);
+     }
 
 }

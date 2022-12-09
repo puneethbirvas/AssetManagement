@@ -57,13 +57,13 @@ class GetDataController extends Controller
     public function getSection( $id)
     { 
        try{ 
-            $section=department::find($id);
+            $section = DB::table('sections')->where('department','=',$id)->get();
         
-            if(!$section){
+            if(count($section)<=0){
                 throw new Exception("data not found");
-            }else{
-                $section = DB::table('sections')->where('department','=',$id)->get();
 
+            }else{
+                
                 $response = [
                     'success' => true,
                     'data' => $section         
@@ -92,13 +92,12 @@ class GetDataController extends Controller
     //To Fetch The assettypes
     public function getAssetType( $id)
     { 
-       try{ 
-            $assetType=section::find($id);
+        try{ 
+            $assetType = DB::table('assettypes')->where('section','=',$id)->get();
         
-            if(!$assetType){
+            if(count($assetType)<=0){
                 throw new Exception("data not found");
             }else{
-                $assetType = DB::table('assettypes')->where('section','=',$id)->get();
 
                 $response = [
                     'success' => true,
@@ -108,16 +107,17 @@ class GetDataController extends Controller
             }
 
         }catch(Exception $e){
-                $response = [
-                    "error" => $e->getMessage(),
-                    "status" => 404
-                ];
-                $status = 404;       
+            $response = [
+                "error" => $e->getMessage(),
+                "status" => 404
+            ];
+            $status = 404;    
+
         }catch(QueryException $e){
-                $response = [
-                    "error" => $e->errorInfo,
-                ];
-                $status = 406; 
+            $response = [
+                "error" => $e->errorInfo,
+            ];
+            $status = 406; 
         }
 
         return response($response,$status);
@@ -126,16 +126,15 @@ class GetDataController extends Controller
     //To Fetch The AssetName
     public function getAssetName($id)
     { 
-       try{ 
-            $assetName=assettype::find($id);
+        try{ 
 
-            if(!$assetName){
+            $assetName = DB::table('assets')->where('assetType','=',$id)->get();
+
+
+            if(count($assetName)<=0){
                 throw new Exception("data not found");
             }else{
-                $assetName = DB::table('assets')
-                    ->where('assetType','=',$id)
-                    ->get();
-
+               
                 $response = [
                     'success' => true,
                     'data' => $assetName         
@@ -207,7 +206,7 @@ class GetDataController extends Controller
                 throw new Exception("VendorData not found");
             }else{   
 
-                $Vendor=DB::table('vendors')->select('id as vendorId','vendorName')->get();
+                $Vendor=DB::table('vendors')->select('vendors.*','id as vendorId','vendorName')->get();
 
                 $response = [
                     'success' => true,
@@ -246,7 +245,7 @@ class GetDataController extends Controller
                 
                 $VendorData = DB::table('vendors')
                     ->where('id','=',$id)
-                    ->select('contactNo','email','address')
+                    ->select('vendors.*','contactNo','email','address')
                     ->get();
 
                 $response = [

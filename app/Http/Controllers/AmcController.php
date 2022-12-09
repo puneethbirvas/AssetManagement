@@ -95,6 +95,7 @@ class AMCController extends Controller
                 "status"=>406
             ];            
             $status = 406;
+            
         }catch(QueryException $e){
             $response = [
                 "error" => $e->errorInfo,
@@ -259,8 +260,9 @@ class AMCController extends Controller
                     ->join('sections','sections.id','=','amcs.section')
                     ->join('assettypes','assettypes.id','=','amcs.assetType')
                     ->join('assets','assets.id','=','amcs.assetName')
-                    ->select('amcs.id','vendors.vendorName as vendorName','periodFrom','periodTo','servicePattern','departments.department_name as department',
-                      'sections.section as section','assettypes.assetType as assetType','assets.assetName as assetName')
+                    ->select('amcs.*','vendors.vendorName as vendorName','vendors.id as vendorId','periodFrom','periodTo','servicePattern','departments.department_name as department',
+                      'sections.section as section','assettypes.assetType as assetType','assets.assetName as assetName','departments.id as departmentId','sections.id as sectionsId', 'assettypes.id as assetTypesId',
+                      'Assets.id as assetNameId')
                     ->get();
                         
                 $response=[
@@ -286,96 +288,160 @@ class AMCController extends Controller
         return response($response,$status); 
     }
 
-    //view amc Data by ID
-    public function showData1($id)
+    //Update Service Dates
+    public function updateServiceDate(Request $request, $id)
     {
-      try{    
-            $amc = Amc::find($id);
+        try{    
+             
+            $amc = Amc::find($id); 
 
             if(!$amc){
-               throw new Exception("amc not found");
+                throw new Exception("Data not found");
+            }
 
-            }else{
-                $data = DB::table('amcs')
-                 ->where('amcs.id','=',$id)
-                 ->select('amcs.*','amcs.id','vendors.vendorName as vendorName','assets.assetName as assetName')
-                 ->join('vendors','vendors.id','=','amcs.vendorName')
-                 ->join('assets','assets.id','=','amcs.assetName')
-                 ->get();
-
-                 if(count($data)>0){
-                    $vendorName = $data[0]->vendorName;
-                    $assetName = $data[0]->assetName;
-                    $servicePattern = $data[0]->servicePattern;
-    
-                    $rawData = array();
-                    $rawData["id"] = $id;
-                    $rawData["vendorName"] = $vendorName;
-                    $rawData["assetName"] = $assetName;
-                    $rawData["servicePattern"] = $servicePattern;
-    
-                    $data1 = array();
-                    for($i=1;$i<=number_format($servicePattern);$i++){
-                        
-                        if($i == 1){
-                            $serviceSplit1 = explode("+",$data[0]->service1);
-    
-                            $rawData["s1startDate"] = $serviceSplit1[0];
-                            $rawData["s1endDate"] = $serviceSplit1[1];
-                            $rawData["s1runHours"] = $serviceSplit1[2];
-                        }
-    
-                        if($i == 2){
-                            $serviceSplit2 = explode("+",$data[0]->service2);
-                            $rawData["s2startDate"] = $serviceSplit2[0];
-                            $rawData["s2endDate"] = $serviceSplit2[1];
-                            $rawData["s2runHours"] = $serviceSplit2[2];
-                        }
-    
-                        if($i == 3){
-                            $serviceSplit3 = explode("+",$data[0]->service3);
-                            $rawData["s3startDate"] = $serviceSplit3[0];
-                            $rawData["s3endDate"] = $serviceSplit3[1];
-                            $rawData["s3runHours"] = $serviceSplit3[2];
-                        }
-    
-                        if($i == 4){
-                            $serviceSplit4 = explode("+",$data[0]->service4);
-                            $rawData["s4startDate"] = $serviceSplit4[0];
-                            $rawData["s4endDate"] = $serviceSplit4[1];
-                            $rawData["s4runHours"] = $serviceSplit4[2];
-                        }
-    
-                        if($i == 5){
-                            $serviceSplit5 = explode("+",$data[0]->service5);
-                            $rawData["s5startDate"] = $serviceSplit5[0];
-                            $rawData["s5endDate"] = $serviceSplit5[1];
-                            $rawData["s5runHours"] = $serviceSplit5[2];
-                        }
-                    }
+                if($request->s1DateFrom != null){
+                    $amc->service1 = $this->service1($request);
                 }
 
-                $data[] = $rawData;
-                $response["data"][] = $rawData;
-                $status = 200; 
-            }
+                if($request->s2DateFrom != null){
+                    $amc->service1 = $this->service1($request);
+                    $amc->service2 = $this->service2($request);
+                }
+
+                if($request->s3DateFrom != null){
+                    $amc->service1 = $this->service1($request);
+                    $amc->service2 = $this->service2($request);
+                    $amc->service3 = $this->service3($request);
+                }
+
+                if($request->s4DateFrom != null){
+                    $amc->service1 = $this->service1($request);
+                    $amc->service2 = $this->service2($request);
+                    $amc->service3 = $this->service3($request);
+                    $amc->service4 = $this->service4($request);
+                }
+
+                if($request->s5DateFrom != null){
+                    $amc->service1 = $this->service1($request);
+                    $amc->service2 = $this->service2($request);
+                    $amc->service3 = $this->service3($request);
+                    $amc->service4 = $this->service4($request);
+                    $amc->service5 = $this->service5($request);  
+                }
             
+            $amc->save();
+
+            $response=[
+                "message" => "details updated successfully",
+                "status" => 200
+            ];
+            $status = 200; 
+            
+
         }catch(Exception $e){
             $response = [
              "message"=>$e->getMessage(),
               "status" => 406
-              ];            
+            ];            
             $status = 406;
             
         }catch(QueryException $e){
             $response = [
                 "error" => $e->errorInfo,
                 "status" => 406
-               ];
+            ];
             $status = 406; 
+
         }
         return response($response,$status); 
-    
+    }
+
+    //view amc Data by ID
+    public function showData1(Request $request, $id)
+    {
+        try{
+
+            $data = DB::table('amcs')
+                ->select('*','vendors.vendorName as vendorName','assets.assetName as assetName')
+                ->join('vendors','vendors.id','=','amcs.vendorName')
+                ->join('assets','assets.id','=','amcs.assetName')
+                ->where('amcs.id','=',$id)                
+                ->get();
+
+            if(count($data)>0){
+                $vendorName = $data[0]->vendorName;
+                $assetName = $data[0]->assetName;
+                $periodFrom = $data[0]->periodFrom;
+                $servicePattern = $data[0]->servicePattern;
+
+                $rawData = array();
+                $rawData["id"] = $id;
+                $rawData["vendorName"] = $vendorName;
+                $rawData["assetName"] = $assetName;
+                $rawData ["periodFrom"] = $periodFrom;
+                $rawData["servicePattern"] = $servicePattern;
+
+                $data1 = array();
+                for($i=1;$i<=number_format($servicePattern);$i++){
+                    
+                    if($i == 1){
+                        $serviceSplit1 = explode("+",$data[0]->service1);
+
+                        $date["s1startDate"] = $serviceSplit1[0];
+                        $date["s1endDate"] = $serviceSplit1[1];
+                        $date["s1runHours"] = $serviceSplit1[2];
+                    }
+
+                    if($i == 2){
+                        $serviceSplit2 = explode("+",$data[0]->service2);
+                        $date["s2startDate"] = $serviceSplit2[0];
+                        $date["s2endDate"] = $serviceSplit2[1];
+                        $date["s2runHours"] = $serviceSplit2[2];
+                    }
+
+                    if($i == 3){
+                        $serviceSplit3 = explode("+",$data[0]->service3);
+                        $date["s3startDate"] = $serviceSplit3[0];
+                        $date["s3endDate"] = $serviceSplit3[1];
+                        $date["s3runHours"] = $serviceSplit3[2];
+                    }
+
+                    if($i == 4){
+                        $serviceSplit4 = explode("+",$data[0]->service4);
+                        $date["s4startDate"] = $serviceSplit4[0];
+                        $date["s4endDate"] = $serviceSplit4[1];
+                        $date["s4runHours"] = $serviceSplit4[2];
+                    }
+
+                    if($i == 5){
+                        $serviceSplit5 = explode("+",$data[0]->service5);
+                        $date["s5startDate"] = $serviceSplit5[0];
+                        $date["s5endDate"] = $serviceSplit5[1];
+                        $date["s5runHours"] = $serviceSplit5[2];
+                    }
+                }
+
+                $rawData["serviceList"] = $date;
+                $response["data"][] = $rawData;
+                $status = 200; 
+            }
+        
+        }catch(Exception $e){
+            $response = [
+            "message"=>$e->getMessage(),
+            "status" => 406
+            ];            
+            $status = 406;
+
+        }catch(QueryException $e){
+            $response = [
+                "error" => $e->errorInfo,
+                "status" => 406
+            ];
+            $status = 406; 
+        }
+
+      return Response($response,$status);
     }
 
     // to display service date
@@ -442,9 +508,12 @@ class AMCController extends Controller
                     }
                 }
 
-                $data[] = $rawData;
+                // $data[] = $rawData;
                 $response["data"][] = $rawData;
                 $status = 200; 
+
+            }else{
+                throw new Exception("data not found");
             }
             
         }catch(Exception $e){
