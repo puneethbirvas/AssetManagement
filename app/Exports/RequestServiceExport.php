@@ -2,7 +2,7 @@
 
 namespace App\Exports;
 
-use App\Models\Asset;
+use App\Models\RequestService;
 use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\FromQuery;
 use Maatwebsite\Excel\Concerns\WithHeadings;
@@ -11,8 +11,9 @@ use Maatwebsite\Excel\Concerns\WithStyles;
 use Maatwebsite\Excel\Concerns\WithColumnWidths;
 
 
-class AssetsExport implements FromCollection, WithHeadings, WithStyles, WithColumnWidths
+class RequestServiceExport implements FromCollection, WithHeadings, WithStyles, WithColumnWidths
 {
+   
     protected $query;
     public function __construct($query){
         $this->query = $query;
@@ -31,14 +32,12 @@ class AssetsExport implements FromCollection, WithHeadings, WithStyles, WithColu
             'SerialNo', 
             'Department',  
             'Section',
-            'MachineName',
-            'AssetType',
-            'Manufaturer',
-            'AssetModel',
-            'PODetails',
-            'InvoiceDetails',
-            'WarrantyStartDate',
-            'WarrantyEndDate',
+            'AssetName',
+            'AmcStatus',
+            'WarrantyStatus',
+            'InsuranceStatus',
+            'ProblemNote',
+            'UserName'
         ];
     }
 
@@ -55,14 +54,11 @@ class AssetsExport implements FromCollection, WithHeadings, WithStyles, WithColu
         return [
             'B' => 11,
             'D' => 16,
-            'E' => 12, 
-            'F' => 12, 
-            'g' => 12,   
-            'h' => 10, 
-            'i' => 13.50,
-            'j' => 17.50,  
-            'k' => 17,                                
+            'E' => 17, 
+            'F' => 17, 
+            'g' => 47.60,   
+            'h' => 12.20, 
+            'i' => 10.20,
         ];
     }
-
 }

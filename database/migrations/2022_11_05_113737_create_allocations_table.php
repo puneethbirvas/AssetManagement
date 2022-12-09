@@ -28,11 +28,10 @@ return new class extends Migration
             $table->foreign('empId')->references('id')->on('users')->onDelete('cascade');
             $table->bigInteger('userDepartment')->unsigned()->nullable();
             $table->foreign('userDepartment')->references('id')->on('departments')->onDelete('cascade');
-            $table->bigInteger('user')->unsigned()->nullable();
-            $table->foreign('user')->references('id')->on('users')->onDelete('cascade');
+            $table->string('user');
             $table->string('position');
             $table->string('fromDate')->nullable();
-            $table->string('tomDate')->nullable();
+            $table->string('toDate')->nullable();
             $table->string('reasonForUntag')->nullable();
             $table->string('tag')->nullable();
             $table->timestamps();

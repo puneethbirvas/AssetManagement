@@ -24,9 +24,9 @@ return new class extends Migration
             $table->foreign('assetType')->references('id')->on('assetTypes')->onDelete('cascade');
             $table->bigInteger('assetName')->unsigned();
             $table->foreign('assetName')->references('id')->on('assets')->onDelete('cascade');
-            $table->string('vendorName');
+            $table->bigInteger('vendorName')->unsigned();
+            $table->foreign('vendorName')->references('id')->on('vendors')->onDelete('cascade');
             $table->string('vendorEmail');
-            $table->string('vendorAddress');
             $table->string('vendorAddress');
             $table->string('vendorPhone');
             $table->string('gstNo');

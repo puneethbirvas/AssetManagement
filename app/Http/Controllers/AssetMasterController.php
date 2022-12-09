@@ -22,7 +22,7 @@ class AssetMasterController extends Controller
           ->join('departments','departments.id','=','assets.department')
           ->join('sections','sections.id','=','assets.section')
           ->join('assettypes','assettypes.id','=','assets.assetType')
-          ->select('assets.id','departments.department_name as department','sections.section as 
+          ->select('assets.*','departments.department_name as department','sections.section as 
             section','assettypes.assetType as  assetype','assetName','manufacturer','poNo',
           'assetModel','warrantyStartDate')
           ->get();
@@ -67,7 +67,7 @@ class AssetMasterController extends Controller
         'assets.warrantyStartDate', 'assets.warrantyEndDate')
       ->get();
 
-    return Excel::download(new AssetsExport($query), 'Asset.csv');
+    return Excel::download(new AssetsExport($query), 'Asset.xlsx');
   }
   
 }

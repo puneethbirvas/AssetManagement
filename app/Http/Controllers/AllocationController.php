@@ -16,33 +16,42 @@ class AllocationController extends Controller
     public function store(Request $request)
     {
         try{
-            $allocation = new Allocation;
-            $allocation->department = $request->department;
-            $allocation->section  = $request->section ;
-            $allocation->assetType = $request->assetType;
-            $allocation->assetName = $request->assetName;
-            $allocation->userType = $request->userType;
-            
-            if($allocation->userType == 'empId'){
-                $allocation->empId = $request->empId;
-            }
+            $assetName = $request->assetName;
+            $data = DB::table('allocations')->where('assetName','=',$assetName)->get();
 
-            $allocation->user = $request->user; 
+            if(count($data)>0){
+                throw new Exception("this asset already exist");
 
-            if($allocation->userType == 'department'){
-                $allocation->userDepartment = $request->userDepartment;
-            }
-            $allocation->position = $request->position;
-            if($allocation->position == 'temporary'){
-                $allocation->fromDate = $request->fromDate;
-                $allocation->toDate = $request->toDate; 
-            }
-            if($allocation->position == 'permanent'){
-                $allocation->fromDate = null;
-                $allocation->toDate =  null;
-            }
+            }else{
+                $allocation = new Allocation;
 
-            $allocation->save();
+                $allocation->department = $request->department;
+                $allocation->section  = $request->section ;
+                $allocation->assetType = $request->assetType;
+                $allocation->assetName = $request->assetName;
+                $allocation->userType = $request->userType;
+                
+                if($allocation->userType == 'empId'){
+                    $allocation->empId = $request->empId;
+                }
+
+                $allocation->user = $request->user; 
+
+                if($allocation->userType == 'department'){
+                    $allocation->userDepartment = $request->userDepartment;
+                }
+                $allocation->position = $request->position;
+                if($allocation->position == 'temporary'){
+                    $allocation->fromDate = $request->fromDate;
+                    $allocation->toDate = $request->toDate; 
+                }
+                if($allocation->position == 'permanent'){
+                    $allocation->fromDate = null;
+                    $allocation->toDate =  null;
+                }
+
+                $allocation->save();
+            }
 
             $response = [
                 'success' => true,
@@ -50,12 +59,14 @@ class AllocationController extends Controller
                 'status' => 201
             ];
             $status = 201;   
+
         }catch(Exception $e){
             $response = [
                 "message"=>$e->getMessage(),
                 "status" => 406
             ];            
-            $status = 406;            
+            $status = 406;    
+
         }catch(QueryException $e){
             $response = [
                 "error" => $e->errorInfo,
@@ -178,9 +189,9 @@ class AllocationController extends Controller
             }else{
                 $empName = DB::table('users')
                  ->where('employee_id','=',$id)
-                 ->first('employee_name');
+                 ->first('user_name');
 
-                $empName1 =$empName->employee_name;
+                $empName1 =$empName->user_name;
 
                 $response["empName"] = $empName1;
                 $status = 200;
@@ -209,17 +220,16 @@ class AllocationController extends Controller
     public function getUser($id)
     {
         try{
-
-            $empUser = Users::find($id);
-
-            if(!$empUser){
+            $empUser = DB::table('users') ->where('department','=',$id)->get();
+            
+            if(count($empUser)<=0){
                 throw new Exception("data not found");
+
             }else{
     
-            
                 $empUser = DB::table('users')
                   ->where('department','=',$id)
-                  ->select('id','employee_name')
+                  ->select('id','user_name')
                   ->get();
 
                 $response = [
@@ -264,9 +274,11 @@ class AllocationController extends Controller
                 ->select('allocations.*','departments.department_name as department',
                  'sections.section as section', 'assettypes.assetType as assetType',
                  'assets.assetName as assetName','assets.assetId as assetId',
-                 'B.employee_id as empId',
-                 'A.employee_name as user','departments.department_name as userDepartment',)
+                 'B.employee_id as empId','A.employee_name as user',
+                  'departments.department_name as userDepartment', 'departments.id as departmentId','sections.id as sectionsId', 'assettypes.id as assetTypesId',
+                  'Assets.id as assetNameId','A.id as usersId')
                 ->get();
+                
             if(!$result){
               throw new Exception("data not found");
             }
@@ -312,8 +324,9 @@ class AllocationController extends Controller
             ->select('allocations.id','departments.department_name as department',
              'sections.section as section', 'assettypes.assetType as assetType',
              'assets.assetName as assetName','assets.assetId as assetId',
-             'users.employee_name as user');
+             'users.employee_name as user')
+            ->get(); 
   
-       return Excel::download(new AllocationExport($query), 'Allocation.xlsx');
+        return Excel::download(new AllocationExport($query), 'Allocation.xlsx');
     }
 }    

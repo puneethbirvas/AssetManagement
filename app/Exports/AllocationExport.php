@@ -6,8 +6,10 @@ use App\Models\Allocation;
 use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\FromQuery;
 use Maatwebsite\Excel\Concerns\WithHeadings;
+use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
+use Maatwebsite\Excel\Concerns\WithStyles;
 
-class AllocationExport implements FromCollection, WithHeadings
+class AllocationExport implements FromCollection, WithHeadings, WithStyles
 {
     protected $query;
     public function __construct($query){
@@ -17,7 +19,7 @@ class AllocationExport implements FromCollection, WithHeadings
 
     public function collection()
     {
-        return $this->query->get();
+        return  collect($this->query);
     }
     
    
@@ -31,6 +33,14 @@ class AllocationExport implements FromCollection, WithHeadings
             'AssetName',
             'AssetId',
             'Assigneduser',
+        ];
+    }
+
+    public function styles(Worksheet $sheet)
+    {
+        return [
+            // Style the first row as bold text.
+            1    => ['font' => ['bold' => true]]
         ];
     }
 }

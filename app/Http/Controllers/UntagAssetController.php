@@ -88,17 +88,14 @@ class UntagAssetController extends Controller
             ->where('fromDate','>=',$fromDate) 
             ->where('toDate','<=', $toDate)
             ->where('reasonForUntag','!=',"null")
-            ->join('departments','departments.id','=','allocations.department')
-            ->join('assettypes','assettypes.id','=','allocations.assetType')
             ->join('assets','assets.id','=','allocations.assetName')
             ->join('sections','sections.id','=','allocations.section')
             ->join('users','users.id','=','allocations.user')
-            ->select('allocations.id','departments.department_name as department',
-             'sections.section as section', 'assettypes.assetType as assetType',
+            ->select('allocations.id','sections.section as section', 
              'assets.assetName as assetName','assets.assetId as assetId',
              'users.employee_name as user')
             ->get();
-        return ($query);
-      // return Excel::download(new untagAssetExport($query), 'Allocation.csv');
+       
+        return Excel::download(new untagAssetExport($query), 'UnTagAssets.xlsx');
     }
 }

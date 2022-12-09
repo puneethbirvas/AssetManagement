@@ -15,7 +15,7 @@ class AssetController extends Controller
 {
     public function store(Request $request)
     {
-       try{                
+        try{             
             $asset = new Asset;
                 
             $asset->assetId = $request->assetId;
@@ -177,7 +177,7 @@ class AssetController extends Controller
                 }
                 if($asset->typeWarranty == 'noWarranty'){
                     $asset->warrantyStartDate = null;
-                    $asset->warrantyEndDate = null; 
+                    $asset->warrantyEndDate = null;  
                     $asset->warrantyDocument = null; 
                 }
                 //imageStoring uploadDocument

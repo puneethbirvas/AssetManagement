@@ -18,6 +18,7 @@ class UsersController extends Controller
     {
         try{
             $users = new users;
+            $users->userType= $request->userType;
             $users->employee_id= $request->employee_id;
             $users->employee_name= $request->employee_name;
             $users->department= $request->department;
@@ -80,7 +81,8 @@ class UsersController extends Controller
             if(!$users){
                 throw new Exception("user not found");
             }
-
+            
+            $users->userType= $request->userType;
             $users->employee_id = $request->employee_id;
             $users->employee_name = $request->employee_name;
             $users->department= $request->department;
@@ -167,20 +169,27 @@ class UsersController extends Controller
                 $status = 403; 
                        
             }
-            elseif(!$users = Users::where(['password' => $request->password])->first()){         
-                    $response = [
-                        'error' => 'Entered password is invalid',
-                        "status" => 401
-                    ];
-                    $status=401;
+            elseif(!$users = Users::where(['password' => $request->password])->first()){  
+
+                $response = [
+                    'error' => 'Entered password is invalid',
+                    "status" => 401
+                ];
+                $status=401;
+
             }else{
                 $users = Users::where('email', $request['email'])->firstOrFail();
                 $users = Users::where('password', $request['password'])->firstOrFail();
                 $token = $users->createToken('auth_token')->plainTextToken;
                 $response = [
+
                     'userDetails' =>[ 
+                        'id' =>$users->id,
                         'username' => $users->user_name,
                         'email'=>$users->email,
+                        'userRole'=>$users->userType
+                    
+
                     ],
                     'access_token' => $token, 
                     ];
@@ -208,6 +217,7 @@ class UsersController extends Controller
                 "status" => 406
             ];            
             $status = 406;
+            
         }catch(QueryException $e){
             $response = [
                 "error" => $e->errorInfo,
@@ -221,7 +231,7 @@ class UsersController extends Controller
 
     public function block($id)
     {
-       try{
+        try{
             $users = Users::find($id);
             if(!$users){
                 throw new Exception("user not found");
@@ -239,6 +249,7 @@ class UsersController extends Controller
                    "status" => 406
                 ];            
             $status = 406;
+
         }catch(QueryException $e){
                 $response = [
                     "error" => $e->errorInfo,

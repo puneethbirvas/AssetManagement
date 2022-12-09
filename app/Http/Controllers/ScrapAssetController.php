@@ -67,7 +67,7 @@ class ScrapAssetController extends Controller
     public function showData()
     {
         try{    
-            return DB::table('scrap_assets')
+            $scrapAsset = DB::table('scrap_assets')
                 ->join('departments','departments.id','=','scrap_assets.department')
                 ->join('sections','sections.id','=','scrap_assets.section')
                 ->join('assettypes','assettypes.id','=','scrap_assets.assetType')
@@ -93,6 +93,7 @@ class ScrapAssetController extends Controller
               "status" => 406
             ];            
             $status = 406;
+
         }catch(QueryException $e){
             $response = [
                 "error" => $e->errorInfo,
@@ -115,8 +116,6 @@ class ScrapAssetController extends Controller
          'assets.assetName as assetName','scrap_assets.created_at as dateAndTime','scrap_assets.user')
         ->get();
   
-      return Excel::download(new ScrapAssetsExport($query), 'ScrapAsset.csv');
+      return Excel::download(new ScrapAssetsExport($query), 'ScrapAsset.xlsx');
     }
-
-
 }

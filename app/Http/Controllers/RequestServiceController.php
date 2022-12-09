@@ -4,18 +4,19 @@ namespace App\Http\Controllers;
 
 use App\Models\RequestService;
 use Illuminate\Http\Request;
+use App\Exports\RequestServiceExport;
+use Maatwebsite\Excel\Facades\Excel;
 use DB;
 use Exception;
 use Illuminate\Database\QueryException;
 
-class RequestController extends Controller
+class RequestServiceController extends Controller
 {
     public function store(Request $request)
     {
         try{
             $service = new RequestService;
 
-            $service->mId = $request->mId;
             $service->department = $request->department;
             $service->section = $request->section;
             $service->assetType  = $request->assetType ;
@@ -71,39 +72,8 @@ class RequestController extends Controller
         return response($response, $status);        
     }
 
-    public function showServiceRequest()
-    {
-        try{
-            $data = DB::table('request_services')->select('request_services.*','department_name as department')
-                    ->join('departments','departments.id','=','request_services.department')
-                    ->get();
-                
-                $response =[
-                    "data" => $data,
-                    "status" =>200
-                ];
-                $status = 200;
 
-
-        }catch(Exception $e){
-            $response = [
-                "error"=>$e->getMessage(),
-                "status"=>406
-            ];            
-            $status = 406;
-
-        }catch(QueryException $e){
-            $response = [
-                "error" => $e->errorInfo,
-                "status"=>406
-            ];
-            $status = 406; 
-        }
-    
-        return response($response, $status);        
-    }
-
-    public function showServiceRequest1($id)
+    public function showServiceRequest($id)
     {
         try{
             $data = DB::table('request_services')->where('id','=',$id)->select('*')->get();
@@ -135,13 +105,24 @@ class RequestController extends Controller
     public function showMaintenance()
     {
         try{
-            $data = DB::table('maintenances')->get();
+            $maintenance = DB::table('maintenances')
+                ->select('maintenances.*','departments.department_name as department','sections.section as section','assettypes.assetType as assetType','assets.assetName as assetName','users.user_name as userName')
+                ->join('users','users.id','=','maintenances.userName')
+                ->join('departments','departments.id','=','maintenances.department')
+                ->join('sections','sections.id','=','maintenances.section')
+                ->join('assettypes','assettypes.id','=','maintenances.assetType')
+                ->join('assets','assets.id','=','maintenances.assetName')
+                ->get(); 
 
-            $response = [
-                "data" => $data,
-                "status" => 200
-            ];
-            $status = 200;
+            if(count($maintenance)<=0){
+                throw new Exception("Data not found");
+            }
+        
+                $response = [
+                    "data" => $maintenance,
+                    "status" => 200
+                ];
+                $status = 200;
 
         }catch(Exception $e){
             $response = [
@@ -157,9 +138,50 @@ class RequestController extends Controller
             ];
             $status = 406; 
         }
-    
+
         return response($response, $status);        
     }
+
+    public function showMaintenance1($id)
+    {
+        try{
+            $maintenance = DB::table('maintenances')
+                ->select('maintenances.*','departments.department_name as department','sections.section as section','assettypes.assetType as assetType','assets.assetName as assetName')
+                ->where('maintenances.id','=',$id)
+                ->join('departments','departments.id','=','maintenances.department')
+                ->join('sections','sections.id','=','maintenances.section')
+                ->join('assettypes','assettypes.id','=','maintenances.assetType')
+                ->join('assets','assets.id','=','maintenances.assetName')
+                ->get(); 
+
+            if(count($maintenance)<=0){
+                throw new Exception("Data not found");
+            }
+        
+                $response = [
+                    "data" => $maintenance,
+                    "status" => 200
+                ];
+                $status = 200;
+
+        }catch(Exception $e){
+            $response = [
+                "error"=>$e->getMessage(),
+                "status"=>406
+            ];            
+            $status = 406;
+
+        }catch(QueryException $e){
+            $response = [
+                "error" => $e->errorInfo,
+                "status"=>406
+            ];
+            $status = 406; 
+        }
+
+        return response($response, $status);     
+    }   
+
 
     public function updateServiceStatus(Request $request, $id)
     {
@@ -195,4 +217,19 @@ class RequestController extends Controller
     
         return response($response, $status);       
     }
+
+    public function export()
+    {
+      $query = DB::table('maintenances')
+            ->select('maintenances.id','departments.department_name as department','sections.section as section','assets.assetName as assetName','amcStatus','warrantyStatus','insuranceStatus','problemNote','users.user_name as userName')
+            ->join('users','users.id','=','maintenances.userName')
+            ->join('departments','departments.id','=','maintenances.department')
+            ->join('sections','sections.id','=','maintenances.section')
+            ->join('assets','assets.id','=','maintenances.assetName')
+            ->get(); 
+    
+        return Excel::download(new RequestServiceExport($query), 'RequestServices.xlsx');
+    }
+
+
 }

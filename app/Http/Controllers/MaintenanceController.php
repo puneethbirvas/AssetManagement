@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 use App\Models\Maintenance;
+use App\Exports\MaintenanceExport;
+use Maatwebsite\Excel\Facades\Excel;
 use DB;
 use Str;
 use Storage;
@@ -15,96 +17,113 @@ class MaintenanceController extends Controller
    public function store(Request $request)
    {
         try{
-      
-            $maintenance = new Maintenance;
+            $assetName = $request->assetName;
+            $data = DB::table('maintenances')->where('assetName','=',$assetName)->get();
 
-            $maintenance->maintenanceId = $request->maintenanceId;
-            $maintenance->assetName = $request->assetName;
-            $maintenance->maintenanceType = $request->maintenanceType;
-            $maintenance->severity = $request->severity;
-            $maintenance->problemNote = $request->problemNote;
-            
-            $image = $request->bpImages1;  // your base64 encoded
-            if($image){
-                $extension = explode('/', explode(':', substr($image, 0, strpos($image, ';')))[1])[1]; 
-                $replace = substr($image, 0, strpos($image, ',')+1); 
-                $image = str_replace($replace, '', $image); 
-                $image = str_replace(' ', '+', $image); 
-                $imageName = Str::random(10).'.'.$extension;
-                $imagePath = '/storage'.'/'.$imageName;
-                Storage::disk('public')->put($imageName, base64_decode($image));
-                $maintenance->bpImages1 = $imagePath;
-            }
+            if(count($data)>0){
+                throw new Exception("this asset already exist");
 
-            $image = $request->bpImages2;  // your base64 encoded
-            if($image){
-                $extension = explode('/', explode(':', substr($image, 0, strpos($image, ';')))[1])[1]; 
-                $replace = substr($image, 0, strpos($image, ',')+1); 
-                $image = str_replace($replace, '', $image); 
-                $image = str_replace(' ', '+', $image); 
-                $imageName = Str::random(10).'.'.$extension;
-                $imagePath = '/storage'.'/'.$imageName;
-                Storage::disk('public')->put($imageName, base64_decode($image));
-                $maintenance->bpImages2 = $imagePath;
-            }
+            }else{
 
-            $image = $request->bpImages3;  // your base64 encoded
-            if($image){
-                $extension = explode('/', explode(':', substr($image, 0, strpos($image, ';')))[1])[1]; 
-                $replace = substr($image, 0, strpos($image, ',')+1); 
-                $image = str_replace($replace, '', $image); 
-                $image = str_replace(' ', '+', $image); 
-                $imageName = Str::random(10).'.'.$extension;
-                $imagePath = '/storage'.'/'.$imageName;
-                Storage::disk('public')->put($imageName, base64_decode($image));
-                $maintenance->bpImages3 = $imagePath;
-            }
+                $maintenance = new Maintenance;
 
-            $image = $request->bpImages4;  // your base64 encoded
-            if($image){
-                $extension = explode('/', explode(':', substr($image, 0, strpos($image, ';')))[1])[1]; 
-                $replace = substr($image, 0, strpos($image, ',')+1); 
-                $image = str_replace($replace, '', $image); 
-                $image = str_replace(' ', '+', $image); 
-                $imageName = Str::random(10).'.'.$extension;
-                $imagePath = '/storage'.'/'.$imageName;
-                Storage::disk('public')->put($imageName, base64_decode($image));
-                $maintenance->bpImages4 = $imagePath;
-            }
+                $maintenance->userName = $this->getUserName($request);
+                $maintenance->maintenanceId = $request->maintenanceId;
+                $maintenance->department = $request->department;
+                $maintenance->section = $request->section;
+                $maintenance->assetType = $request->assetType;
+                $maintenance->assetName = $request->assetName;
+                $maintenance->amcStatus = $request->amcStatus;
+                $maintenance->warrantyStatus = $request->warrantyStatus;
+                $maintenance->warrantyType = $request->warrantyType;
+                $maintenance->insuranceStatus = $this->insuranceCheck($request);
+                $maintenance->maintenanceType = $request->maintenanceType;
+                $maintenance->severity = $request->severity;
+                $maintenance->problemNote = $request->problemNote;
+                
+                $image = $request->bpImages1;  // your base64 encoded
+                if($image){
+                    $extension = explode('/', explode(':', substr($image, 0, strpos($image, ';')))[1])[1]; 
+                    $replace = substr($image, 0, strpos($image, ',')+1); 
+                    $image = str_replace($replace, '', $image); 
+                    $image = str_replace(' ', '+', $image); 
+                    $imageName = Str::random(10).'.'.$extension;
+                    $imagePath = '/storage'.'/'.$imageName;
+                    Storage::disk('public')->put($imageName, base64_decode($image));
+                    $maintenance->bpImages1 = $imagePath;
+                }
 
-            $maintenance->partsOrConsumable = $request->partsOrConsumable;
-            $maintenance->affectedMachine = $request->affectedMachine;
-            $maintenance->affectedManHours = $request->affectedManHours;
+                $image = $request->bpImages2;  // your base64 encoded
+                if($image){
+                    $extension = explode('/', explode(':', substr($image, 0, strpos($image, ';')))[1])[1]; 
+                    $replace = substr($image, 0, strpos($image, ',')+1); 
+                    $image = str_replace($replace, '', $image); 
+                    $image = str_replace(' ', '+', $image); 
+                    $imageName = Str::random(10).'.'.$extension;
+                    $imagePath = '/storage'.'/'.$imageName;
+                    Storage::disk('public')->put($imageName, base64_decode($image));
+                    $maintenance->bpImages2 = $imagePath;
+                }
 
-            $type1 = $request->type1;
+                $image = $request->bpImages3;  // your base64 encoded
+                if($image){
+                    $extension = explode('/', explode(':', substr($image, 0, strpos($image, ';')))[1])[1]; 
+                    $replace = substr($image, 0, strpos($image, ',')+1); 
+                    $image = str_replace($replace, '', $image); 
+                    $image = str_replace(' ', '+', $image); 
+                    $imageName = Str::random(10).'.'.$extension;
+                    $imagePath = '/storage'.'/'.$imageName;
+                    Storage::disk('public')->put($imageName, base64_decode($image));
+                    $maintenance->bpImages3 = $imagePath;
+                }
 
-            if($type1 == "shutDown"){
-                $maintenance->shutdownOrUtilization = "shutDown";
-            }
+                $image = $request->bpImages4;  // your base64 encoded
+                if($image){
+                    $extension = explode('/', explode(':', substr($image, 0, strpos($image, ';')))[1])[1]; 
+                    $replace = substr($image, 0, strpos($image, ',')+1); 
+                    $image = str_replace($replace, '', $image); 
+                    $image = str_replace(' ', '+', $image); 
+                    $imageName = Str::random(10).'.'.$extension;
+                    $imagePath = '/storage'.'/'.$imageName;
+                    Storage::disk('public')->put($imageName, base64_decode($image));
+                    $maintenance->bpImages4 = $imagePath;
+                }
 
-            if($type1 == "machineUtilization"){
-                $maintenance->shutdownOrUtilization = $request->shutdownOrUtilization;
-                $maintenance->machineDetails = $request->machineDetails;
-            }
+                $maintenance->partsOrConsumable = $request->partsOrConsumable;
+                $maintenance->affectedMachine = $request->affectedMachine;
+                $maintenance->affectedManHours = $request->affectedManHours;
 
-            $type2 = $request->type2;
+                $type1 = $request->type1;
 
-            if($type2 == "off"){
-                $maintenance->offOrUtilization = "off";
-            }
+                if($type1 == "shutDown"){
+                    $maintenance->shutdownOrUtilization = "shutDown";
+                }
 
-            if($type2 == "manHoursUtilization"){
-                $maintenance->offOrUtilization = $request->offOrUtilization;
-                $maintenance->manHoursDetails = $request->manHoursDetails;
-            }
+                if($type1 == "machineUtilization"){
+                    $maintenance->shutdownOrUtilization = $request->shutdownOrUtilization;
+                    $maintenance->machineDetails = $request->machineDetails;
+                }
 
-            $maintenance->dateFrom = $request->dateFrom;
-            $maintenance->dateTo  = $request->dateTo ;
-            $maintenance->timeFrom = $request->timeFrom;
-            $maintenance->timeTo = $request->timeTo;
-            $maintenance->action = "pending";
+                $type2 = $request->type2;
 
-            $maintenance->save();
+                if($type2 == "off"){
+                    $maintenance->offOrUtilization = "off";
+                }
+
+                if($type2 == "manHoursUtilization"){
+                    $maintenance->offOrUtilization = $request->offOrUtilization;
+                    $maintenance->manHoursDetails = $request->manHoursDetails;
+                }
+
+                $maintenance->dateFrom = $request->dateFrom;
+                $maintenance->dateTo  = $request->dateTo ;
+                $maintenance->timeFrom = $request->timeFrom;
+                $maintenance->timeTo = $request->timeTo;
+                $maintenance->action = "pending";
+
+                $maintenance->save();
+            }   
+
             $response = [
                 'success' => true,
                 'message' => "successfully added",
@@ -130,6 +149,37 @@ class MaintenanceController extends Controller
         return response($response, $status);        
     }
 
+    public function getUserName(Request $request){
+
+        $email = $request->header('email');
+        $data = DB::table('users')->where('email','=',$email)->first();
+        $data = $data->id;
+
+        return $data;
+    }
+
+    public function insuranceCheck(Request $request){
+
+        $assetName = $request->assetName;
+
+        $data = DB::table('insurances')->where('assetName','=',$assetName)->get();
+        $data1 = DB::table('insurances')->where('assetName','=',$assetName)->first();
+
+        if(count($data)>0){
+            $get1 = "Insurance is available";
+            $get2 = $data1->periodFrom;
+            $get3 = $data1->periodTo;
+
+            $get = $get1." "."From: ".$get2." To: ".$get3 ;
+
+        }else{
+            $get = "Insurance not available";
+        }
+
+        return $get;
+
+    }
+
     //shoow Maintenance data
     public function showData()
     {
@@ -140,7 +190,14 @@ class MaintenanceController extends Controller
                throw new Exception("manintenance not found");
             }else{
                 $manintenance = DB::table('maintenances')
+                    ->select('maintenances.*','users.user_name as userName','departments.department_name as department',
+                    'sections.section as section', 'assettypes.assetType as assetType',
+                    'assets.assetName as assetName')
+                    ->join('users','users.id','=','maintenances.userName')
+                    ->join('departments','departments.id','=','maintenances.department')
+                    ->join('assettypes','assettypes.id','=','maintenances.assetType')
                     ->join('assets','assets.id','=','maintenances.assetName')
+                    ->join('sections','sections.id','=','maintenances.section')
                     ->get();
                         
                 $response=[
@@ -194,7 +251,16 @@ class MaintenanceController extends Controller
 
             $maintenance = Maintenance::find($id); 
             
-            $maintenance->action = $request->action;
+            $action = $request->action;
+
+            if($action == ' '){
+                $maintenance->action = $request->action;
+                $maintenance->rejectReason = $request->rejectReason;
+
+            }else{
+                $maintenance->action = $request->action;
+                $maintenance->rejectReason = null;
+            }
 
             $maintenance->save();
             $response = [
@@ -261,7 +327,7 @@ class MaintenanceController extends Controller
         try{
             
             $maintenance = DB::table('maintenances')
-              ->where('action','=','aproved')
+              ->where('action','=','aprove')
               ->join('assets','assets.id','=','maintenances.assetName')
               ->get();
 
@@ -337,7 +403,7 @@ class MaintenanceController extends Controller
     {
         try{
 
-            $maintenance = DB::table('maintenances')->where('action','=','rejected')->get();
+            $maintenance = DB::table('maintenances')->where('action','=','reject')->get();
             
             if(!$maintenance){
                 throw new Exception("data not found");
@@ -409,8 +475,10 @@ class MaintenanceController extends Controller
         try{
          
             $amc = DB::table('amcs')->where('assetName','=',$id)->get();
+            $number = mt_rand(1, 900);
 
                 if(count($amc)>0){
+                    $data["id"] = $number;
                     $data["amc"] = "Amc available";
 
                 }else{
@@ -430,7 +498,7 @@ class MaintenanceController extends Controller
             $data["warrantyType"] = "NA";
 
             $response = $data;
-            $status = 406; 
+            $status = 200; 
 
         }catch(Exception $e){
             $response = [
@@ -447,6 +515,19 @@ class MaintenanceController extends Controller
             $status = 406; 
         }  
 
-      return Response($response,$status);
+        $array["data"][] = $data;
+        return Response($array,$status);
+    }
+
+    public function export()
+    {
+      $query = DB::table('maintenances')
+            ->where('action','=','aproved')
+            ->join('assets','assets.id','=','maintenances.assetName')
+            ->select('maintenances.id','maintenanceId','maintenanceType',
+             'assets.assetName as assetName','severity','problemNote','dateFrom','dateTo','timeFrom','timeTo')
+            ->get();
+
+        return Excel::download(new MaintenanceExport($query), 'Maintenance.xlsx');
     }
 }   
