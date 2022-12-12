@@ -74,7 +74,7 @@ Route::post('asset/add', [AssetController::class, 'store']);
 Route::post('asset/{id}/update', [AssetController::class, 'update']);
 Route::post('asset/{id}/delete', [AssetController::class, 'destroy']);
 Route::get('asset/showData', [AssetController::class, 'showData']);
-Route::post('asset/assetId', [AssetController::class, 'assetId']);
+Route::get('asset/assetId', [AssetController::class, 'assetId']);
 
 //AssetType   
 Route::post('assetType/add',[AssettypeController::class,'store']);
@@ -194,7 +194,6 @@ Route::post('certificate/{id}/inspectionDue', [CertificateController::class, 'in
 Route::get('certificate/viewCertificateRenewal', [CertificateController::class, 'viewCertificateRenewal']);
 Route::get('certificate/{id}/showInspection', [CertificateController::class, 'showInspection']);
 Route::post('certificate/{id}/renewalCertificate', [CertificateController::class, 'renewalCertificate']);
-Route::get('certificate/{id}/showDetails', [CertificateController::class, 'showDetails']);
 Route::get('certificate/export', [CertificateController::class, 'export']);
 
 //Warranty
@@ -236,8 +235,4 @@ Route::post('scrapCount', [DashboardController::class, 'scrapCount']);
 Route::post('inServiceCount', [DashboardController::class, 'inServiceCount']);
 Route::post('damageCount', [DashboardController::class, 'damageCount']);
 Route::post('salesCount', [DashboardController::class, 'salesCount']);
-
-
-
-
-
+Route::get('maintenanceCount', [DashboardController::class, 'maintenanceCount']);

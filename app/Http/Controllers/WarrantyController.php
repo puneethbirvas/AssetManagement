@@ -24,8 +24,8 @@ class WarrantyController extends Controller
                      'assets.warrantyStartDate', 'assets.warrantyEndDate')
                     ->get();
 
-                if(!$result){
-                 throw new Exception("data not found");
+                    if(count($result)<=0){
+                        throw new Exception("data not found");
                 }
             $response=[
              "message" => "View Warranty List",

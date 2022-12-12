@@ -6,6 +6,7 @@ use App\Models\Allocation;
 use App\Models\tagAsset;
 use App\Models\scrapAsset;
 use App\Models\RequestService;
+use App\Models\Maintenance;
 use Illuminate\Http\Request;
 use DB;
 
@@ -175,7 +176,14 @@ class DashboardController extends Controller
 
     }
    
+    
+    public function maintenanceCount()
+    {
+        $count = Maintenance::count();
+        $counts['maintenances'] = $count;
+        return $counts;
 
+    }
   
    
 }

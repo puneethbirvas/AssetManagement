@@ -37,8 +37,8 @@ return new class extends Migration
             $table->string('chargable');
             $table->string('returnable');
             $table->string('delivery');
-            $table->string('jobWork');
-            $table->string('repair')->nullable();
+            $table->boolean('jobWork');
+            $table->boolean('repair');
             $table->string('personName')->nullable();
             $table->string('serviceStatus')->nullable();
             $table->timestamps();

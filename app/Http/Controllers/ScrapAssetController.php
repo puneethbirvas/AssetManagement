@@ -53,6 +53,7 @@ class ScrapAssetController extends Controller
                 "status"=>406
             ];            
             $status = 406;
+            
         }catch(QueryException $e){
             $response = [
                 "error" => $e->errorInfo,

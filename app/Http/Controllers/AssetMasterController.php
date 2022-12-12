@@ -15,27 +15,26 @@ class AssetMasterController extends Controller
 
   public function showData($id)
   {
-    try{    
+    try{
+        $result = DB::table('assets')
+        ->where('assets.assetType','=',$id)
+        ->join('departments','departments.id','=','assets.department')
+        ->join('sections','sections.id','=','assets.section')
+        ->join('assettypes','assettypes.id','=','assets.assetType')
+        ->select('assets.*','departments.department_name as department','sections.section as 
+          section','assettypes.assetType as  assetype','assetName','manufacturer','poNo',
+        'assetModel','warrantyStartDate')
+        ->get();    
         
-      $result = DB::table('assets')
-          ->where('assets.assetType','=',$id)
-          ->join('departments','departments.id','=','assets.department')
-          ->join('sections','sections.id','=','assets.section')
-          ->join('assettypes','assettypes.id','=','assets.assetType')
-          ->select('assets.*','departments.department_name as department','sections.section as 
-            section','assettypes.assetType as  assetype','assetName','manufacturer','poNo',
-          'assetModel','warrantyStartDate')
-          ->get();
-
         if(!$result){
           throw new Exception("data not found");
         }
 
-      $response=[
-        "message" => "Assets List",
-        "data" => $result
-      ];
-      $status = 200; 
+        $response=[
+          "message" => "Assets List",
+          "data" => $result
+        ];
+        $status = 200; 
       
     }catch(Exception $e){
       $response = [
@@ -51,7 +50,7 @@ class AssetMasterController extends Controller
       ];
       $status = 406; 
     }
-
+    
     return response($response,$status); 
   }
 

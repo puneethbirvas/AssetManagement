@@ -176,14 +176,13 @@ class AuditController extends Controller
                 ->join('departments','departments.id','=','audits.department')
                 ->join('sections','sections.id','=','audits.section')
                 ->join('assettypes','assettypes.id','=','audits.assetType')
-                ->select('audits.*','audits.auditName',
-                 'departments.department_name as department',
-                 'sections.section as section','assettypes.assetType as assetType')
+                ->select('audits.*')
                 ->get();
 
-            if(!$result){
+            if(count($result)<=0){
               throw new Exception("data not found");
             }
+
             $response=[
              "message" => "Audits List",
              "data" => $result
@@ -196,6 +195,7 @@ class AuditController extends Controller
               "status" => 406
             ];            
             $status = 406;
+
         }catch(QueryException $e){
             $response = [
                 "error" => $e->errorInfo,

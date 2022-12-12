@@ -266,7 +266,7 @@ class UsersController extends Controller
         try{    
             $result = DB::table('users')
                 ->join('departments','departments.id','=','users.department')
-                ->select('users.*','departments.department_name as department')
+                ->select('users.*','departments.department_name as department','departments.id as departmentId')
                 ->get();
             if(!$result){
 
