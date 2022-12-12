@@ -275,13 +275,14 @@ class AllocationController extends Controller
                  'sections.section as section', 'assettypes.assetType as assetType',
                  'assets.assetName as assetName','assets.assetId as assetId',
                  'B.employee_id as empId','A.employee_name as user',
-                  'departments.department_name as userDepartment', 'departments.id as departmentId','sections.id as sectionsId', 'assettypes.id as assetTypesId',
-                  'Assets.id as assetNameId','A.id as usersId')
+                 'departments.department_name as userDepartment', 'departments.id as departmentId','sections.id as sectionsId', 'assettypes.id as assetTypesId',
+                 'Assets.id as assetNameId','A.id as usersId')
                 ->get();
                 
             if(!$result){
               throw new Exception("data not found");
             }
+
             $response=[
              "message" => "Allocations List",
              "data" => $result
@@ -294,6 +295,7 @@ class AllocationController extends Controller
               "status" => 406
             ];            
             $status = 406;
+            
         }catch(QueryException $e){
             $response = [
                 "error" => $e->errorInfo,

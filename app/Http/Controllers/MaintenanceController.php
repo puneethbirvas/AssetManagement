@@ -250,26 +250,30 @@ class MaintenanceController extends Controller
         try{
 
             $maintenance = Maintenance::find($id); 
-            
-            $action = $request->action;
 
-            if($action == ' '){
-                $maintenance->action = $request->action;
-                $maintenance->rejectReason = $request->rejectReason;
-
+            if(!$maintenance){
+                throw new Exception("Data not found");
             }else{
-                $maintenance->action = $request->action;
-                $maintenance->rejectReason = null;
+            
+                $action = $request->action;
+
+                if($action == ' '){
+                    $maintenance->action = $request->action;
+                    $maintenance->rejectReason = $request->rejectReason;
+
+                }else{
+                    $maintenance->action = $request->action;
+                    $maintenance->rejectReason = null;
+                }
+
+                $maintenance->save();
+                $response = [
+                    'success' => true,
+                    'message' => "details updated successfully",
+                    'status' => 201
+                ];
+                $status = 201;  
             }
-
-            $maintenance->save();
-            $response = [
-                'success' => true,
-                'message' => "details updated successfully",
-                'status' => 201
-            ];
-            $status = 201;  
-
         }catch(Exception $e){
             $response = [
                 "error"=>$e->getMessage(),
@@ -332,7 +336,7 @@ class MaintenanceController extends Controller
               ->get();
 
 
-                if(!$maintenance){
+                if(count($maintenance)<=0){
                     throw new Exception("data not found");
                 } 
 

@@ -205,6 +205,7 @@ class AMCController extends Controller
                 "status"=>406
             ];            
             $status = 406;
+
         }catch(QueryException $e){
             $response = [
                 "error" => $e->errorInfo,
@@ -552,7 +553,7 @@ class AMCController extends Controller
                      'assets.assetName as assetName','periodTo as serviceDueDate')
                     ->get();
 
-                if(!$result){
+                if(count($result)<=0){
                  throw new Exception("data not found");
                 }
 
@@ -593,8 +594,8 @@ class AMCController extends Controller
                      'periodFrom as amcStartDate','periodTo as amcEndDate')
                     ->get();
                 
-                if(!$result){
-                 throw new Exception("data not found");
+                if(count($result)<=0){
+                    throw new Exception("data not found");
                 } 
                 
             $response = [
@@ -700,6 +701,7 @@ class AMCController extends Controller
         return response($response,$status); 
     }
 
+    //Downloading Amc Report
     public function export()
     {
       $query = DB::table('amcs')

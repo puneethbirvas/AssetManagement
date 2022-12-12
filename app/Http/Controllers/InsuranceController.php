@@ -261,8 +261,8 @@ class InsuranceController extends Controller
                  'assets.assetName as  assetName','periodFrom as insuranceStartDate','periodTo as insuranceEndDate')
                 ->get();
                 
-                if(!$result){
-                 throw new Exception("data not found");
+                if(count($result)<=0){
+                    throw new Exception("data not found");
                 } 
                 
             $response = [

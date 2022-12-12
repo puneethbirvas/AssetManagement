@@ -218,6 +218,7 @@ class CertificateController extends Controller
             if(!$certificate){
                 throw new Exception("Data not found");
             }else{
+
                 $certificate->delete();
                 $response = [
                     "message" => "data deleted successfully",
@@ -246,6 +247,7 @@ class CertificateController extends Controller
             if(!$certificate){
                throw new Exception("Data not found");
             }else{
+
                 $certificate = DB::table('certificates')
                     ->join('vendors','vendors.id','=','certificates.vendorName')
                     ->join('departments','departments.id','=','certificates.department')
@@ -263,6 +265,7 @@ class CertificateController extends Controller
                 ];
                 $status = 200; 
             } 
+            
         }catch(Exception $e){
             $response = [
              "message"=>$e->getMessage(),
@@ -661,16 +664,16 @@ class CertificateController extends Controller
         try{
 
             $result=DB::table('certificates')
-                    ->whereBetween('expireDate', [now(), now()->addDays(7)])
-                    ->join('departments','departments.id','=','certificates.department')
-                    ->join('assets','assets.id','=','certificates.assetName')
-                    ->select( 'certificates.id','departments.department_name as department', 
-                     'assets.assetName as assetName','certificateDate as certificateStartDate',
-                     'expireDate as certificateEndDate')
-                    ->get();
+                ->whereBetween('expireDate', [now(), now()->addDays(7)])
+                ->join('departments','departments.id','=','certificates.department')
+                ->join('assets','assets.id','=','certificates.assetName')
+                ->select( 'certificates.id','departments.department_name as department', 
+                 'assets.assetName as assetName','certificateDate as certificateStartDate',
+                 'expireDate as certificateEndDate')
+                ->get();
                 
-                if(!$result){
-                 throw new Exception("data not found");
+                if(count($result)<=0){
+                    throw new Exception("data not found");
                 } 
                 
             $response = [

@@ -24,7 +24,6 @@ class RequestServiceController extends Controller
             $service->vendorName = $request->vendorName;
             $service->vendorEmail = $request->vendorEmail;
             $service->vendorAddress = $request->vendorAddress;
-            $service->vendorAddress = $request->vendorAddress;
             $service->vendorPhone = $request->vendorPhone;
             $service->gstNo = $request->gstNo;
             $service->dateOrDay = $request->dateOrDay;
@@ -33,6 +32,7 @@ class RequestServiceController extends Controller
                 $service->expectedDate = $request->expectedDate;
                 $service->expectedDay = null;
             }
+
 
             if($service->dateOrDay == "day"){
             $service->expectedDate = null;
@@ -54,20 +54,20 @@ class RequestServiceController extends Controller
             ];
             $status = 200;
 
-      }catch(Exception $e){
-            $response = [
-                "error"=>$e->getMessage(),
-                "status"=>406
-            ];            
-            $status = 406;
+        }catch(Exception $e){
+                $response = [
+                    "error"=>$e->getMessage(),
+                    "status"=>406
+                ];            
+                $status = 406;
 
-        }catch(QueryException $e){
-            $response = [
-                "error" => $e->errorInfo,
-                "status"=>406
-            ];
-            $status = 406; 
-        }
+            }catch(QueryException $e){
+                $response = [
+                    "error" => $e->errorInfo,
+                    "status"=>406
+                ];
+                $status = 406; 
+            }
     
         return response($response, $status);        
     }
@@ -76,7 +76,16 @@ class RequestServiceController extends Controller
     public function showServiceRequest($id)
     {
         try{
-            $data = DB::table('request_services')->where('id','=',$id)->select('*')->get();
+            $data = DB::table('request_services')
+              ->where('request_services.assetName','=',$id)
+              ->select('request_services.*','departments.department_name as department',
+              'sections.section as section','assettypes.assetType as assetType','assets.assetName as assetName','vendors.vendorName as vendorName')
+              ->join('departments','departments.id','=','request_services.department')
+              ->join('sections','sections.id','=','request_services.section')
+              ->join('assettypes','assettypes.id','=','request_services.assetType')
+              ->join('assets','assets.id','=','request_services.assetName')
+              ->join('vendors','vendors.id','=','request_services.vendorName')
+              ->get();
 
             $response =[
                 "data" => $data,
@@ -106,7 +115,8 @@ class RequestServiceController extends Controller
     {
         try{
             $maintenance = DB::table('maintenances')
-                ->select('maintenances.*','departments.department_name as department','sections.section as section','assettypes.assetType as assetType','assets.assetName as assetName','users.user_name as userName')
+                ->select('maintenances.*','departments.department_name as department','sections.section as section','assettypes.assetType as assetType','assets.assetName as assetName','users.user_name as userName','departments.id as departmentId','sections.id as sectionsId', 'assettypes.id as assetTypesId',
+                 'Assets.id as assetNameId')
                 ->join('users','users.id','=','maintenances.userName')
                 ->join('departments','departments.id','=','maintenances.department')
                 ->join('sections','sections.id','=','maintenances.section')

@@ -99,6 +99,7 @@ class AssetController extends Controller
                 "status"=>406
             ];            
             $status = 406;
+            
         }catch(QueryException $e){
             $response = [
                 "error" => $e->errorInfo,
@@ -110,10 +111,11 @@ class AssetController extends Controller
         return response($response, $status);        
     }
 
-    //default asset-id
+    //To generate default asset-id
     public function assetId()
     {
         $last = DB::table('assets')->latest('id')->first();
+
         if(!$last){
            $user = "1";
         }else{
@@ -241,6 +243,7 @@ class AssetController extends Controller
     {
         try{
             $asset = Asset::find($id);
+
             if(!$asset){
                 throw new Exception("asset not found");
             }else{
@@ -270,6 +273,7 @@ class AssetController extends Controller
 
             if(!$asset){
                throw new Exception("Asset not found");
+
             }else{
                 $asset = DB::table('assets')
                     ->join('departments','departments.id','=','assets.department')
@@ -289,6 +293,7 @@ class AssetController extends Controller
                 ];
                 $status = 200; 
             } 
+
         }catch(Exception $e){
             $response = [
              "message"=>$e->getMessage(),

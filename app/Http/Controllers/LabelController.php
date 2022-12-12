@@ -47,8 +47,8 @@ class LabelController extends Controller
         }
         // BarCode
         if($Label->code == 'barCode'){
-        $name = 'barcode.png';
-        Storage::disk('public')->put("$name" ,base64_decode(DNS1DFacade::getBarcodePNG("44453645656", "EAN13")));
+        $name =  Str::random(10).'.png';;
+        Storage::disk('public')->put("$name" ,base64_decode(DNS1DFacade::getBarcodePNG("9854454", "EAN13")));
         $Label->codeGenerator =  '/storage/'.$name;
         }
            
@@ -93,15 +93,16 @@ class LabelController extends Controller
  
         try{
             $Label = DB::table('labels')
-             ->join('departments','departments.id','=','labels.department')
-             ->join('sections','sections.id','=','labels.selectSection')
-             ->join('assettypes','assettypes.id','=','labels.assetType')
-             ->join('assets','assets.id','=','labels.selectAsset')
-             ->select('labels.id','departments.department_name as department', 
-              'sections.section as section','assettypes.assetType as assetType',
-               'labels.selectAssetId','labels.code','labels.created_at as date',
-               'assets.assetName as assetName')->get();
- 
+                ->join('departments','departments.id','=','labels.department')
+                ->join('sections','sections.id','=','labels.selectSection')
+                ->join('assettypes','assettypes.id','=','labels.assetType')
+                ->join('assets','assets.id','=','labels.selectAsset')
+                ->select('labels.id','departments.department_name as department', 
+                    'sections.section as section','assettypes.assetType as assetType',
+                    'labels.selectAssetId','labels.code','labels.created_at as date',
+                    'assets.assetName as assetName')
+                ->get();
+    
             if(!$Label){
                 throw new Exception("data not found");
             }else{
@@ -138,15 +139,15 @@ class LabelController extends Controller
             }else{
 
                 $Label = DB::table('labels')->where('labels.id','=',$id)
-                        ->join('departments','departments.id','=','labels.department')
-                        ->join('sections','sections.id','=','labels.id')
-                        ->join('assets','assets.id','=','labels.selectAsset')
-                        ->select('labels.id','departments.department_name as departmentName','sections.section as section','assets.assetName as assetName','codeGenerator','labels.created_at')
-                        ->get();
+                    ->join('departments','departments.id','=','labels.department')
+                    ->join('sections','sections.id','=','labels.selectSection')
+                    ->join('assets','assets.id','=','labels.selectAsset')
+                    ->select('labels.*','labels.id','departments.department_name as department', 
+                        'sections.section as selectSection','assets.assetName as selectAsset',     'codeGenerator','labels.created_at as date')
+                    ->get();
 
                 $response = [
-                     'success' => true,
-                     'data' => $Label         
+                    'data' => $Label         
                 ];
 
                 $status = 201;   
@@ -177,11 +178,11 @@ class LabelController extends Controller
                 $Label->delete();
 
                 $response = [
-                     "message" => "Label deleted successfully",
-                     "status" => 200
+                    "message" => "Label deleted successfully",
+                    "status" => 200
                 ];
                 $status = 200;                   
-            }
+            } 
  
         }catch(Exception $e){
             $response = [

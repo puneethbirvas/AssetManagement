@@ -83,7 +83,7 @@ class VendorController extends Controller
           
         }catch(Exception $e){
             $response = [
-                "error"=>$e->getMessage(),
+                "message"=>$e->getMessage(),
                 "status"=>406
             ];            
             $status = 406;
@@ -219,7 +219,9 @@ class VendorController extends Controller
     {
 
         try{
-            $vendor = DB::table('vendors')->select('id','vendorName','address','email','contactNo','contactPerson')->orderby('id','asc')->get();
+            $vendor = DB::table('vendors')
+                ->join('vendor_types','vendor_types.id','=','vendors.vendorType')
+                ->select('vendors.*','vendorName','address','email','contactNo','contactPerson','vendor_types.id as vendorTypeId')->orderby('id','asc')->get();
 
             if(!$vendor){
                 throw new Exception("Vendor details not found");
