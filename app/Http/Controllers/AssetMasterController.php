@@ -54,9 +54,10 @@ class AssetMasterController extends Controller
     return response($response,$status); 
   }
 
-  public function export()
+  public function export($id)
   {
     $query = DB::table('assets')
+      ->where('assets.assetType','=',$id)
       ->join('departments','departments.id','=','assets.department')
       ->join('sections','sections.id','=','assets.section')
       ->join('assettypes','assettypes.id','=','assets.assetType')

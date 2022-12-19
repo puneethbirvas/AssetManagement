@@ -27,16 +27,16 @@ class LabelController extends Controller
         $Label->assetType = $request->assetType;
         $Label->selectAssetType = $request->selectAssetType;
 
-        if($Label->selectAssetType == 'selectAsset'){
+        if($Label->selectAssetType == 'asset'){
             $Label->selectAsset = $request->selectAsset;
         } 
 
-        if($Label->selectAssetType == 'selectAssetId'){
+        if($Label->selectAssetType == 'assetId'){
             $Label->selectAssetId = $request->selectAssetId;
         }
         $Label->code = $request->code; 
 
-         // QrCode
+        // QrCode
         if($Label->code == 'qrCode')
         {
             $getId = $this->assetGetId($request);
@@ -66,14 +66,16 @@ class LabelController extends Controller
                 "status"=>406
             ];            
             $status = 406;
+
         }catch(QueryException $e){
             $response = [
                 "error" => $e->errorInfo,
                 "status"=>406
             ];
             $status = 406; 
-           } 
-            return response($response, $status);        
+        } 
+
+        return response($response, $status);        
 
     }
 
@@ -90,42 +92,41 @@ class LabelController extends Controller
      // Displaying data
     public function showData(Label $Label)
     {
- 
         try{
-            $Label = DB::table('labels')
+         
+                $Label = DB::table('labels')
                 ->join('departments','departments.id','=','labels.department')
                 ->join('sections','sections.id','=','labels.selectSection')
-                ->join('assettypes','assettypes.id','=','labels.assetType')
-                ->join('assets','assets.id','=','labels.selectAsset')
-                ->select('labels.id','departments.department_name as department', 
-                    'sections.section as section','assettypes.assetType as assetType',
-                    'labels.selectAssetId','labels.code','labels.created_at as date',
-                    'assets.assetName as assetName')
+                ->leftjoin('assets','assets.id','=','labels.selectAsset')
+                ->select('labels.*','labels.id','departments.department_name as department', 
+                    'sections.section as selectSection','assets.assetName as selectAsset','labels.selectAssetId','codeGenerator','labels.created_at as date')
                 ->get();
-    
-            if(!$Label){
-                throw new Exception("data not found");
-            }else{
+                
                 $response = [
                      'success' => true,
                      'data' => $Label         
                 ];
                 $status = 201;   
-            return response($response,$status);
-            }
- 
+          
             }catch(Exception $e){
-            $response = [
-                "error" => $e->getMessage(),
-                "status" => 404
-            ];
-            $status = 404; 
-         
+
+                $response = [
+                    "error" => $e->getMessage(),
+                    "status" => 404
+                ];
+                $status = 404; 
+             
+            }catch(QueryException $e){
+                $response = [
+                    "error" => $e->errorInfo,
+                    "status"=>406
+                ];
+                $status = 406; 
+            }
+     
+            return response($response,$status);
+     
         }
- 
-        return response($response,$status);
- 
-    }
 
     public function showLabel($id)
     {
@@ -137,14 +138,27 @@ class LabelController extends Controller
                 throw new Exception("data not found");
 
             }else{
+                $Label = DB::table('labels')->where('labels.id','=',$id)->first();
+                $Label = $Label->selectAssetType;
 
-                $Label = DB::table('labels')->where('labels.id','=',$id)
+                if($Label == "asset")
+                {
+                    $Label = DB::table('labels')->where('labels.id','=',$id)
+                        ->join('departments','departments.id','=','labels.department')
+                        ->join('sections','sections.id','=','labels.selectSection')
+                        ->join('assets','assets.id','=','labels.selectAsset')
+                        ->select('labels.*','labels.id','departments.department_name as department', 
+                            'sections.section as selectSection','assets.assetName as selectAsset','codeGenerator','labels.created_at as date')
+                        ->get();
+                }
+                else{
+                    $Label = DB::table('labels')->where('labels.id','=',$id)
                     ->join('departments','departments.id','=','labels.department')
                     ->join('sections','sections.id','=','labels.selectSection')
-                    ->join('assets','assets.id','=','labels.selectAsset')
                     ->select('labels.*','labels.id','departments.department_name as department', 
-                        'sections.section as selectSection','assets.assetName as selectAsset',     'codeGenerator','labels.created_at as date')
+                        'sections.section as selectSection','codeGenerator','labels.created_at as date')
                     ->get();
+                }
 
                 $response = [
                     'data' => $Label         
@@ -153,7 +167,7 @@ class LabelController extends Controller
                 $status = 201;   
             }
  
-            }catch(Exception $e){
+        }catch(Exception $e){
 
             $response = [
                 "error" => $e->getMessage(),
@@ -161,6 +175,12 @@ class LabelController extends Controller
             ];
             $status = 404; 
          
+        }catch(QueryException $e){
+            $response = [
+                "error" => $e->errorInfo,
+                "status"=>406
+            ];
+            $status = 406; 
         }
  
         return response($response,$status);
@@ -186,10 +206,17 @@ class LabelController extends Controller
  
         }catch(Exception $e){
             $response = [
-                "error" => $e->getMessage(),
+                "message" => $e->getMessage(),
                 "status" => 404
             ];
-            $status = 404;     
+            $status = 404; 
+
+        }catch(QueryException $e){
+            $response = [
+                "error" => $e->errorInfo,
+                "status"=>406
+            ];
+            $status = 406; 
         }
  
         return response($response,$status);

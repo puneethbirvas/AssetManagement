@@ -17,7 +17,9 @@ class SectionController extends Controller
             $section = new section;
             $section->department= $request->department;
             $section->section= $request->section;
+
             $section->save();
+            
             $response = [
                 "message" => "section Added Sucessfully!",
                 "status" => 200
@@ -29,7 +31,8 @@ class SectionController extends Controller
                 "message"=>$e->getMessage(),
                 "status" => 406
             ];            
-            $status = 406;            
+            $status = 406;    
+
         }catch(QueryException $e){
             $response = [
                 "error" => $e->errorInfo,
@@ -46,12 +49,16 @@ class SectionController extends Controller
     {
         try{
             $section = section::find($id);
+
             if(!$section){
                 throw new Exception("section not found");
             }
+
             $section->department= $request->department;
             $section->section= $request->section;
+
             $section->save();
+
             $response = [       
                "message" =>' Section Updated Successfully', 
                "status" => 200
@@ -97,6 +104,7 @@ class SectionController extends Controller
                 "status" => 406
             ];            
             $status = 406;
+
         }catch(QueryException $e){
             $response = [
                 "error" => $e->errorInfo,
@@ -110,12 +118,12 @@ class SectionController extends Controller
 
     public function showData()
     {
-      try{    
+        try{    
 
             $result = DB::table('sections')
-                    ->join('departments','departments.id','=','sections.department')
-                    ->select('sections.*','departments.department_name as department')
-                    ->get();
+                ->join('departments','departments.id','=','sections.department')
+                ->select('sections.*','departments.department_name as department','departments.id as departmentId')
+                ->get();
             if(!$result){
                 throw new Exception("section not found");
             }
@@ -132,6 +140,7 @@ class SectionController extends Controller
               "status" => 406
               ];            
             $status = 406;
+
         }catch(QueryException $e){
             $response = [
               "error" => $e->errorInfo,

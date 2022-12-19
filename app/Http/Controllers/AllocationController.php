@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Allocation;
 use App\Models\Users;
+use App\Models\Asset;
 use Illuminate\Http\Request;
 use App\Exports\AllocationExport;
 use Maatwebsite\Excel\Facades\Excel;
@@ -35,7 +36,7 @@ class AllocationController extends Controller
                     $allocation->empId = $request->empId;
                 }
 
-                $allocation->user = $request->user; 
+                $allocation->user = $this->getUserId($request);
 
                 if($allocation->userType == 'department'){
                     $allocation->userDepartment = $request->userDepartment;
@@ -49,7 +50,15 @@ class AllocationController extends Controller
                     $allocation->fromDate = null;
                     $allocation->toDate =  null;
                 }
+                $allocation->returnStatus = "inUse"; 
 
+                $asset = DB::table('assets')->where('id','=',$assetName)->first();
+                
+                    $asset = Asset::find($assetName);
+                    $asset->allocated = 1;
+                    $asset->save();
+                
+             
                 $allocation->save();
             }
 
@@ -76,6 +85,15 @@ class AllocationController extends Controller
         }    
      
         return response($response, $status);        
+    }
+
+    public function getUserId(Request $request){
+
+        $name = $request->user;
+        $data = DB::table('users')->where('user_name','=',$name)->first();
+        $data = $data->id;
+
+        return $data;
     }
 
     //update
@@ -276,7 +294,7 @@ class AllocationController extends Controller
                  'assets.assetName as assetName','assets.assetId as assetId',
                  'B.employee_id as empId','A.employee_name as user',
                  'departments.department_name as userDepartment', 'departments.id as departmentId','sections.id as sectionsId', 'assettypes.id as assetTypesId',
-                 'Assets.id as assetNameId','A.id as usersId')
+                 'Assets.id as assetNameId','A.id as usersId','B.id as EmpId','assets.id as assetId')
                 ->get();
                 
             if(!$result){
@@ -312,9 +330,6 @@ class AllocationController extends Controller
         $fromDate =$request->fromDate;
         $toDate = $request->toDate;
 
-        // $fromDate =$request->input(key:'fromDate');
-        // $toDate = $request->input(key:'toDate');
-
         $query = DB::table('allocations')
             ->where('fromDate','>=',$fromDate) 
             ->where('toDate','<=', $toDate)
@@ -326,9 +341,178 @@ class AllocationController extends Controller
             ->select('allocations.id','departments.department_name as department',
              'sections.section as section', 'assettypes.assetType as assetType',
              'assets.assetName as assetName','assets.assetId as assetId',
-             'users.employee_name as user')
+             'users.user_name as user')
             ->get(); 
   
         return Excel::download(new AllocationExport($query), 'Allocation.xlsx');
     }
-}    
+
+
+    public function showRequestReturnAsset()
+    {
+        try{
+
+            $result = DB::table('allocations')
+                ->join('assets','assets.id','=','allocations.assetName')
+                ->join('users','users.id','=','allocations.user')
+                ->where('requestedReturnAsset','=',1)
+                ->select('allocations.id','assets.assetId as assetId','assets.assetName as assetName','users.user_name as user')
+                ->get();
+
+                if(count( $result)<=0){
+                    throw new Exception("data not found");
+                  }
+            $response=[
+                "data" => $result
+               ];
+               $status = 200; 
+                   
+        }catch(Exception $e){
+            $response = [
+             "message"=>$e->getMessage(),
+              "status" => 406
+            ];            
+            $status = 406;
+            
+        }catch(QueryException $e){
+            $response = [
+                "error" => $e->errorInfo,
+                "status" => 406
+            ];
+            $status = 406; 
+        }
+        return response($response,$status); 
+
+    }
+
+
+    public function updateRequestedReturnAsset(Request $request,$id)
+    {
+        try{  
+
+            $update = Allocation::find($id);
+
+            $update->requestedReturnAsset = $request->requestedReturnAsset;
+            $update->returnedDate = $request->returnedDate;
+            $update->returnStatus = "returned";
+            $update->selfAssessmentStatus = null;
+            $update->assetImage1 = null;
+            $update->assetImage2 = null;
+
+            $name = $update->assetName;
+            $asset = DB::table('assets')->where('id','=',$name)->first();
+                
+            $asset = Asset::find($name);
+            $asset->allocated = 0;
+            $asset->save();
+
+            $update->save();
+        
+            if(!$update){
+                throw new Exception("data not found");
+            }
+
+            $response=[
+                "data" => "updated successfully"
+            ];
+            $status = 200; 
+               
+        }catch(Exception $e){
+            $response = [
+            "message"=>$e->getMessage(),
+            "status" => 406
+            ];            
+            $status = 406;
+            
+        }catch(QueryException $e){
+            $response = [
+                "error" => $e->errorInfo,
+                "status" => 406
+            ];
+            $status = 406; 
+        }
+        return response($response,$status); 
+            
+    }
+
+    public function viewReturnAsset()
+    {
+        try{
+
+            $result = DB::table('allocations')
+                ->join('assets','assets.id','=','allocations.assetName')
+                ->join('users','users.id','=','allocations.user')
+                ->where('returnStatus','=','returned')
+                ->select('allocations.id','assets.assetId as assetId','assets.assetName as   assetName', 'users.user_name as user','allocations.returnedDate')
+                ->get();
+
+                if(count( $result)<=0){
+                    throw new Exception("data not found");
+                }
+
+            $response=[
+                "data" => $result
+            ];
+            $status = 200; 
+               
+        }catch(Exception $e){
+            $response = [
+            "message"=>$e->getMessage(),
+            "status" => 406
+            ];            
+            $status = 406;
+            
+        }catch(QueryException $e){
+            $response = [
+                "error" => $e->errorInfo,
+                "status" => 406
+            ];
+            $status = 406; 
+        }
+        return response($response,$status); 
+    }
+
+
+    public function viewSelfAssessment()
+    {
+        try{
+
+            $result = DB::table('allocations')
+                ->join('assets','assets.id','=','allocations.assetName')
+                ->join('users','users.id','=','allocations.user')
+                ->where('selfAssessmentStatus','!=',null)
+                ->select('allocations.id','assets.assetId as assetId','assets.assetName as assetName','users.user_name as user'
+                ,'allocations.selfAssessmentStatus')
+                ->get();
+
+            if(count( $result)<=0){
+                throw new Exception("data not found");
+            }
+    
+            $response=[
+                "data" => $result
+            ];
+            $status = 200; 
+                   
+        }catch(Exception $e){
+            $response = [
+            "message"=>$e->getMessage(),
+            "status" => 406
+            ];            
+            $status = 406;
+            
+        }catch(QueryException $e){
+            $response = [
+                "error" => $e->errorInfo,
+                "status" => 406
+            ];
+            $status = 406; 
+        }
+
+        return response($response,$status); 
+    }
+}
+
+
+    
+

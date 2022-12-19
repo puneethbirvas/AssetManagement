@@ -38,6 +38,7 @@ class AuditController extends Controller
                 "status"=>406
             ];            
             $status = 406;
+            
         }catch(QueryException $e){
             $response = [
                 "error" => $e->errorInfo,
@@ -54,7 +55,8 @@ class AuditController extends Controller
     {
         try{
 
-            $audit = Audit::find($id);          
+            $audit = Audit::find($id);  
+
             if(!$audit){
                 throw new Exception("data not found");
             }
@@ -94,6 +96,7 @@ class AuditController extends Controller
     public function destroy(Audit $audit, $id)
     {
         try{
+
             $audit = Audit::find($id);
 
             if(!$audit){
@@ -113,6 +116,7 @@ class AuditController extends Controller
                     "status" => 404
                 ];
                 $status = 404;     
+
         }catch(QueryException $e){
                 $response = [
                     "error" => $e->errorInfo,
@@ -128,12 +132,14 @@ class AuditController extends Controller
     public function showData(Audit $audit)
      {
         try{
+
             $audit = DB::table('audits')
                 ->join('departments','departments.id','=','audits.department')
                 ->join('sections','sections.id','=','audits.section')
                 ->join('assettypes','assettypes.id','=','audits.assetType')
                 ->select('audits.*','departments.department_name as department',
-                  'sections.section as section','assettypes.assetType as assetType' )
+                  'sections.section as section','assettypes.assetType as assetType', 
+                  'departments.id as departmentId','sections.id as sectionsId', 'assettypes.id as assetTypesId')
                 ->get();
 
             if(!$audit){
@@ -151,7 +157,8 @@ class AuditController extends Controller
                 "error" => $e->getMessage(),
                 "status" => 404
             ];
-            $status = 404;       
+            $status = 404;     
+
         }catch(QueryException $e){
             $response = [
                 "error" => $e->errorInfo,
@@ -223,6 +230,6 @@ class AuditController extends Controller
              'sections.section as section','assettypes.assetType as assetType')
             ->get();
   
-        return Excel::download(new AuditExport($query), 'Audit.csv');
+        return Excel::download(new AuditExport($query), 'Audit.xlsx');
     }
 }

@@ -19,15 +19,17 @@ class Asset extends Model
         'email',
         'vendorAddress',
         'assetType',
-        'manufaturer',
+        'manufacturer',
         'assetModel',
         'poNo',
         'invoiceNo',
+        'typeWarranty',
         'warrantyStartDate',
         'warrantyEndDate',
         'warrantyDocument',
         'uploadDocument',
         'description',
-        'assetImage'
+        'assetImage',
+        'transfer'
     ];
 }

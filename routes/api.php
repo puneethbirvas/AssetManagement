@@ -25,6 +25,8 @@ use App\Http\Controllers\InsuranceController;
 use App\Http\Controllers\MaintenanceController;
 use App\Http\Controllers\RequestServiceController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\UserModuleController;
+
 
 
 Route::get('token', function() {
@@ -42,14 +44,14 @@ Route::get('token', function() {
 Route::middleware(['auth:sanctum'])->group(function () {
     //All secure URL's
 
+  
+
+    });
     Route::post('user/{id}/update',[UsersController::class,'update']);
     Route::post('logout',[UsersController::class,'logout']);
     Route::post('user/{id}/delete',[UsersController::class,'destroy']);
     Route::post('user/{id}/block',[UsersController::class,'block']);
     Route::get('user/showData',[UsersController::class,'showData']);
-
-    });
-
 //users
 Route::post('user/add',[UsersController::class,'store']);
 Route::get('user/empId',[UsersController::class,'empId']);
@@ -75,6 +77,10 @@ Route::post('asset/{id}/update', [AssetController::class, 'update']);
 Route::post('asset/{id}/delete', [AssetController::class, 'destroy']);
 Route::get('asset/showData', [AssetController::class, 'showData']);
 Route::get('asset/assetId', [AssetController::class, 'assetId']);
+Route::post('asset/import', [AssetController::class, 'import']);
+Route::get('asset/template', [AssetController::class, 'template']);
+
+
 
 //AssetType   
 Route::post('assetType/add',[AssettypeController::class,'store']);
@@ -107,7 +113,6 @@ Route::post('scrapAsset/add',[ScrapAssetController::class,'store']);
 Route::get('scrapAsset/showData',[ScrapAssetController::class,'showData']);
 Route::get('scrapAsset/export',[ScrapAssetController::class,'export']);
 
-
 //Audit
 Route::post('audit/add', [AuditController::class, 'store']);
 Route::post('audit/{id}/update', [AuditController::class, 'update']);
@@ -125,13 +130,20 @@ Route::post('allocation/{id}/getEmpName',[AllocationController::class, 'getEmpNa
 Route::get('allocation/{id}/getUser',[AllocationController::class, 'getUser']);
 Route::get('allocation/export', [AllocationController::class, 'export']);
 
+//Allocation->RequestedAsset
+Route::get('allocation/showRequestReturnAsset', [AllocationController::class, 'showRequestReturnAsset']);
+Route::post('allocation/{id}/updateRequestedReturnAsset', [AllocationController::class, 'updateRequestedReturnAsset']);
+Route::get('allocation/viewReturnAsset', [AllocationController::class, 'viewReturnAsset']);
+Route::get('allocation/viewSelfAssessment', [AllocationController::class, 'viewSelfAssessment']);
+
+
 
 //TransferAsset
 Route::post('transferAsset/{id}', [TransferAssetController::class, 'transferData']);
 
 // AssetMaster
 Route::get('assetMaster/{id}/showData', [AssetMasterController::class, 'showData']);
-Route::get('assetMaster/export', [AssetMasterController::class, 'export']);
+Route::get('assetMaster/{id}/export', [AssetMasterController::class, 'export']);
 
 //GetData
 Route::get('getDepartment', [GetDataController::class, 'getDepartment']);
@@ -152,6 +164,7 @@ Route::get('tagAsset/rfid', [TagAssetController::class, 'rfid']);
 //UnTagAsset
 Route::post('untagAsset/{id}/update', [UntagAssetController::class, 'update']);
 Route::post('untagAsset/showData', [UntagAssetController::class, 'showData']);
+Route::post('untagAsset/{id}/untagUpdate', [UntagAssetController::class, 'untagUpdate']);
 Route::get('untagAsset/export', [UntagAssetController::class, 'export']);
 
 
@@ -211,28 +224,38 @@ Route::post('insurance/{id}/renewalInsurance', [InsuranceController::class, 'ren
 Route::get('insurance/export', [InsuranceController::class, 'export']);
 
 //RequestService
-Route::get('requestService/showMaintenance', [RequestServiceController::class, 'showMaintenance']);
-Route::get('requestService/{id}/showMaintenance1', [RequestServiceController::class, 'showMaintenance1']);
-Route::post('requestService/add', [RequestServiceController::class, 'store']);
-Route::get('requestService/{id}/showServiceRequest', [RequestServiceController::class, 'showServiceRequest']);
+Route::get('requestService/showData', [RequestServiceController::class, 'showData']);
+Route::get('requestService/{id}/showData1', [RequestServiceController::class, 'showData1']);
+Route::post('requestService/{id}/update', [RequestServiceController::class, 'update']);
 Route::post('requestService/{id}/updateServiceStatus', [RequestServiceController::class, 'updateServiceStatus']);
 Route::get('requestService/export', [RequestServiceController::class, 'export']);
 
 //DashBoard
-Route::post('assetsCount', [DashboardController::class, 'assetsCount']);
-Route::post('tagAssetsCount', [DashboardController::class, 'tagAssetsCount']);
 Route::get('tagAssetsCount/showData', [DashboardController::class, 'showData']);
-Route::post('untagCount', [DashboardController::class, 'untagCount']);
-Route::post('warrantyDueCount', [DashboardController::class, 'warrantyDueCount']);
-Route::post('amcDueCount', [DashboardController::class, 'amcDueCount']);
-// Route::post('serviceeDueCount', [DashboardController::class, 'serviceeDueCount']);
-Route::post('certificateDueCount', [DashboardController::class, 'certificateDueCount']);
-Route::post('insuranceDueCount', [DashboardController::class, 'insuranceDueCount']);
-Route::post('auditDueCount', [DashboardController::class, 'auditDueCount']);
-Route::post('eolCount', [DashboardController::class, 'eolCount']);
-Route::post('transferCount', [DashboardController::class, 'transferCount']);
-Route::post('scrapCount', [DashboardController::class, 'scrapCount']);
-Route::post('inServiceCount', [DashboardController::class, 'inServiceCount']);
-Route::post('damageCount', [DashboardController::class, 'damageCount']);
-Route::post('salesCount', [DashboardController::class, 'salesCount']);
-Route::get('maintenanceCount', [DashboardController::class, 'maintenanceCount']);
+Route::get('assets/showData', [DashboardController::class, 'assets']);
+Route::get('newAsset/showData', [DashboardController::class, 'newAsset']);
+Route::get('tagAsset/showData', [DashboardController::class, 'tagAsset']);
+Route::get('warrantyDue/showData', [DashboardController::class, 'warrantyDue']);
+Route::get('amcDue/showData', [DashboardController::class, 'amcDue']);
+Route::get('certificateDue/showData', [DashboardController::class, 'certificateDue']);
+Route::get('insuranceDue/showData', [DashboardController::class, 'insuranceDue']);
+Route::get('transferDue/showData', [DashboardController::class, 'transferDue']);
+
+Route::get('auditDue/showData', [DashboardController::class, 'auditDue']);
+Route::get('eol/showData', [DashboardController::class, 'eol']);
+Route::get('notInuse/showData', [DashboardController::class, 'notInuse']);
+Route::get('damage/showData', [DashboardController::class, 'damage']);
+Route::get('transfer/showData', [DashboardController::class, 'transfer']);
+Route::get('sales/showData', [DashboardController::class, 'sales']);
+Route::get('getCount', [DashboardController::class, 'getCount']);
+
+//UserModule
+Route::get('um/showAsset', [UserModuleController::class, 'showAsset']);
+Route::post('um/add', [UserModuleController::class, 'store']);
+Route::get('um/getAssetName', [UserModuleController::class, 'getAssetName']);
+Route::get('um/{id}/showStatus', [UserModuleController::class, 'showStatus']);
+Route::get('um/viewServiceRequest', [UserModuleController::class, 'viewServiceRequest']);
+Route::get('um/showReturnAsset', [UserModuleController::class, 'showReturnAsset']);
+Route::post('um/{id}/updateReturnAsset', [UserModuleController::class, 'updateReturnAsset']);
+Route::post('um/{id}/updateSelfAssessment', [UserModuleController::class, 'updateSelfAssessment']);
+

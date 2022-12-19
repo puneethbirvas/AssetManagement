@@ -153,50 +153,60 @@ class UsersController extends Controller
  
     public function loginUser(Request $request)
     {   
-      $users = Users::where(['email' => $request->email])->first();
+        $email = $request->email;
+        $password = $request->password;
+        $data = DB::table('users')->where('email','=',$email)->where('password','=',$password)->get();
+
+
+        $users = Users::where(['email' => $request->email])->first();
        
         if(!$users){    
+
             $response = [
                 'error' => 'Entered email has not been registered. Please enter the registered email id',
                 "status" => 401
             ];
             $status=401;
-        }else{
-            if($users['blocked']){
+            
+            }elseif($users['blocked']){
+
                 $response = [
                     'message'=>"User is blocked, please contact admin",
-                    ];
+                ];
                 $status = 403; 
-                       
-            }
-            elseif(!$users = Users::where(['password' => $request->password])->first()){  
-
+                            
+            }elseif(!$users  = Users::where(['password' => $request->password])->first()){  
+                
                 $response = [
                     'error' => 'Entered password is invalid',
                     "status" => 401
                 ];
                 $status=401;
+            
+            }elseif(count($data)<=0){
 
-            }else{
-                $users = Users::where('email', $request['email'])->firstOrFail();
-                $users = Users::where('password', $request['password'])->firstOrFail();
-                $token = $users->createToken('auth_token')->plainTextToken;
-                $response = [
+            $response = [
+                'error' => 'Entered email and password is invalid',
+                    "status" => 401
+                ];
+            $status=401;  
 
-                    'userDetails' =>[ 
-                        'id' =>$users->id,
-                        'username' => $users->user_name,
-                        'email'=>$users->email,
-                        'userRole'=>$users->userType
+        }elseif(count($data)>0){
                     
-
-                    ],
-                    'access_token' => $token, 
-                    ];
-                $status = 200;        
-            }
+            $users = Users::where('email', $request['email'])->firstOrFail();
+            $token = $users->createToken('auth_token')->plainTextToken;
+            $response = [
+                'userDetails' =>[ 
+                    'id' =>$users->id,
+                    'username' => $users->user_name,
+                    'email'=>$users->email,
+                    'userRole'=>$users->userType
+                ],
+                'access_token' => $token, 
+            ];
+            $status = 200;    
+                        
         }
-
         return response($response, $status);
     }
 
