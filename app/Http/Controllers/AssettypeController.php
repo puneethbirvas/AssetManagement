@@ -13,11 +13,14 @@ class AssettypeController extends Controller
     public function store(Request $request)
     {
         try{
+            
             $assettype = new assettype;
             $assettype->department= $request->department;
             $assettype->section= $request->section;
             $assettype->assetType= $request->assetType;
+
             $assettype->save();
+
             $response = [
                 "message" => "Asset Type Added Sucessfully!",
                 "status" => 200
@@ -29,7 +32,8 @@ class AssettypeController extends Controller
                 "message"=>$e->getMessage(),
                 "status" => 406
             ];            
-            $status = 406;            
+            $status = 406;          
+
         }catch(QueryException $e){
             $response = [
                 "error" => $e->errorInfo,
@@ -45,14 +49,18 @@ class AssettypeController extends Controller
     public function update(Request $request,$id)
     {
         try{
+
             $assettype = assettype::find($id);
+
             if(!$assettype){
                 throw new Exception("Asset Type not found");
             }
             $assettype->department= $request->department;
             $assettype->section= $request->section;
             $assettype->assetType= $request->assetType;
+
             $assettype->save();
+
             $response = [       
                "message" =>'Asset Type Updated Successfully', 
                "status" => 200
@@ -65,6 +73,7 @@ class AssettypeController extends Controller
                    "status" => 406
                ];            
                $status = 200;
+
             }catch(QueryException $e){
                $response = [
                    "error" => $e->errorInfo,
@@ -80,10 +89,13 @@ class AssettypeController extends Controller
     public function destroy($id)
     { 
         try{
+
             $assettype = assettype::find($id);
+
             if(!$assettype){
                 throw new Exception("Asset Type not found");
             }else{
+
                 $assettype->delete();
                 $response = [          
                     "message" => " Asset Type Deleted Sucessfully!",
@@ -98,6 +110,7 @@ class AssettypeController extends Controller
                 "status" => 406
             ];            
             $status = 406;
+
         }catch(QueryException $e){
             $response = [
                 "error" => $e->errorInfo,
@@ -111,15 +124,18 @@ class AssettypeController extends Controller
 
     public function showData()
     {
-      try{    
+        try{    
+
             $result = DB::table('assettypes')
-                    ->join('departments','departments.id','=','assettypes.department')
-                    ->join('sections','sections.id','=','assettypes.section')
-                    ->select('assettypes.*','departments.department_name as department','sections.section as section' )
-                    ->get();
+                ->join('departments','departments.id','=','assettypes.department')
+                ->join('sections','sections.id','=','assettypes.section')
+                ->select('assettypes.*','departments.department_name as department','sections.section as section','departments.id as departmentId','sections.id as sectionId' )
+                ->get();
+
             if(!$result){
               throw new Exception("Asset Type not found");
             }
+
             $response=[
              "message" => "Asset Type List",
              "data" => $result
@@ -132,6 +148,7 @@ class AssettypeController extends Controller
               "status" => 406
             ];            
             $status = 406;
+
         }catch(QueryException $e){
             $response = [
                 "error" => $e->errorInfo,

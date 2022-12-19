@@ -4,6 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Models\Asset;
 use App\Models\Vendor;
+use App\Imports\AssetsImport;
+use App\Exports\TemplateExport;
+use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Http\Request;
 use Exception;
 use Illuminate\Database\QueryException;
@@ -84,6 +87,7 @@ class AssetController extends Controller
                 Storage::disk('public')->put($imageName, base64_decode($image));
                 $asset->assetImage = $imagePath;
             }
+            $asset->allocated = "new";
 
             $asset->save();
             $response = [
@@ -268,7 +272,8 @@ class AssetController extends Controller
 
     public function showData()
     {
-      try{    
+        try{    
+
             $asset = DB::table('assets');
 
             if(!$asset){
@@ -309,6 +314,50 @@ class AssetController extends Controller
             $status = 406; 
         }
         return response($response,$status); 
+    }
+
+    public function import(Request $request)
+    {
+        try{
+
+            $image = $request->file;
+        
+                $data = explode(',',$image,)[1];  
+                $imageName = Str::random(10).'.'.'xlsx';
+                $imagePath = '/storage'.'/'.$imageName;
+                Storage::disk('public')->put($imageName, base64_decode($data));
+                $file = $imageName;
+
+            Excel::import(new AssetsImport, storage_path('app/public/'.$file));
+        
+            $response=[
+                "message" => "Data Imported Sucessfully",
+            ];
+            $status = 200; 
+        
+
+        }catch(Exception $e){
+            $response = [
+                "message"=>$e->getMessage(),
+                "status" => 406
+            ];            
+            $status = 406;
+            
+        }catch(QueryException $e){
+            $response = [
+                "error" => $e->errorInfo,
+                "status" => 406
+            ];
+            $status = 406; 
+        }
+
+        return response($response,$status);     
+
+    }
+
+    public function template()
+    {
+        return Excel::download(new TemplateExport, 'Template.xlsx');
     }
 
 }

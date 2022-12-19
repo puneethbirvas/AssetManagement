@@ -14,22 +14,114 @@ class UntagAssetController extends Controller
 {
     public function update(Request $request,$id)
     {
-        $get = DB::table('allocations')->where('assetName','=',$id)->first();
-        $get = $get->id;
-        $untag = Allocation::find($get);
+        try{  
 
-        $untag->reasonForUntag = $request->reasonForUntag;
-        $untag->tag = $request->tag;
+            $data = DB::table('allocations')->where('assetName','=',$id)->get();
+            
+            if(count($data)<=0){
+                throw new Exception("id not found");
 
-        $untag->save();
+            }else{
+                $get = DB::table('allocations')->where('assetName','=',$id)->first();
+                $get1 = $get->id;
+                $untag = Allocation::find($get1);
 
-        $response = [
-            "data" => "untagged successfuly",
-            "status" => 200
-        ];
-        $status = 200;
+                $untag->reasonForUntag = $request->reasonForUntag;
+                $untag->tag = $request->tag;
 
-        return Response($response,$status);
+                $untag->save();
+
+                $response = [
+                    "message" => "untagged successfuly",
+                    "status" => 200
+                ];
+                $status = 200;
+            }
+        }catch(Exception $e){
+            $response = [
+                "message"=>$e->getMessage(),
+            ];            
+            $status = 406;
+
+        }catch(QueryException $e){
+            $response = [
+                "error" => $e->errorInfo,
+            ];
+            $status = 406; 
+        }
+    
+        return response($response, $status);   
+    }
+
+
+     public function untagUpdate(Request $request,$id)
+    {
+        try{
+            $data = DB::table('allocations')
+             ->where('id','=',$id)
+             ->get();
+       
+            if(count($data)<=0){
+                throw new Exception("data not found");
+
+            }else{
+                $get =DB::table('allocations')->where('id','=',$id)->first();
+                $get = $get->id;
+
+                $untag = Allocation::find($get);
+
+                $untag->department = $request->department;
+                $untag->section  = $request->section ;
+                $untag->assetType = $request->assetType;
+                $untag->assetName = $request->assetName;
+                $untag->userType = $request->userType;
+                
+                if($untag->userType == 'empId'){
+                    $untag->empId = $request->empId;
+                }
+                
+                $untag->user = $request->user; 
+
+                if($untag->userType == 'department'){
+                    $allocation->userDepartment = $request->userDepartment;
+                }
+                $untag->position = $request->position;
+                if($untag->position == 'temporary'){
+                    $untag->fromDate = $request->fromDate;
+                    $untag->toDate = $request->toDate; 
+                }
+                if($untag->position == 'permanent'){
+                    $untag->fromDate = null;
+                    $untag->toDate =  null;
+                }
+                $untag->reasonForUntag = null;
+                $untag->tag = null;
+
+                $untag->save();
+            }
+                
+
+            $response = [
+                'success' => true,
+                'message' => "details updated successfully",
+            ];
+            $status = 201;   
+            
+
+        }catch(Exception $e){
+            $response = [
+                "error"=>$e->getMessage(),
+            ];            
+            $status = 406;
+
+        }catch(QueryException $e){
+            $response = [
+                "error" => $e->errorInfo,
+            ];
+            $status = 406; 
+        }
+        
+        return response($response, $status);    
     }
 
     public function showData(Request $request)
@@ -39,24 +131,24 @@ class UntagAssetController extends Controller
             $toDate = $request->toDate;
 
             $result = DB::table('allocations')
-                    ->where('fromDate','>=',$fromDate) 
-                    ->where('toDate','<=', $toDate)
-                    ->where('reasonForUntag','!=',"null")
-                    ->join('departments','departments.id','=','allocations.department')
-                    ->join('sections','sections.id','=','allocations.section')
-                    ->join('assettypes','assettypes.id','=','allocations.assetType')
-                    ->join('assets','assets.id','=','allocations.assetName')
-                    ->leftjoin('users as A','A.id','=','allocations.user')
-                    ->leftjoin('users as B','B.id','=','allocations.empId')
-                    ->select('allocations.*','departments.department_name as department',
-                     'sections.section as  section','assettypes.assetType as assetType',
-                     'assets.assetName as assetName','A.user_name as user',
-                     'departments.department_name as userDepartment','B.employee_id as empId')  
-                    ->get();
+                ->where('fromDate','>=',$fromDate) 
+                ->where('toDate','<=', $toDate)
+                ->where('reasonForUntag','!=',"null")
+                ->join('departments','departments.id','=','allocations.department')
+                ->join('sections','sections.id','=','allocations.section')
+                ->join('assettypes','assettypes.id','=','allocations.assetType')
+                ->join('assets','assets.id','=','allocations.assetName')
+                ->leftjoin('users as A','A.id','=','allocations.user')
+                ->leftjoin('users as B','B.id','=','allocations.empId')
+                ->select('allocations.*','departments.department_name as department',
+                  'sections.section as  section','assettypes.assetType as assetType',
+                  'assets.assetName as assetName','A.user_name as user',
+                  'departments.department_name as userDepartment','B.employee_id as empId','departments.id as departmentId','sections.id as sectionsId', 'assettypes.id as assetTypesId','assets.id as assetNameId','A.id as userId')  
+                ->get();
                     
-            if(!$result){
-              throw new Exception("data not found");
-            }
+                    if(count($result)<=0){
+                        throw new Exception("data not found");
+                    }
             $response=[
              "message" => "UnTag Assets List",
              "data" => $result

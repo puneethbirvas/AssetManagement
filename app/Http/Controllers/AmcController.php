@@ -18,76 +18,85 @@ class AMCController extends Controller
     public function store(Request $request)
     {
         try{
-            $amc = new Amc;
 
-            $amc->vendorName = $request->vendorName;
-            $amc->periodFrom = $request->periodFrom;
-            $amc->periodTo = $request->periodTo;
-            $amc->premiumCost = $request->premiumCost;
+            $assetName = $request->assetName;
+            $data = DB::table('amcs')->where('assetName','=',$assetName)->get();
 
-            // Amc document
-            $image = $request->amcDoc;
-            if($image){ // your base64 encoded
-                $extension = explode('/', explode(':', substr($image, 0, strpos($image, ';')))[1])[1]; 
-                $replace = substr($image, 0, strpos($image, ',')+1); 
-                $image = str_replace($replace, '', $image); 
-                $image = str_replace(' ', '+', $image); 
-                $imageName = Str::random(10).'.'.$extension;
-                $imagePath = '/storage'.'/'.$imageName;
-                Storage::disk('public')->put($imageName, base64_decode($image));
-                $amc->amcDoc = $imagePath;
-            }
-           
-            $amc->servicePattern = $request->servicePattern;
-            $service = $request->servicePattern;
+            if(count($data)>0){
+                throw new Exception("this asset already exist");
 
-            if($service == 1 )
-            {
-                $amc->service1 = $this->service1($request);
-            }
+            }else{
+                $amc = new Amc;
 
-            if($service == 2)
-            {
-                $amc->service1 = $this->service1($request);
-                $amc->service2 = $this->service2($request);
-            }
+                $amc->vendorName = $request->vendorName;
+                $amc->periodFrom = $request->periodFrom;
+                $amc->periodTo = $request->periodTo;
+                $amc->premiumCost = $request->premiumCost;
 
-            if($service == 3)
-            {
-                $amc->service1 = $this->service1($request);
-                $amc->service2 = $this->service2($request);
-                $amc->service3 = $this->service3($request);
-            }
+                // Amc document
+                $image = $request->amcDoc;
+                if($image){ // your base64 encoded
+                    $extension = explode('/', explode(':', substr($image, 0, strpos($image, ';')))[1])[1]; 
+                    $replace = substr($image, 0, strpos($image, ',')+1); 
+                    $image = str_replace($replace, '', $image); 
+                    $image = str_replace(' ', '+', $image); 
+                    $imageName = Str::random(10).'.'.$extension;
+                    $imagePath = '/storage'.'/'.$imageName;
+                    Storage::disk('public')->put($imageName, base64_decode($image));
+                    $amc->amcDoc = $imagePath;
+                }
+            
+                $amc->servicePattern = $request->servicePattern;
+                $service = $request->servicePattern;
 
-            if($service == 4)
-            {
-                $amc->service1 = $this->service1($request);
-                $amc->service2 = $this->service2($request);
-                $amc->service3 = $this->service3($request);
-                $amc->service4 = $this->service4($request);
-            }
+                if($service == 1 )
+                {
+                    $amc->service1 = $this->service1($request);
+                }
 
-            if($service == 5)
-            {
-                $amc->service1 = $this->service1($request);
-                $amc->service2 = $this->service2($request);
-                $amc->service3 = $this->service3($request);
-                $amc->service4 = $this->service4($request);
-                $amc->service5 = $this->service5($request);
-            }
+                if($service == 2)
+                {
+                    $amc->service1 = $this->service1($request);
+                    $amc->service2 = $this->service2($request);
+                }
 
-            $amc->department = $request->department;
-            $amc->section = $request->section;
-            $amc->assetType = $request->assetType;
-            $amc->assetName = $request->assetName;
-        
-            $amc->save();
-            $response = [
-                'success' => true,
-                'message' => "successfully added",
-                'status' => 201
-            ];
-            $status = 201; 
+                if($service == 3)
+                {
+                    $amc->service1 = $this->service1($request);
+                    $amc->service2 = $this->service2($request);
+                    $amc->service3 = $this->service3($request);
+                }
+
+                if($service == 4)
+                {
+                    $amc->service1 = $this->service1($request);
+                    $amc->service2 = $this->service2($request);
+                    $amc->service3 = $this->service3($request);
+                    $amc->service4 = $this->service4($request);
+                }
+
+                if($service == 5)
+                {
+                    $amc->service1 = $this->service1($request);
+                    $amc->service2 = $this->service2($request);
+                    $amc->service3 = $this->service3($request);
+                    $amc->service4 = $this->service4($request);
+                    $amc->service5 = $this->service5($request);
+                }
+
+                $amc->department = $request->department;
+                $amc->section = $request->section;
+                $amc->assetType = $request->assetType;
+                $amc->assetName = $request->assetName;
+            
+                $amc->save();
+                $response = [
+                    'success' => true,
+                    'message' => "successfully added",
+                    'status' => 201
+                ];
+                $status = 201; 
+            }    
         
         }catch(Exception $e){
             $response = [
@@ -272,6 +281,7 @@ class AMCController extends Controller
                 ];
                 $status = 200; 
             } 
+            
         }catch(Exception $e){
             $response = [
              "message"=>$e->getMessage(),
@@ -293,7 +303,7 @@ class AMCController extends Controller
     public function updateServiceDate(Request $request, $id)
     {
         try{    
-             
+              
             $amc = Amc::find($id); 
 
             if(!$amc){
@@ -474,7 +484,6 @@ class AMCController extends Controller
                     
                     if($i == 1){
                         $serviceSplit1 = explode("+",$data[0]->service1);
-
                         $rawData["s1startDate"] = $serviceSplit1[0];
                         $rawData["s1endDate"] = $serviceSplit1[1];
                         $rawData["s1runHours"] = $serviceSplit1[2];

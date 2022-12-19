@@ -17,76 +17,86 @@ class CertificateController extends Controller
     public function store(Request $request)
     {
         try{
-            $certificate = new Certificate;
 
-            $certificate->vendorName = $request->vendorName;
-            $certificate->certificateDate = $request->certificateDate;
-            $certificate->expireDate = $request->expireDate;
-            $certificate->premiumCost = $request->premiumCost;
+            $assetName = $request->assetName;
+            $data = DB::table('certificates')->where('assetName','=',$assetName)->get();
 
-            // Certificate document
-            $image = $request->certificateDoc;
-            if($image){ // your base64 encoded
-                $extension = explode('/', explode(':', substr($image, 0, strpos($image, ';')))[1])[1]; 
-                $replace = substr($image, 0, strpos($image, ',')+1); 
-                $image = str_replace($replace, '', $image); 
-                $image = str_replace(' ', '+', $image); 
-                $imageName = Str::random(10).'.'.$extension;
-                $imagePath = '/storage'.'/'.$imageName;
-                Storage::disk('public')->put($imageName, base64_decode($image));
-                $certificate->certificateDoc = $imagePath;
-            }
-           
-            $certificate->inspectionPattern = $request->inspectionPattern;
-            $inspection = $request->inspectionPattern;
+            if(count($data)>0){
+                throw new Exception("this asset already exist");
 
-            if($inspection == 1)
-            {
-                $certificate->inspection1 = $this->inspection1($request);
-            }
+            }else{
 
-            if($inspection == 2)
-            {
-                $certificate->inspection1 = $this->inspection1($request);
-                $certificate->inspection2 = $this->inspection2($request);
-            }
+                $certificate = new Certificate;
 
-            if($inspection == 3)
-            {
-                $certificate->inspection1 = $this->inspection1($request);
-                $certificate->inspection2 = $this->inspection2($request);
-                $certificate->inspection3 = $this->inspection3($request);
-            }
+                $certificate->vendorName = $request->vendorName;
+                $certificate->certificateDate = $request->certificateDate;
+                $certificate->expireDate = $request->expireDate;
+                $certificate->premiumCost = $request->premiumCost;
 
-            if($inspection == 4)
-            {
-                $certificate->inspection1 = $this->inspection1($request);
-                $certificate->inspection2 = $this->inspection2($request);
-                $certificate->inspection3 = $this->inspection3($request);
-                $certificate->inspection4 = $this->inspection4($request);
-            }
+                // Certificate document
+                $image = $request->certificateDoc;
+                if($image){ // your base64 encoded
+                    $extension = explode('/', explode(':', substr($image, 0, strpos($image, ';')))[1])[1]; 
+                    $replace = substr($image, 0, strpos($image, ',')+1); 
+                    $image = str_replace($replace, '', $image); 
+                    $image = str_replace(' ', '+', $image); 
+                    $imageName = Str::random(10).'.'.$extension;
+                    $imagePath = '/storage'.'/'.$imageName;
+                    Storage::disk('public')->put($imageName, base64_decode($image));
+                    $certificate->certificateDoc = $imagePath;
+                }
+            
+                $certificate->inspectionPattern = $request->inspectionPattern;
+                $inspection = $request->inspectionPattern;
 
-            if($inspection == 5)
-            {
-                $certificate->inspection1 = $this->inspection1($request);
-                $certificate->inspection2 = $this->inspection2($request);
-                $certificate->inspection3 = $this->inspection3($request);
-                $certificate->inspection4 = $this->inspection4($request);
-                $certificate->inspection5 = $this->inspection5($request);
-            }
+                if($inspection == 1)
+                {
+                    $certificate->inspection1 = $this->inspection1($request);
+                }
 
-            $certificate->department = $request->department;
-            $certificate->section = $request->section;
-            $certificate->assetType = $request->assetType;
-            $certificate->assetName = $request->assetName;
-        
-            $certificate->save();
-            $response = [
-                'success' => true,
-                'message' => "successfully added",
-                'status' => 201
-            ];
-            $status = 201; 
+                if($inspection == 2)
+                {
+                    $certificate->inspection1 = $this->inspection1($request);
+                    $certificate->inspection2 = $this->inspection2($request);
+                }
+
+                if($inspection == 3)
+                {
+                    $certificate->inspection1 = $this->inspection1($request);
+                    $certificate->inspection2 = $this->inspection2($request);
+                    $certificate->inspection3 = $this->inspection3($request);
+                }
+
+                if($inspection == 4)
+                {
+                    $certificate->inspection1 = $this->inspection1($request);
+                    $certificate->inspection2 = $this->inspection2($request);
+                    $certificate->inspection3 = $this->inspection3($request);
+                    $certificate->inspection4 = $this->inspection4($request);
+                }
+
+                if($inspection == 5)
+                {
+                    $certificate->inspection1 = $this->inspection1($request);
+                    $certificate->inspection2 = $this->inspection2($request);
+                    $certificate->inspection3 = $this->inspection3($request);
+                    $certificate->inspection4 = $this->inspection4($request);
+                    $certificate->inspection5 = $this->inspection5($request);
+                }
+
+                $certificate->department = $request->department;
+                $certificate->section = $request->section;
+                $certificate->assetType = $request->assetType;
+                $certificate->assetName = $request->assetName;
+            
+                $certificate->save();
+                $response = [
+                    'success' => true,
+                    'message' => "successfully added",
+                    'status' => 201
+                ];
+                $status = 201; 
+            }    
         
         }catch(Exception $e){
             $response = [
@@ -256,7 +266,8 @@ class CertificateController extends Controller
                     ->join('assets','assets.id','=','certificates.assetName')
                     ->select('certificates.id','vendors.vendorName as vendorName','certificateDate','expireDate','inspectionPattern','departments.department_name as department',
                       'sections.section as section','assettypes.assetType as assetType',
-                      'assets.assetName as assetName')
+                      'assets.assetName as assetName', 'departments.id as departmentId','sections.id as sectionsId', 'assettypes.id as assetTypesId',
+                      'assets.id as assetNameId',)
                     ->get();
                         
                 $response=[
@@ -441,88 +452,6 @@ class CertificateController extends Controller
     }
 
 
-   
-    // to explode the data
-    public function getDate1($id)
-    {
-        $last =DB::table('certificates')->where('assetName','=',$id)->select('inspection1')->first();
-        $last = $last->inspection1;
-        $get = explode('+',$last);
-        $get1 = $get[0];
-        $get2 = $get[1];
-  
-        $response = [
-            "c1DateFrom" =>$get1,
-            "c1To" =>$get2,
-        ]; 
-
-        return $response;
-    }   
-      
-    public function getDate2($id)
-    {
-        $last =DB::table('certificates')->where('assetName','=',$id)->select('inspection2')->first();
-        $last = $last->inspection2;
-        $get = explode('+',$last);
-        $get1 = $get[0];
-        $get2 = $get[1];
-  
-        $response = [
-            "c2DateFrom" =>$get1,
-            "c2To" =>$get2,
-        ]; 
-
-        return $response;
-    }
-  
-    public function getDate3($id)
-    {
-        $last =DB::table('certificates')->where('assetName','=',$id)->select('inspection3')->first();
-        $last = $last->inspection3;
-        $get = explode('+',$last);
-        $get1 = $get[0];
-        $get2 = $get[1];
-  
-        $response = [
-            "c3DateFrom" =>$get1,
-            "c3To" =>$get2,
-        ]; 
-
-        return $response;
-    }
-  
-    public function getDate4($id)
-    {
-        $last =DB::table('certificates')->where('assetName','=',$id)->select('inspection4')->first();
-        $last = $last->inspection4;
-        $get = explode('+',$last);
-        $get1 = $get[0];
-        $get2 = $get[1];
-  
-        $response = [
-            "c4DateFrom" =>$get1,
-            "c4To" =>$get2,
-        ]; 
-
-        return $response;
-    }
-  
-    public function getDate5( $id)
-    {
-        $last =DB::table('certificates')->where('assetName','=',$id)->select('inspection5')->first();
-        $last = $last->inspection5;
-        $get = explode('+',$last);
-        $get1 = $get[0];
-        $get2 = $get[1];
-  
-        $response = [
-            "c5DateFrom" =>$get1,
-            "c5To" =>$get2,
-        ]; 
-        
-        return $response;
-    }
-
     //To Get Certificate (VendorName,AssetName)
     public function showDetails($id)
     {
@@ -631,8 +560,8 @@ class CertificateController extends Controller
                  'expireDate as inspectionDate','assets.assetName as assetName',)
                 ->get();
 
-                if(!$result){
-                 throw new Exception("data not found");
+                if(count($result)<=0){
+                    throw new Exception("data not found");
                 }
 
             $response=[

@@ -19,38 +19,48 @@ class InsuranceController extends Controller
     {
         try{
 
-            $insurance = new Insurance;
             
-            $insurance->vendorName = $request->vendorName;
-            $insurance->periodFrom = $request->periodFrom;
-            $insurance->periodTo = $request->periodTo;
-            $insurance->premiumCost = $request->premiumCost;
+            $assetName = $request->assetName;
+            $data = DB::table('insurances')->where('assetName','=',$assetName)->get();
 
-            //Insurance  document
-            $image = $request->insuranceDoc;
-            if($image){ // your base64 encoded
-                $extension = explode('/', explode(':', substr($image, 0, strpos($image, ';')))[1])[1]; 
-                $replace = substr($image, 0, strpos($image, ',')+1); 
-                $image = str_replace($replace, '', $image); 
-                $image = str_replace(' ', '+', $image); 
-                $imageName = Str::random(10).'.'.$extension;
-                $imagePath = '/storage'.'/'.$imageName;
-                Storage::disk('public')->put($imageName, base64_decode($image));
-                $insurance->insuranceDoc = $imagePath;
-            }
-            
-            $insurance->department = $request->department;
-            $insurance->section = $request->section;
-            $insurance->assetType = $request->assetType;
-            $insurance->assetName = $request->assetName;
-            
-            $insurance->save();
-            $response = [
-                'success' => true,
-                'message' => "successfully added",
-                'status' => 201
-            ];
-            $status = 201; 
+            if(count($data)>0){
+                throw new Exception("this asset already exist");
+
+            }else{
+
+                $insurance = new Insurance;
+                
+                $insurance->vendorName = $request->vendorName;
+                $insurance->periodFrom = $request->periodFrom;
+                $insurance->periodTo = $request->periodTo;
+                $insurance->premiumCost = $request->premiumCost;
+
+                //Insurance  document
+                $image = $request->insuranceDoc;
+                if($image){ // your base64 encoded
+                    $extension = explode('/', explode(':', substr($image, 0, strpos($image, ';')))[1])[1]; 
+                    $replace = substr($image, 0, strpos($image, ',')+1); 
+                    $image = str_replace($replace, '', $image); 
+                    $image = str_replace(' ', '+', $image); 
+                    $imageName = Str::random(10).'.'.$extension;
+                    $imagePath = '/storage'.'/'.$imageName;
+                    Storage::disk('public')->put($imageName, base64_decode($image));
+                    $insurance->insuranceDoc = $imagePath;
+                }
+                
+                $insurance->department = $request->department;
+                $insurance->section = $request->section;
+                $insurance->assetType = $request->assetType;
+                $insurance->assetName = $request->assetName;
+                
+                $insurance->save();
+                $response = [
+                    'success' => true,
+                    'message' => "successfully added",
+                    'status' => 201
+                ];
+                $status = 201; 
+            }    
         
         }catch(Exception $e){
             $response = [
@@ -172,11 +182,12 @@ class InsuranceController extends Controller
                 ->join('assets','assets.id','=','insurances.assetName')
                 ->select('insurances.id','vendors.vendorName as vendorName','periodFrom','periodTo',
                   'departments.department_name as department', 'sections.section as section',
-                  'assettypes.assetType as assetType','assets.assetName as assetName')
+                  'assettypes.assetType as assetType','assets.assetName as assetName','departments.id as departmentId','sections.id as sectionsId', 'assettypes.id as assetTypesId',
+                  'assets.id as assetNameId')
                 ->get();
                 
-                if(!$insurance){
-                    throw new Exception("amc not found");
+                if(count($insurance)<=0){
+                    throw new Exception("No Data Available");
                 }
                           
             $response=[
@@ -221,8 +232,8 @@ class InsuranceController extends Controller
                      'assets.assetName as assetName')
                     ->get();
 
-                if(!$result){
-                 throw new Exception("data not found");
+                if(count($result)<=0){
+                    throw new Exception("data not found");
                 }
 
             $response=[
@@ -258,7 +269,7 @@ class InsuranceController extends Controller
                 ->join('departments','departments.id','=','insurances.department')
                 ->join('assets','assets.id','=','insurances.assetName')
                 ->select( 'insurances.id','departments.department_name as department',
-                 'assets.assetName as  assetName','periodFrom as insuranceStartDate','periodTo as insuranceEndDate')
+                 'assets.assetName as  assetName','periodFrom as insuranceStartDate','periodTo as insuranceEndDate',)
                 ->get();
                 
                 if(count($result)<=0){

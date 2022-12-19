@@ -14,10 +14,14 @@ class DepartmentController extends Controller
     public function store(Request $request)
     {
         try{
+
             $department = new department;
+
             $department->department_name= $request->department_name;
             $department->description= $request->description;
+
             $department->save();
+
             $response = [
                 "message" => "Department Added Sucessfully!",
                 "status" => 200
@@ -29,7 +33,8 @@ class DepartmentController extends Controller
                 "message"=>$e->getMessage(),
                 "status" => 406
             ];            
-            $status = 406;            
+            $status = 406;    
+
         }catch(QueryException $e){
             $response = [
                 "error" => $e->errorInfo,
@@ -45,7 +50,9 @@ class DepartmentController extends Controller
     public function update(Request $request,$id)
     {
         try{
+
             $department = department::find($id);
+
             if(!$department){
                 throw new Exception("department not found");
             }
@@ -54,6 +61,7 @@ class DepartmentController extends Controller
             $department->description = $request->description;
 
             $department->save();
+
             $response = [       
                "message" =>' department Updated Successfully', 
                "status" => 200
@@ -66,6 +74,7 @@ class DepartmentController extends Controller
                    "status" => 406
                ];            
                $status = 200;
+
             }catch(QueryException $e){
                $response = [
                    "error" => $e->errorInfo,
@@ -81,7 +90,9 @@ class DepartmentController extends Controller
     public function destroy($id)
     { 
         try{
+
             $department = department::find($id);
+
             if(!$department){
                 throw new Exception("department not found");
             }else{
@@ -112,15 +123,18 @@ class DepartmentController extends Controller
 
     public function showData()
     {
-      try{    
+        try{   
+
             $department = department::all();
+
             if(!$department){
              throw new Exception("department not found");
             }
+
             $response=[
-             "message" => "department List",
-             "data" => $department
-              ];
+                "message" => "department List",
+                "data" => $department
+            ];
             $status = 200; 
             
         }catch(Exception $e){
@@ -129,6 +143,7 @@ class DepartmentController extends Controller
               "status" => 406
               ];            
             $status = 406;
+
         }catch(QueryException $e){
             $response = [
                 "error" => $e->errorInfo,
@@ -138,6 +153,5 @@ class DepartmentController extends Controller
         }
         return response($response,$status); 
     }
-
 
 }

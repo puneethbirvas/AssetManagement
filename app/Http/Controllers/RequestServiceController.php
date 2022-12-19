@@ -6,92 +6,155 @@ use App\Models\RequestService;
 use Illuminate\Http\Request;
 use App\Exports\RequestServiceExport;
 use Maatwebsite\Excel\Facades\Excel;
+use Str;
+use Storage;
 use DB;
 use Exception;
 use Illuminate\Database\QueryException;
 
 class RequestServiceController extends Controller
 {
-    public function store(Request $request)
+
+
+    public function showData()
     {
         try{
-            $service = new RequestService;
+            $manintenance = DB::table('request_services')->get();
 
-            $service->department = $request->department;
-            $service->section = $request->section;
-            $service->assetType  = $request->assetType ;
-            $service->assetName = $request->assetName;
-            $service->vendorName = $request->vendorName;
-            $service->vendorEmail = $request->vendorEmail;
-            $service->vendorAddress = $request->vendorAddress;
-            $service->vendorPhone = $request->vendorPhone;
-            $service->gstNo = $request->gstNo;
-            $service->dateOrDay = $request->dateOrDay;
+            if(count($manintenance)<=0){
+                throw new Exception("requestServices not found");
 
-            if($service->dateOrDay == "date"){
-                $service->expectedDate = $request->expectedDate;
-                $service->expectedDay = null;
+            }else{
+
+                $manintenance = DB::table('request_services')
+                    ->select('request_services.*','users.user_name as userName','departments.department_name as department',
+                    'assettypes.assetType as assetType','sections.section as section','assets.assetName as assetName')
+                    ->join('users','users.id','=','request_services.userName')
+                    ->join('assets','assets.id','=','request_services.assetName')
+                    ->join('departments','departments.id','=','assets.department')
+                    ->join('assettypes','assettypes.id','=','assets.assettype')
+                    ->join('sections','sections.id','=','assets.section')
+                    ->get();
+            } 
+
+            $response=[
+                "message" => "manintenance List",
+                "data" => $manintenance
+            ];
+            $status = 200; 
+
+
+        }catch(Exception $e){
+            $response = [
+                "message"=>$e->getMessage(),
+                "status"=>406
+            ];            
+            $status = 406;
+
+
+        }catch(QueryException $e){
+            $response = [
+                "error" => $e->errorInfo,
+                "status"=>406
+            ];
+            $status = 406; 
+        }
+    
+        return response($response, $status);        
+    } 
+
+    public function showData1($id)
+    {
+        try{
+            $service = DB::table('request_services')->where('assetName','=',$id)->get();
+
+            if(count($service)<=0){
+                throw new Exception("No data available");
+
+            }else{
+
+                $service = DB::table('request_services')
+                    ->select('request_services.*','users.user_name as userName','departments.department_name as department',
+                    'assettypes.assetType as assetType','sections.section as section','assets.assetName as assetName')
+                    ->where('request_services.assetName','=',$id)
+                    ->join('users','users.id','=','request_services.userName')
+                    ->join('assets','assets.id','=','request_services.assetName')
+                    ->join('departments','departments.id','=','assets.department')
+                    ->join('assettypes','assettypes.id','=','assets.assettype')
+                    ->join('sections','sections.id','=','assets.section')
+                    ->get();
+            } 
+
+            $response=[
+                "message" => "service List",
+                "data" => $service
+            ];
+            $status = 200; 
+
+
+        }catch(Exception $e){
+            $response = [
+                "message"=>$e->getMessage(),
+                "status"=>406
+            ];            
+            $status = 406;
+
+
+        }catch(QueryException $e){
+            $response = [
+                "error" => $e->errorInfo,
+                "status"=>406
+            ];
+            $status = 406; 
+        }
+    
+        return response($response, $status);        
+    } 
+
+
+    public function update(Request $request,$id)
+    {
+        try{
+            $service = RequestService::find($id);
+
+            if(!$service){
+                throw new Exception("data not found");
+
+            }else{
+        
+                $service->vendorName = $request->vendorName;
+                $service->vendorEmail = $request->vendorEmail;
+                $service->vendorAddress = $request->vendorAddress;
+                $service->vendorPhone = $request->vendorPhone;
+                $service->gstNo = $request->gstNo;
+                $service->dateOrDay = $request->dateOrDay;
+
+                if($service->dateOrDay == "date"){
+                    $service->expectedDate = $request->expectedDate;
+                    $service->expectedDay = null;
+                }
+
+                if($service->dateOrDay == "day"){
+                $service->expectedDate = null;
+                $service->expectedDay = $request->expectedDay;
+                }
+                $service->eWayBill  = $request->eWayBill ;
+                $service->chargable = $request->chargable;
+                $service->returnable = $request->returnable;
+                $service->delivery = $request->delivery;
+                $service->jobWork  = $request->jobWork ;
+                $service->repair = $request->repair;
+                $service->personName = $request->personName;
             }
-
-
-            if($service->dateOrDay == "day"){
-            $service->expectedDate = null;
-            $service->expectedDay = $request->expectedDay;
-            }
-            $service->eWayBill  = $request->eWayBill ;
-            $service->chargable = $request->chargable;
-            $service->returnable = $request->returnable;
-            $service->delivery = $request->delivery;
-            $service->jobWork  = $request->jobWork ;
-            $service->repair = $request->repair;
-            $service->personName = $request->personName;
 
             $service->save();
 
-            $response = [
-                "data" => "details added successfully",
-                "status" => 200
+            $response=[
+                "message" => "manintenance List",
+                "data" => "details updated successfully"
             ];
             $status = 200;
 
-        }catch(Exception $e){
-                $response = [
-                    "error"=>$e->getMessage(),
-                    "status"=>406
-                ];            
-                $status = 406;
-
-            }catch(QueryException $e){
-                $response = [
-                    "error" => $e->errorInfo,
-                    "status"=>406
-                ];
-                $status = 406; 
-            }
-    
-        return response($response, $status);        
-    }
-
-
-    public function showServiceRequest($id)
-    {
-        try{
-            $data = DB::table('request_services')
-              ->where('request_services.assetName','=',$id)
-              ->select('request_services.*','departments.department_name as department',
-              'sections.section as section','assettypes.assetType as assetType','assets.assetName as assetName','vendors.vendorName as vendorName')
-              ->join('departments','departments.id','=','request_services.department')
-              ->join('sections','sections.id','=','request_services.section')
-              ->join('assettypes','assettypes.id','=','request_services.assetType')
-              ->join('assets','assets.id','=','request_services.assetName')
-              ->join('vendors','vendors.id','=','request_services.vendorName')
-              ->get();
-
-            $response =[
-                "data" => $data,
-                "status" =>200
-            ];
-            $status = 200;
 
         }catch(Exception $e){
             $response = [
@@ -99,6 +162,7 @@ class RequestServiceController extends Controller
                 "status"=>406
             ];            
             $status = 406;
+
 
         }catch(QueryException $e){
             $response = [
@@ -109,99 +173,22 @@ class RequestServiceController extends Controller
         }
     
         return response($response, $status);        
-    }
+    } 
 
-    public function showMaintenance()
-    {
-        try{
-            $maintenance = DB::table('maintenances')
-                ->select('maintenances.*','departments.department_name as department','sections.section as section','assettypes.assetType as assetType','assets.assetName as assetName','users.user_name as userName','departments.id as departmentId','sections.id as sectionsId', 'assettypes.id as assetTypesId',
-                 'Assets.id as assetNameId')
-                ->join('users','users.id','=','maintenances.userName')
-                ->join('departments','departments.id','=','maintenances.department')
-                ->join('sections','sections.id','=','maintenances.section')
-                ->join('assettypes','assettypes.id','=','maintenances.assetType')
-                ->join('assets','assets.id','=','maintenances.assetName')
-                ->get(); 
-
-            if(count($maintenance)<=0){
-                throw new Exception("Data not found");
-            }
-        
-                $response = [
-                    "data" => $maintenance,
-                    "status" => 200
-                ];
-                $status = 200;
-
-        }catch(Exception $e){
-            $response = [
-                "error"=>$e->getMessage(),
-                "status"=>406
-            ];            
-            $status = 406;
-
-        }catch(QueryException $e){
-            $response = [
-                "error" => $e->errorInfo,
-                "status"=>406
-            ];
-            $status = 406; 
-        }
-
-        return response($response, $status);        
-    }
-
-    public function showMaintenance1($id)
-    {
-        try{
-            $maintenance = DB::table('maintenances')
-                ->select('maintenances.*','departments.department_name as department','sections.section as section','assettypes.assetType as assetType','assets.assetName as assetName')
-                ->where('maintenances.id','=',$id)
-                ->join('departments','departments.id','=','maintenances.department')
-                ->join('sections','sections.id','=','maintenances.section')
-                ->join('assettypes','assettypes.id','=','maintenances.assetType')
-                ->join('assets','assets.id','=','maintenances.assetName')
-                ->get(); 
-
-            if(count($maintenance)<=0){
-                throw new Exception("Data not found");
-            }
-        
-                $response = [
-                    "data" => $maintenance,
-                    "status" => 200
-                ];
-                $status = 200;
-
-        }catch(Exception $e){
-            $response = [
-                "error"=>$e->getMessage(),
-                "status"=>406
-            ];            
-            $status = 406;
-
-        }catch(QueryException $e){
-            $response = [
-                "error" => $e->errorInfo,
-                "status"=>406
-            ];
-            $status = 406; 
-        }
-
-        return response($response, $status);     
-    }   
-
-
+   
     public function updateServiceStatus(Request $request, $id)
     {
         try{
 
-            $data = DB::table('request_services')->where('assetName','=',$id)->first();
+            $data = DB::table('request_services')->where('id','=',$id)->first();
             $get = $data->id;
 
             $update = RequestService::find($get);
+            
+            $update->status = $request->status;
             $update->serviceStatus = $request->serviceStatus;
+
+            
             $update->save();
 
             $response = [
@@ -227,6 +214,8 @@ class RequestServiceController extends Controller
     
         return response($response, $status);       
     }
+
+  
 
     public function export()
     {

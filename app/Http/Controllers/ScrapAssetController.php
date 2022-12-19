@@ -6,6 +6,8 @@ use App\Models\scrapAsset;
 use App\Exports\ScrapAssetsExport;
 use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Http\Request;
+use Exception;
+use Illuminate\Database\QueryException;
 use DB;
 use Str;
 use Storage;
@@ -14,42 +16,52 @@ class ScrapAssetController extends Controller
 {
     public function store(Request $request)
     {
-       try{                
-            $scrapAsset = new scrapAsset;
-                
-            $scrapAsset->scrapType = $request->scrapType;
-            $scrapAsset->department = $request->department;
-            $scrapAsset->section = $request->section;
-            $scrapAsset->assetType = $request->assetType;
-            $scrapAsset->assetName = $request->assetName;
-           
-            //imageStoring
-            $image = $request->scrapAprovalLetter;
-            if($image){  // your base64 encoded
-                $extension = explode('/', explode(':', substr($image, 0, strpos($image, ';')))[1])[1]; 
-                $replace = substr($image, 0, strpos($image, ',')+1); 
-                $image = str_replace($replace, '', $image); 
-                $image = str_replace(' ', '+', $image); 
-                $imageName = Str::random(10).'.'.$extension;
-                $imagePath = '/storage'.'/'.$imageName;
-                Storage::disk('public')->put($imageName, base64_decode($image));
+        try{    
 
-                $scrapAsset->scrapAprovalLetter = $imagePath;
-            }
+            $assetName = $request->assetName;
+            $data = DB::table('scrap_assets')->where('assetName','=',$assetName)->get();
 
-            $scrapAsset->user='Admin';
+            if(count($data)>0){
+                throw new Exception("this asset already exist");
 
-            $scrapAsset->save();
-            $response = [
-                'success' => true,
-                'message' => $request->scrapType." Added successfully",
-                'status' => 201
-            ];
-            $status = 201;   
+            }else{
+
+                $scrapAsset = new scrapAsset;
+                    
+                $scrapAsset->scrapType = $request->scrapType;
+                $scrapAsset->department = $request->department;
+                $scrapAsset->section = $request->section;
+                $scrapAsset->assetType = $request->assetType;
+                $scrapAsset->assetName = $request->assetName;
+            
+                //imageStoring
+                $image = $request->scrapAprovalLetter;
+                if($image){  // your base64 encoded
+                    $extension = explode('/', explode(':', substr($image, 0, strpos($image, ';')))[1])[1]; 
+                    $replace = substr($image, 0, strpos($image, ',')+1); 
+                    $image = str_replace($replace, '', $image); 
+                    $image = str_replace(' ', '+', $image); 
+                    $imageName = Str::random(10).'.'.$extension;
+                    $imagePath = '/storage'.'/'.$imageName;
+                    Storage::disk('public')->put($imageName, base64_decode($image));
+
+                    $scrapAsset->scrapAprovalLetter = $imagePath;
+                }
+
+                $scrapAsset->user='Admin';
+
+                $scrapAsset->save();
+                $response = [
+                    'success' => true,
+                    'message' => $request->scrapType." Added successfully",
+                    'status' => 201
+                ];
+                $status = 201;   
+            }    
           
         }catch(Exception $e){
             $response = [
-                "error"=>$e->getMessage(),
+                "message"=>$e->getMessage(),
                 "status"=>406
             ];            
             $status = 406;
